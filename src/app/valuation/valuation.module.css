@@ -1,0 +1,313 @@
+/* Container */
+.valuationContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+  
+  /* Hero Section */
+  .valuationHero {
+    padding: 4rem 0;
+    background-color: #f9f9f9;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .valuationHeroContent {
+    max-width: 800px;
+    margin: 0 auto 3rem;
+    text-align: center;
+  }
+  
+  .valuationHeroContent h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #323232;
+    margin-bottom: 1.5rem;
+  }
+  
+  .valuationHeroContent p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #666;
+  }
+  
+  .valuationHeroImage {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .heroImage {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Valuation Options */
+  .valuationOptionsSection {
+    padding: 4rem 0;
+  }
+  
+  .valuationOptionsWrapper {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+  
+  .valuationOptionCard {
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    padding: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  }
+  
+  .valuationOptionCard:hover {
+    background-color: #e4b611;
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  }
+  
+  .valuationOptionCard h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #323232;
+    margin: 0;
+  }
+  
+  .arrowIcon {
+    font-size: 1.5rem;
+    color: #323232;
+  }
+  
+  .backToHome {
+    text-align: center;
+  }
+  
+  .btnSecondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background-color: #f0f0f0;
+    color: #323232;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  
+  .btnSecondary:hover {
+    background-color: #e0e0e0;
+  }
+  
+  /* Valuation Form Section */
+  .valuationFormSection {
+    padding: 4rem 0;
+  }
+  
+  .valuationFormWrapper {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 3rem;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    padding: 2rem;
+  }
+  
+  .valuationFormLeft h2,
+  .valuationFormRight h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #323232;
+    margin-bottom: 2rem;
+  }
+  
+  .valuationForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .formGroup label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #323232;
+  }
+  
+  .required {
+    color: #e74c3c;
+    margin-left: 0.25rem;
+  }
+  
+  .formGroup input,
+  .formGroup select {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+  }
+  
+  .formGroup input:focus,
+  .formGroup select:focus {
+    outline: none;
+    border-color: #e4b611;
+  }
+  
+  .postcodeInputGroup {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .postcodeInputGroup input {
+    flex: 1;
+  }
+  
+  .findAddressBtn {
+    padding: 0.75rem 1rem;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .findAddressBtn:hover {
+    background-color: #e0e0e0;
+  }
+  
+  .checkboxGroup {
+    margin-top: 0.5rem;
+  }
+  
+  .checkboxContainer {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    position: relative;
+    cursor: pointer;
+  }
+  
+  .checkboxText {
+    font-size: 0.9rem;
+    color: #666;
+    line-height: 1.6;
+  }
+  
+  .checkboxText a {
+    color: #e4b611;
+    text-decoration: underline;
+  }
+  
+  .formActions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+  }
+  
+  .btnPrimary {
+    padding: 0.75rem 1.5rem;
+    background-color: #e4b611;
+    color: #323232;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .btnPrimary:hover {
+    background-color: #f5c728;
+  }
+  
+  .nextSteps {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .nextSteps li {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .nextSteps li:last-child {
+    border-bottom: none;
+  }
+  
+  .nextSteps li svg {
+    color: #e4b611;
+    flex-shrink: 0;
+  }
+  
+  .nextSteps li span {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #323232;
+  }
+  
+  /* Responsive Styles */
+  @media (max-width: 992px) {
+    .valuationOptionsWrapper {
+      grid-template-columns: 1fr;
+    }
+  
+    .valuationFormWrapper {
+      grid-template-columns: 1fr;
+    }
+  
+    .valuationFormRight {
+      order: -1;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .valuationHeroContent h1 {
+      font-size: 2rem;
+    }
+  
+    .formActions {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  
+    .btnSecondary,
+    .btnPrimary {
+      width: 100%;
+      text-align: center;
+      justify-content: center;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .valuationContainer {
+      padding: 0 1rem;
+    }
+  
+    .postcodeInputGroup {
+      flex-direction: column;
+    }
+  
+    .valuationFormWrapper {
+      padding: 1.5rem;
+    }
+  }
+  
