@@ -102,6 +102,26 @@ export default function AddPropertyPage() {
       setEpcDocument(files && files[0] ? files[0] : null);
   }
 
+  const uploadFile = async (file: File, propertyId: string, folder: string) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("folder", folder);
+    formData.append("property_id", propertyId);
+
+    const response = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    const result = await response.json();
+    console.log("Upload API Response:", result); // Log the response here
+    if (!result.success) {
+      throw new Error(result.message);
+    }
+
+    return result.file_url;
+  };
+
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
     setIsSubmitting(true)
@@ -197,75 +217,149 @@ export default function AddPropertyPage() {
         }
       }
 
-      // Upload images
-      if (imageFiles.length > 0) {
-        let featuredImageSet = false
+      // ──────────────── Upload images ────────────────
+if (imageFiles.length > 0) {
+  let featuredImageSet = false;
 
-        for (let i = 0; i < imageFiles.length; i++) {
-          const file = imageFiles[i]
-          const fileExt = file.name.split(".").pop()
-          const fileName = `${propertyId}/${Date.now()}.${fileExt}`
-          const filePath = `property-images/${fileName}`
+  for (let i = 0; i < imageFiles.length; i++) {
+    const file = imageFiles[i];
+    const ext = file.name.split(".").pop();
+    const fileName = `${propertyId}/${Date.now()}.${ext}`;
+    const filePath = `property-images/${fileName}`;
 
-          // Upload image to storage
-          const { error: uploadError } = await supabase.storage.from("properties").upload(filePath, file)
+    console.log("[DEBUG] calling supabase.storage.upload with", {
+      filePath,
+      fileName: file.name,
+    });
+    const { data: uploadData, error: uploadError } =
+      await supabase.storage
+        .from("properties")
+        .upload(filePath, file, { cacheControl: "3600", upsert: false });
 
-          if (uploadError) {
-            console.error("Error uploading image:", uploadError)
-            continue
-          }
+    console.log("[DEBUG] uploadData:", uploadData);
+    console.log("[DEBUG] uploadError raw:", uploadError);
+    console.log(
+      "[DEBUG] uploadError JSON:",
+      uploadError ? JSON.stringify(uploadError, null, 2) : "none"
+    );
 
-          // Get public URL
-          const { data: publicUrlData } = supabase.storage.from("properties").getPublicUrl(filePath)
+    if (uploadError) {
+      const msg = uploadError.message ?? JSON.stringify(uploadError);
+      setError(`Image upload failed: ${msg}`);
+      // Throw a new Error so you get a proper stacktrace
+      throw new Error(`Supabase upload error: ${msg}`);
+    }
 
-          // Set first image as featured if none is set
-          const isFeatured = !featuredImageSet
-          if (isFeatured) {
-            featuredImageSet = true
-          }
+    console.log("[DEBUG] calling getPublicUrl for:", filePath);
+    const { data } = supabase.storage.from("properties").getPublicUrl(filePath);
+const publicUrl = data.publicUrl;
+    console.log("[DEBUG] getPublicUrl result:", data);
 
-          // Insert image info into database
-          const { error: imageError } = await supabase.from("property_images").insert({
-            property_id: propertyId,
-            image_url: publicUrlData.publicUrl,
-            is_featured: isFeatured,
-            display_order: i,
-          })
+    // Then just check if the URL is valid:
+    if (!publicUrl) {
+      setError("Could not get EPC URL");
+      throw new Error("Could not get EPC URL");
+    }
+    
 
-          if (imageError) {
-            console.error("Error adding image record:", imageError)
-          }
-        }
-      }
+    console.log("[DEBUG] publicUrl:", publicUrl);
 
-      // Upload EPC document
-      if (epcDocument) {
-        const fileExt = epcDocument.name.split(".").pop()
-        const fileName = `${propertyId}/epc-${Date.now()}.${fileExt}`
-        const filePath = `property-documents/${fileName}`
 
-        // Upload document to storage
-        const { error: uploadError } = await supabase.storage.from("properties").upload(filePath, epcDocument)
+    const isFeatured = !featuredImageSet;
+    if (isFeatured) featuredImageSet = true;
 
-        if (uploadError) {
-          console.error("Error uploading EPC document:", uploadError)
-        } else {
-          // Get public URL
-          const { data: publicUrlData } = supabase.storage.from("properties").getPublicUrl(filePath)
+    const { error: imageError } = await supabase
+      .from("property_images")
+      .insert({
+        property_id: propertyId,
+        image_url: publicUrl,
+        is_featured: isFeatured,
+        display_order: i,
+      });
 
-          // Insert document info into database
-          const { error: docError } = await supabase.from("property_documents").insert({
-            property_id: propertyId,
-            document_name: "Energy Performance Certificate",
-            document_url: publicUrlData.publicUrl,
-            document_type: "EPC",
-          })
+    if (imageError) {
+      const msg = imageError.message ?? JSON.stringify(imageError);
+      console.error("[DEBUG] insert image record error:", imageError);
+      setError(`Saving image record failed: ${msg}`);
+      throw new Error(`DB insert error: ${msg}`);
+    }
+  }
+}
 
-          if (docError) {
-            console.error("Error adding document record:", docError)
-          }
-        }
-      }
+// ──────────────── Upload EPC document ────────────────
+// ──────────────── Upload EPC document ────────────────
+if (epcDocument) {
+  const ext = epcDocument.name.split(".").pop();
+  const fileName = `${propertyId}/epc-${Date.now()}.${ext}`;
+  const filePath = `property-documents/${fileName}`;
+
+  // 1. Log inputs
+  console.log("[DEBUG DOC] about to upload EPC document:", {
+    bucket: "properties",
+    filePath,
+    originalName: epcDocument.name,
+    size: epcDocument.size,
+    type: epcDocument.type,
+  });
+
+  // 2. Perform upload
+  const { data: uploadData, error: uploadError } =
+    await supabase.storage
+      .from("properties")
+      .upload(filePath, epcDocument, { cacheControl: "3600", upsert: false });
+
+  // 3. Log upload result
+  console.log("[DEBUG DOC] uploadData:", uploadData);
+  console.log(
+    "[DEBUG DOC] uploadError JSON:",
+    uploadError ? JSON.stringify(uploadError, null, 2) : "none"
+  );
+
+  if (uploadError) {
+    const msg = uploadError.message ?? JSON.stringify(uploadError);
+    setError(`EPC upload failed: ${msg}`);
+    throw new Error(`Supabase EPC upload error: ${msg}`);
+  }
+
+  // 4. Fetch the public URL
+  const { data: urlData } = supabase.storage
+    .from("properties")
+    .getPublicUrl(filePath);
+
+  if (!urlData || !urlData.publicUrl) {
+    console.error("[DEBUG DOC] Could not get EPC URL");
+    setError(`Could not get EPC URL`);
+    throw new Error("Could not get EPC URL");
+  }
+
+  // 5. Log URL result
+  console.log("[DEBUG DOC] urlData:", urlData);
+
+  // 6. Insert into your document table
+  const { error: docError } = await supabase
+  .from("property_documents")
+  .insert([
+    {
+      property_id: propertyId,
+      document_name: "Energy Performance Certificate",
+      document_url: urlData.publicUrl,
+      document_type: "EPC",
+    }
+  ]);
+
+  // 7. Log insert result
+  console.log("[DEBUG DOC] insert result:", { docError });
+
+  if (docError) {
+    const msg = docError.message ?? JSON.stringify(docError);
+    console.error("[DEBUG DOC] insert document record error:", docError);
+    setError(`Saving document record failed: ${msg}`);
+    throw new Error(`DB insert doc error: ${msg}`);
+  }
+}
+
+
+      
 
       setSuccess("Property added successfully!")
 
