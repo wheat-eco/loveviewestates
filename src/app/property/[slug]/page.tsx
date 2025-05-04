@@ -1,13 +1,17 @@
 import { createClient } from "@/utils/supabase/server"
 import { notFound } from "next/navigation"
 import PropertyDetailPageClient from "./PropertyDetailPageClient"
+import type { Metadata } from "next"
 
-// Update the type for generateMetadata to match Next.js conventions
-export async function generateMetadata({
-  params,
-}: {
-  params: { slug: string }
-}) {
+// Define the params type for the page
+type PageParams = {
+  params: {
+    slug: string
+  }
+}
+
+// Update the metadata function with the correct type
+export async function generateMetadata({ params }: PageParams): Promise<Metadata> {
   const { slug } = params
   const supabase = await createClient()
 
@@ -260,12 +264,8 @@ async function getPropertyBySlug(slug: string): Promise<Property | null> {
   return property
 }
 
-// Fix the type definition for the page component
-export default async function PropertyDetailPage({
-  params,
-}: {
-  params: { slug: string }
-}) {
+// Fix the page component with the correct type definition
+export default async function PropertyDetailPage({ params }: PageParams) {
   const { slug } = params
   const property = await getPropertyBySlug(slug)
 
