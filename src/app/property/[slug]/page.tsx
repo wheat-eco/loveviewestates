@@ -2,8 +2,13 @@ import { createClient } from "@/utils/supabase/server"
 import { notFound } from "next/navigation"
 import PropertyDetailPageClient from "./PropertyDetailPageClient"
 
-export async function generateMetadata(props: { params: { slug: string } }) {
-  const { slug } = props.params
+// Update the type for generateMetadata to match Next.js conventions
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string }
+}) {
+  const { slug } = params
   const supabase = await createClient()
 
   const { data: property } = await supabase
@@ -189,7 +194,6 @@ async function getPropertyBySlug(slug: string): Promise<Property | null> {
 
   // Cast raw to the explicit type
   const typedRaw = raw as unknown as RawPropertyType
-
   // Map raw data into the typed `Property` shape
   const property: Property = {
     id: typedRaw.id,
@@ -256,8 +260,13 @@ async function getPropertyBySlug(slug: string): Promise<Property | null> {
   return property
 }
 
-export default async function PropertyDetailPage(props: { params: { slug: string } }) {
-  const { slug } = props.params
+// Fix the type definition for the page component
+export default async function PropertyDetailPage({
+  params,
+}: {
+  params: { slug: string }
+}) {
+  const { slug } = params
   const property = await getPropertyBySlug(slug)
 
   if (!property) notFound()
