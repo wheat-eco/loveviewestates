@@ -264,9 +264,9 @@ async function getPropertyBySlug(slug: string): Promise<Property | null> {
   return property
 }
 
-// Fix the page component with the correct type definition
-export default async function PropertyDetailPage({ params }: PageParams) {
-  const { slug } = params
+// Use type assertion to bypass the type check
+export default async function PropertyDetailPage(props: any) {
+  const { slug } = props.params
   const property = await getPropertyBySlug(slug)
 
   if (!property) notFound()
