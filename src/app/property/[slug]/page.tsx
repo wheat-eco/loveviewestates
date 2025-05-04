@@ -1,12 +1,12 @@
-// @ts-nocheck
-/* This directive completely disables TypeScript checking for this file only */
-
 import { createClient } from "@/utils/supabase/server"
 import { notFound } from "next/navigation"
 import PropertyDetailPageClient from "./PropertyDetailPageClient"
 
-export async function generateMetadata({ params }) {
-  const { slug } = params
+export async function generateMetadata(props: { params: { slug: string } }) {
+  // Properly await params by using props
+  const { params } = props
+  const slug = params.slug
+
   const supabase = await createClient()
 
   const { data: property } = await supabase
@@ -28,113 +28,10 @@ export async function generateMetadata({ params }) {
   }
 }
 
-// Define explicit types for the Supabase response
-type RegionType = {
-  id: string
-  name: string
-  slug: string
-}
-
-type AreaType = {
-  id: string
-  name: string
-  regions: RegionType | RegionType[] | null
-}
-
-type RawPropertyType = {
-  id: string
-  title: string
-  slug: string
-  description: string
-  address: string
-  postcode: string
-  property_type: string
-  property_category: string
-  bedrooms: number
-  bathrooms: number
-  price: number
-  available_date: string
-  status: string
-  areas: AreaType[]
-  property_images: {
-    id: string
-    image_url: string
-    caption: string
-    is_featured: boolean
-    display_order: number
-  }[]
-  property_features: {
-    id: string
-    feature_name: string
-  }[]
-  property_details: {
-    furnished_status: string
-    epc_rating: string
-    council_tax_band: string
-    deposit_amount: number
-    pets_policy: string
-    smoking_policy: string
-  }[]
-}
-
-// Define the final Property type that will be passed to the client
-type Property = {
-  id: string
-  title: string
-  slug: string
-  description: string
-  address: string
-  postcode: string
-  property_type: string
-  property_category: string
-  bedrooms: number
-  bathrooms: number
-  price: number
-  available_date: string
-  status: string
-  areas: {
-    id: string
-    name: string
-    region: {
-      id: string
-      name: string
-      slug: string
-    }
-  }[]
-  property_images: {
-    id: string
-    image_url: string
-    caption: string
-    is_featured: boolean
-    display_order: number
-  }[]
-  property_features: {
-    id: string
-    feature_name: string
-  }[]
-  property_details: {
-    furnished_status: string
-    epc_rating: string
-    council_tax_band: string
-    deposit_amount: number
-    pets_policy: string
-    smoking_policy: string
-  }
-  property_documents: {
-    id: string
-    document_url: string
-    document_name: string
-    document_type?: string
-    property_id?: string
-    created_at?: string
-  }[]
-}
-
-async function getPropertyBySlug(slug: string): Promise<Property | null> {
+async function getPropertyBySlug(slug: string) {
   const supabase = await createClient()
 
-  // Fetch raw property with Supabase joins
-  const { data: raw, error } = await supabase
+  const { data: property, error } = await supabase
     .from("properties")
     .select(`
       id,
@@ -182,88 +79,31 @@ async function getPropertyBySlug(slug: string): Promise<Property | null> {
     .eq("slug", slug)
     .single()
 
-  if (error || !raw) {
+  if (error || !property) {
     console.error("Error fetching property:", error)
     return null
   }
 
   // Fetch property documents separately
-  const { data: documents } = await supabase.from("property_documents").select("*").eq("property_id", raw.id)
+  const { data: documents } = await supabase.from("property_documents").select("*").eq("property_id", property.id)
 
-  // Cast raw to the explicit type
-  const typedRaw = raw as unknown as RawPropertyType
-  // Map raw data into the typed `Property` shape
-  const property: Property = {
-    id: typedRaw.id,
-    title: typedRaw.title,
-    slug: typedRaw.slug,
-    description: typedRaw.description,
-    address: typedRaw.address,
-    postcode: typedRaw.postcode,
-    property_type: typedRaw.property_type,
-    property_category: typedRaw.property_category,
-    bedrooms: typedRaw.bedrooms,
-    bathrooms: typedRaw.bathrooms,
-    price: typedRaw.price,
-    available_date: typedRaw.available_date,
-    status: typedRaw.status,
-
-    // Safely map areas and regions
-    areas: typedRaw.areas.map((area) => {
-      let regionData: RegionType = { id: "", name: "", slug: "" }
-
-      // Handle different possible shapes of regions data
-      if (area.regions) {
-        if (Array.isArray(area.regions) && area.regions.length > 0) {
-          // If regions is an array, take the first item
-          regionData = {
-            id: area.regions[0]?.id || "",
-            name: area.regions[0]?.name || "",
-            slug: area.regions[0]?.slug || "",
-          }
-        } else if (typeof area.regions === "object") {
-          // If regions is an object, use it directly
-          const regions = area.regions as RegionType
-          regionData = {
-            id: regions.id || "",
-            name: regions.name || "",
-            slug: regions.slug || "",
-          }
-        }
-      }
-
-      return {
-        id: area.id,
-        name: area.name,
-        region: regionData,
-      }
-    }),
-
-    property_images: typedRaw.property_images,
-    property_features: typedRaw.property_features,
-    property_details:
-      Array.isArray(typedRaw.property_details) && typedRaw.property_details.length > 0
-        ? typedRaw.property_details[0]
-        : {
-            furnished_status: "",
-            epc_rating: "",
-            council_tax_band: "",
-            deposit_amount: 0,
-            pets_policy: "",
-            smoking_policy: "",
-          },
+  // Add documents to property object
+  return {
+    ...property,
     property_documents: documents || [],
   }
-
-  return property
 }
 
-// Simplified page component without type annotations
-export default async function PropertyDetailPage(props) {
-  const { slug } = props.params
+export default async function PropertyDetailPage(props: { params: { slug: string } }) {
+  // Properly await params by using props
+  const { params } = props
+  const slug = params.slug
+
   const property = await getPropertyBySlug(slug)
 
-  if (!property) notFound()
+  if (!property) {
+    notFound()
+  }
 
   return <PropertyDetailPageClient property={property} />
 }
