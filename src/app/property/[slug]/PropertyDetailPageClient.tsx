@@ -7,7 +7,7 @@ import { notFound } from "next/navigation"
 import { useState, useRef, type FormEvent } from "react"
 import { useRouter } from "next/navigation"
 
-// Update the Property interface to include property_documents
+// Update the Property interface to match the one in page.tsx
 interface Property {
   id: string
   title: string
@@ -25,12 +25,12 @@ interface Property {
   areas: {
     id: string
     name: string
-    regions: {
+    region: {
       id: string
       name: string
       slug: string
     }
-  }
+  }[]
   property_images: {
     id: string
     image_url: string
@@ -52,16 +52,16 @@ interface Property {
   }
   property_documents: {
     id: string
-    property_id: string
-    document_name: string
     document_url: string
-    document_type: string
-    created_at: string
+    document_name: string
+    document_type?: string
+    property_id?: string
+    created_at?: string
   }[]
 }
 
 interface PropertyDetailPageProps {
-  property: Property | null
+  property: Property
 }
 
 export default function PropertyDetailPageClient({ property }: PropertyDetailPageProps) {
@@ -116,6 +116,10 @@ export default function PropertyDetailPageClient({ property }: PropertyDetailPag
   // Get EPC document
   const epcDocument = property.property_documents?.find((doc) => doc.document_type === "EPC")
 
+  // Get area and region info - safely access the first area if it exists
+  const area = property.areas && property.areas.length > 0 ? property.areas[0] : null
+  const region = area?.region || null
+
   // Social sharing functions
   const handleFacebookShare = () => {
     const url = encodeURIComponent(window.location.href)
@@ -160,10 +164,6 @@ export default function PropertyDetailPageClient({ property }: PropertyDetailPag
       if (response.ok) {
         setFormSuccess("Your viewing request has been submitted successfully. We'll contact you shortly.")
         form.reset()
-        // Optionally redirect to thank you page
-        // setTimeout(() => {
-        //   router.push("/viewing-request-thank-you")
-        // }, 2000)
       } else {
         setFormError(result.message || "Failed to submit your request. Please try again.")
       }
@@ -187,12 +187,11 @@ export default function PropertyDetailPageClient({ property }: PropertyDetailPag
 
       {/* Property Title */}
       <h1 className={styles.propertyTitle}>
-        {property.address}, {property.areas?.name || ""}
+        {property.address}, {area?.name || ""}
       </h1>
 
       {/* Property Status */}
-      {property.status && <div className={styles.statusBadge}>{property.status}</div>}
-  
+      {property.status && <div className={styles.statusBadge}>{getStatusLabel()}</div>}
 
       {/* Property Gallery */}
       <div className={styles.propertyGallery}>
@@ -250,7 +249,7 @@ export default function PropertyDetailPageClient({ property }: PropertyDetailPag
         <div className={styles.keyDetails}>
           <div className={styles.keyDetail}>
             <MapPin size={16} className={styles.detailIcon} />
-            <span>{property.areas?.name || ""}</span>
+            <span>{area?.name || ""}</span>
           </div>
 
           <div className={styles.keyDetail}>
@@ -312,7 +311,7 @@ export default function PropertyDetailPageClient({ property }: PropertyDetailPag
               <p>
                 Love View Estate are delighted to present to the{" "}
                 {property.property_category === "rent" ? "rental" : "sales"} market this {property.bedrooms} bedroom{" "}
-                {property.property_type.toLowerCase()} situated in the heart of {property.areas?.name || "Ayrshire"}.
+                {property.property_type.toLowerCase()} situated in the heart of {area?.name || "Ayrshire"}.
               </p>
               <p>
                 The property comprises of a secure entry and welcoming hallway with access to all rooms in the property.
