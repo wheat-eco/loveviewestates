@@ -46,7 +46,7 @@ const Header = () => {
         <div className="header-container">
           <div className="logo-container">
             <Link href="/">
-              <Image src="/img/love-view-logo.png" alt="Love View Estate" width={180} height={60} className="logo" />
+              <Image src="/logo.png" alt="Love View Estate" width={180} height={60} className="logo" />
             </Link>
           </div>
 
