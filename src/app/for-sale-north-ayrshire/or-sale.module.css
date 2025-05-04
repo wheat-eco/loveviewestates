@@ -1,0 +1,202 @@
+/* Main Rental Pages Styles */
+.rentalSection {
+    padding: 4rem 0;
+    background-color: #f9f9f9;
+  }
+  
+  .rentalContainer {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+  
+  .rentalHeading {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: #323232;
+    text-align: center;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+  }
+  
+  .rentalSubheading {
+    font-size: 1.2rem;
+    color: #666;
+    text-align: center;
+    margin-bottom: 3rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+  }
+  
+  /* Property Listings Styles */
+  .propertiesList {
+    margin: 2rem 0 4rem;
+  }
+  
+  .propertyItem {
+    background-color: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  @media (min-width: 768px) {
+    .propertyItem {
+      flex-direction: row;
+    }
+  }
+  
+  .propertyImageContainer {
+    position: relative;
+    flex: 0 0 100%;
+  }
+  
+  @media (min-width: 768px) {
+    .propertyImageContainer {
+      flex: 0 0 35%;
+    }
+  }
+  
+  .propertyImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    min-height: 250px;
+  }
+  
+  .propertyStatus {
+    position: absolute;
+    top: 15px;
+    left: 0;
+    background-color: #e4361c;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+  }
+  
+  .propertyDetails {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .propertyTitle {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #323232;
+  }
+  
+  .propertyLocation {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+  }
+  
+  .propertyFeatures {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  @media (min-width: 992px) {
+    .propertyFeatures {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  
+  .propertyFeature {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    color: #666;
+  }
+  
+  .propertyPriceContainer {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .propertyPrice {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #e4b611;
+  }
+  
+  .propertyButton {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background-color: #323232;
+    color: #fff;
+    font-weight: 600;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  
+  .propertyButton:hover {
+    background-color: #252525;
+    transform: translateY(-2px);
+  }
+  
+  /* No Properties Message */
+  .noProperties {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  }
+  
+  .noProperties p {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .propertyTitle {
+      font-size: 1.2rem;
+    }
+  
+    .propertyFeatures {
+      grid-template-columns: 1fr 1fr;
+    }
+  
+    .propertyPriceContainer {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .propertyButton {
+      width: 100%;
+      text-align: center;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .rentalContainer {
+      padding: 0 1rem;
+    }
+  
+    .propertyDetails {
+      padding: 1rem;
+    }
+  }
+  

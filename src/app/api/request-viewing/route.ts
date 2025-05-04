@@ -1,6 +1,5 @@
 import { createClient } from "@/utils/supabase/server"
 import { NextResponse } from "next/server"
-import { Database } from "@/types/supabase"
 
 export async function POST(request: Request) {
   try {
@@ -39,7 +38,11 @@ export async function POST(request: Request) {
     }
 
     // Get property details for confirmation
-    const { data: property } = await supabase.from("properties").select("title").eq("id", Number.parseInt(propertyId)).single()
+    const { data: property } = await supabase
+      .from("properties")
+      .select("title")
+      .eq("id", Number.parseInt(propertyId))
+      .single()
 
     return NextResponse.json({
       success: true,

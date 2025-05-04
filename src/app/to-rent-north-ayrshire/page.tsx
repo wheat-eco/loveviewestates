@@ -1,25 +1,31 @@
 import Link from "next/link"
 import Image from "next/image"
 import { createClient } from "@/utils/supabase/server"
-import { Bed, Bath, Home, MapPin, Calendar } from "lucide-react"
-import styles from "./available-properties.module.css"
+import { MapPin, Bed, Bath, Home, Calendar } from "lucide-react"
+import styles from "../for-sale-north-ayrshire/for-sale.module.css"
 
 export const metadata = {
-  title: "Available Properties | Love View Estate",
-  description: "Browse our current selection of available properties across Ayrshire",
+  title: "North Ayrshire Rental Properties | Love View Estate",
+  description: "Browse our selection of rental properties in North Ayrshire.",
 }
 
-async function getAvailableProperties() {
+async function getNorthAyrshireRentals() {
   const supabase = await createClient()
 
-  // Get all available properties (both for sale and rent)
+  // Get North Ayrshire region ID
+  const { data: region } = await supabase.from("regions").select("id").eq("name", "North Ayrshire").single()
+
+  if (!region) {
+    return []
+  }
+
+  // Fetch properties from database
   const { data: properties, error } = await supabase
     .from("properties")
     .select(`
       id,
       title,
       slug,
-      description,
       address,
       postcode,
       property_category,
@@ -29,13 +35,10 @@ async function getAvailableProperties() {
       price,
       available_date,
       status,
-      areas (
+      areas!inner (
         id,
         name,
-        regions (
-          id,
-          name
-        )
+        region_id
       ),
       property_images (
         id,
@@ -43,6 +46,8 @@ async function getAvailableProperties() {
         is_featured
       )
     `)
+    .eq("areas.region_id", region.id)
+    .eq("property_category", "rent")
     .order("created_at", { ascending: false })
 
   if (error) {
@@ -53,18 +58,15 @@ async function getAvailableProperties() {
   return properties || []
 }
 
-export default async function AvailablePropertiesPage() {
-  const properties = await getAvailableProperties()
+export default async function ToRentNorthAyrshirePage() {
+  const properties = await getNorthAyrshireRentals()
 
   return (
-    <section className={styles.propertiesSection}>
-      <div className={styles.propertiesContainer}>
-        <h1 className={styles.propertiesHeading}>AVAILABLE PROPERTIES</h1>
-        <p className={styles.propertiesSubheading}>
-          Browse our current selection of available properties across Ayrshire
-        </p>
+    <section className={styles.rentalSection}>
+      <div className={styles.rentalContainer}>
+        <h1 className={styles.rentalHeading}>TO RENT NORTH AYRSHIRE</h1>
+        <p className={styles.rentalSubheading}>Discover our selection of rental properties in North Ayrshire.</p>
 
-        {/* Property Listings */}
         <div className={styles.propertiesList}>
           {properties.length > 0 ? (
             properties.map((property) => {
@@ -74,10 +76,6 @@ export default async function AvailablePropertiesPage() {
                 (property.property_images?.length ? property.property_images[0] : null)
 
               const imageUrl = featuredImage?.image_url || "/img/property-placeholder.jpg"
-
-              // Get area and region information
-              const area = property.areas ? property.areas.name : null
-              const region = property.areas?.regions ? property.areas.regions.name : null
 
               return (
                 <div key={property.id} className={styles.propertyItem}>
@@ -90,40 +88,35 @@ export default async function AvailablePropertiesPage() {
                       className={styles.propertyImage}
                     />
                     {property.status && <div className={styles.propertyStatus}>{property.status}</div>}
-                    <div className={styles.propertyCategory}>
-                      {property.property_category === "rent" ? "TO RENT" : "FOR SALE"}
-                    </div>
                   </div>
                   <div className={styles.propertyDetails}>
                     <h2 className={styles.propertyTitle}>{property.title}</h2>
                     <p className={styles.propertyLocation}>
-                      <MapPin size={16} className={styles.iconGold} />
-                      {property.address} {region ? `(${region})` : ""}
+                      <MapPin size={16} className="mr-1 text-primary-gold" />
+                      {property.address}
                     </p>
 
                     <div className={styles.propertyFeatures}>
-                      {area && (
-                        <div className={styles.propertyFeature}>
-                          <MapPin size={16} className={styles.iconGold} /> {area}
-                        </div>
-                      )}
                       <div className={styles.propertyFeature}>
-                        <Bed size={16} className={styles.iconGold} /> {property.bedrooms} Bedroom
+                        <MapPin size={16} className="mr-1 text-primary-gold" /> {property.areas?.name}
+                      </div>
+                      <div className={styles.propertyFeature}>
+                        <Bed size={16} className="mr-1 text-primary-gold" /> {property.bedrooms} Bedroom
                         {property.bedrooms !== 1 ? "s" : ""}
                       </div>
                       <div className={styles.propertyFeature}>
-                        <Bath size={16} className={styles.iconGold} /> {property.bathrooms} Bathroom
+                        <Bath size={16} className="mr-1 text-primary-gold" /> {property.bathrooms} Bathroom
                         {property.bathrooms !== 1 ? "s" : ""}
                       </div>
                       <div className={styles.propertyFeature}>
-                        <Home size={16} className={styles.iconGold} /> {property.property_type}
+                        <Home size={16} className="mr-1 text-primary-gold" /> {property.property_type}
                       </div>
                       <div className={styles.propertyFeature}>
-                        <MapPin size={16} className={styles.iconGold} /> {property.postcode}
+                        <MapPin size={16} className="mr-1 text-primary-gold" /> {property.postcode}
                       </div>
                       {property.available_date && (
                         <div className={styles.propertyFeature}>
-                          <Calendar size={16} className={styles.iconGold} />
+                          <Calendar size={16} className="mr-1 text-primary-gold" />
                           {new Date(property.available_date).toLocaleDateString("en-GB")}
                         </div>
                       )}
@@ -131,8 +124,8 @@ export default async function AvailablePropertiesPage() {
 
                     <div className={styles.propertyPriceContainer}>
                       <div className={styles.propertyPrice}>
-                        £{property.price}{" "}
-                        {property.property_category === "rent" ? <span className={styles.pcm}>PCM</span> : null}
+                        £{property.price.toLocaleString()}{" "}
+                        <span className="text-sm font-normal text-gray-500">PCM</span>
                       </div>
                       <Link href={`/property/${property.slug}`} className={styles.propertyButton}>
                         More Info
@@ -144,17 +137,12 @@ export default async function AvailablePropertiesPage() {
             })
           ) : (
             <div className={styles.noProperties}>
-              <p>No properties available at the moment. Please check back soon.</p>
+              <p>
+                No properties currently available in North Ayrshire. Please check back soon or contact us for more
+                information.
+              </p>
             </div>
           )}
-        </div>
-
-        {/* CTA Section */}
-        <div className={styles.propertiesCta}>
-          <p>Can't find what you're looking for? Contact our team for assistance.</p>
-          <Link href="/contact" className={styles.btnPrimary}>
-            Contact Us
-          </Link>
         </div>
       </div>
     </section>
