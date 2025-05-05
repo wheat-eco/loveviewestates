@@ -1,7 +1,7 @@
 /* Selling Page Styles */
 .sellingHero {
     background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-      url("/placeholder.svg?height=800&width=1600");
+      url("/img/1.jpg");
     background-size: cover;
     background-position: center;
     color: #fff;

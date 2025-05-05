@@ -215,7 +215,7 @@ export default function SellingPage() {
               </div>
               <div className={styles.testimonialAuthor}>
                 <div className={styles.authorImage}>
-                  <Image src="/placeholder.svg?height=50&width=50" alt="Sarah Johnson" width={50} height={50} />
+                  <Image src="/img/1.jpg?height=50&width=50" alt="Sarah Johnson" width={50} height={50} />
                 </div>
                 <div className={styles.authorInfo}>
                   <h4>Sarah Johnson</h4>
