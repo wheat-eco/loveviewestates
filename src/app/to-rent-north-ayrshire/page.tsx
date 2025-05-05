@@ -13,7 +13,7 @@ async function getNorthAyrshireRentals() {
   const supabase = await createClient()
 
   // Get North Ayrshire region ID
-  const { data: region } = await supabase.from("regions").select("id").eq("name", "North Ayrshire").single()
+  const { data: region } = await supabase.from("regions").select("id").eq("name", "north-ayrshire").single()
 
   if (!region) {
     return []
