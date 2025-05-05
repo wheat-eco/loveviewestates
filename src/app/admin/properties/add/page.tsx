@@ -4,7 +4,7 @@ import { useState, useEffect, SetStateAction } from "react"
 import { useRouter } from "next/navigation"
 import AdminLayout from "@/components/admin/AdminLayout"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
-import styles from "../admin-properties.module.css"
+import styles from "./i.module.css"
 
 export default function AddPropertyPage() {
   const router = useRouter()
