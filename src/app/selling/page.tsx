@@ -197,7 +197,7 @@ export default function SellingPage() {
               </div>
               <div className={styles.testimonialAuthor}>
                 <div className={styles.authorImage}>
-                  <Image src="/placeholder.svg?height=50&width=50" alt="John Smith" width={50} height={50} />
+                  <Image src="/img/john.jpg?height=50&width=50" alt="John Smith" width={50} height={50} />
                 </div>
                 <div className={styles.authorInfo}>
                   <h4>John Smith</h4>
@@ -215,7 +215,7 @@ export default function SellingPage() {
               </div>
               <div className={styles.testimonialAuthor}>
                 <div className={styles.authorImage}>
-                  <Image src="/img/1.jpg?height=50&width=50" alt="Sarah Johnson" width={50} height={50} />
+                  <Image src="/img/sarah.jpg?height=50&width=50" alt="Sarah Johnson" width={50} height={50} />
                 </div>
                 <div className={styles.authorInfo}>
                   <h4>Sarah Johnson</h4>
@@ -233,7 +233,7 @@ export default function SellingPage() {
               </div>
               <div className={styles.testimonialAuthor}>
                 <div className={styles.authorImage}>
-                  <Image src="/placeholder.svg?height=50&width=50" alt="David Wilson" width={50} height={50} />
+                  <Image src="/img/david.jpg?height=50&width=50" alt="David Wilson" width={50} height={50} />
                 </div>
                 <div className={styles.authorInfo}>
                   <h4>David Wilson</h4>
