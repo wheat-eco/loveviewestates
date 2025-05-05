@@ -1,0 +1,201 @@
+.adminContainer {
+    padding: 2rem;
+  }
+  
+  .header {
+    margin-bottom: 2rem;
+  }
+  
+  .header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    color: #323232;
+  }
+  
+  .card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+  }
+  
+  .cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  .cardHeader h2 {
+    margin: 0;
+    color: #323232;
+  }
+  
+  .filterTabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+  
+  .filterTab {
+    padding: 0.5rem 1rem;
+    background-color: #f0f0f0;
+    color: #323232;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+  
+  .filterTab.active {
+    background-color: #e4b611;
+    color: #323232;
+  }
+  
+  .alertSuccess {
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+  
+  .alertDanger {
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
+    background-color: #ffebee;
+    color: #c62828;
+  }
+  
+  .tableContainer {
+    overflow-x: auto;
+  }
+  
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .table th,
+  .table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .table th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+  }
+  
+  .statusBadge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+  
+  .statusBadgePending {
+    background-color: #fff8e1;
+    color: #f57f17;
+  }
+  
+  .statusBadgeCompleted {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+  
+  .statusBadgeCancelled {
+    background-color: #ffebee;
+    color: #c62828;
+  }
+  
+  .salesBadge {
+    background-color: #e3f2fd;
+    color: #0d47a1;
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+  
+  .rentalBadge {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+  
+  .actionButtons {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .btn {
+    padding: 0.5rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  .btnInfo {
+    background-color: #2196f3;
+    color: #fff;
+  }
+  
+  .btnSuccess {
+    background-color: #4caf50;
+    color: #fff;
+  }
+  
+  .btnWarning {
+    background-color: #ff9800;
+    color: #fff;
+  }
+  
+  .btnDanger {
+    background-color: #f44336;
+    color: #fff;
+  }
+  
+  .noResults {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+  }
+  
+  @media (max-width: 768px) {
+    .adminContainer {
+      padding: 1rem;
+    }
+  
+    .filterTabs {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+  
+    .table th:nth-child(3),
+    .table td:nth-child(3),
+    .table th:nth-child(4),
+    .table td:nth-child(4) {
+      display: none;
+    }
+  }
+  

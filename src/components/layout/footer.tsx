@@ -11,7 +11,7 @@ const Footer = () => {
             <Image
               src="/logo.png"
               alt="Love View Estate"
-              width={150}
+              width={100}
               height={50}
               className="footer-logo"
             />

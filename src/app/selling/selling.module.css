@@ -1,0 +1,344 @@
+/* Selling Page Styles */
+.sellingHero {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+      url("/placeholder.svg?height=800&width=1600");
+    background-size: cover;
+    background-position: center;
+    color: #fff;
+    padding: 6rem 0;
+    text-align: center;
+  }
+  
+  .sellingHeroContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+  
+  .sellingHeroContent {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .sellingHero h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+  
+  .sellingHero p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .heroCTAButton {
+    display: inline-block;
+    padding: 1rem 2rem;
+    background-color: #e4b611;
+    color: #323232;
+    font-weight: 600;
+    font-size: 1.1rem;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  
+  .heroCTAButton:hover {
+    background-color: #f5c728;
+    transform: translateY(-3px);
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+  
+  .sectionTitle {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: #323232;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  
+  .sectionSubtitle {
+    font-size: 1.1rem;
+    color: #666;
+    text-align: center;
+    margin-bottom: 3rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  /* Selling Process Section */
+  .sellingProcess {
+    padding: 5rem 0;
+    background-color: #f9f9f9;
+  }
+  
+  .processSteps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+  
+  .processStep {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    position: relative;
+    transition: all 0.3s ease;
+  }
+  
+  .processStep:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+  }
+  
+  .stepNumber {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #e4b611;
+    color: #323232;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+  }
+  
+  .stepIcon {
+    font-size: 2.5rem;
+    color: #e4b611;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .processStep h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #323232;
+    margin-bottom: 1rem;
+  }
+  
+  .processStep p {
+    font-size: 0.95rem;
+    color: #666;
+    line-height: 1.6;
+  }
+  
+  /* Why Choose Us Section */
+  .whyChooseUs {
+    padding: 5rem 0;
+    background-color: #fff;
+  }
+  
+  .featuresGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+  
+  .feature {
+    text-align: center;
+    padding: 2rem;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+  }
+  
+  .feature:hover {
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  }
+  
+  .featureIcon {
+    font-size: 2.5rem;
+    color: #e4b611;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .feature h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #323232;
+    margin-bottom: 1rem;
+  }
+  
+  .feature p {
+    font-size: 0.95rem;
+    color: #666;
+    line-height: 1.6;
+  }
+  
+  /* Testimonials Section */
+  .testimonials {
+    padding: 5rem 0;
+    background-color: #f9f9f9;
+  }
+  
+  .testimonialsSlider {
+    display: flex;
+    gap: 2rem;
+    overflow-x: auto;
+    padding: 1rem 0;
+    scrollbar-width: none; /* Firefox */
+  }
+  
+  .testimonialsSlider::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Edge */
+  }
+  
+  .testimonial {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    min-width: 350px;
+    max-width: 400px;
+  }
+  
+  .testimonialContent {
+    margin-bottom: 1.5rem;
+  }
+  
+  .testimonialContent p {
+    font-size: 1rem;
+    color: #666;
+    line-height: 1.8;
+    font-style: italic;
+  }
+  
+  .testimonialAuthor {
+    display: flex;
+    align-items: center;
+  }
+  
+  .authorImage {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 1rem;
+  }
+  
+  .authorInfo h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #323232;
+    margin-bottom: 0.25rem;
+  }
+  
+  .authorInfo p {
+    font-size: 0.9rem;
+    color: #666;
+  }
+  
+  /* CTA Section */
+  .sellingCTA {
+    padding: 5rem 0;
+    background-color: #323232;
+    color: #fff;
+  }
+  
+  .ctaContent {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .ctaContent h2 {
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+  }
+  
+  .ctaContent p {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+  
+  .ctaButtons {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+  }
+  
+  .btn {
+    display: inline-block;
+    padding: 1rem 2rem;
+    font-weight: 600;
+    font-size: 1rem;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  
+  .btnPrimary {
+    background-color: #e4b611;
+    color: #323232;
+  }
+  
+  .btnPrimary:hover {
+    background-color: #f5c728;
+    transform: translateY(-3px);
+  }
+  
+  .btnSecondary {
+    background-color: transparent;
+    color: #fff;
+    border: 2px solid #fff;
+  }
+  
+  .btnSecondary:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-3px);
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 992px) {
+    .processSteps,
+    .featuresGrid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  
+    .sellingHero h1 {
+      font-size: 2.5rem;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .processSteps,
+    .featuresGrid {
+      grid-template-columns: 1fr;
+    }
+  
+    .sellingHero h1 {
+      font-size: 2rem;
+    }
+  
+    .sellingHero p {
+      font-size: 1rem;
+    }
+  
+    .sectionTitle {
+      font-size: 2rem;
+    }
+  
+    .ctaButtons {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
+  

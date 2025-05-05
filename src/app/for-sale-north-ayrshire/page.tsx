@@ -99,7 +99,7 @@ export default async function ForSaleNorthAyrshirePage() {
 
                     <div className={styles.propertyFeatures}>
                       <div className={styles.propertyFeature}>
-                        <MapPin size={16} className="mr-1 text-primary-gold" /> {property.areas?.name}
+                        <MapPin size={16} className="mr-1 text-primary-gold" /> {property.areas?.[0]?.name}
                       </div>
                       <div className={styles.propertyFeature}>
                         <Bed size={16} className="mr-1 text-primary-gold" /> {property.bedrooms} Bedroom

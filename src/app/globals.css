@@ -97,13 +97,14 @@ ul {
 }
 
 .logo-container {
+  margin-left: -20px;
   margin-bottom: 20px;
   margin-top: 20px;
-  margin-right: 1rem;
+  margin-right: 3rem;
 }
 
 .logo {
-  height: 60px;
+  height: 120px;
   width: auto;
 }
 
@@ -111,20 +112,21 @@ ul {
 .nav-container {
   flex: 1;
   display: flex;
-  flex-direction: column; /* Stack top and bottom navs vertically */
   align-items: center; /* Center the links horizontally */
+  justify-content: flex-end;
   margin: 0;
 }
 
 .main-nav {
   display: flex;
   justify-content: flex-end;
+  margin-top: 14px;
 }
 
 .nav-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 1.25rem;
+  gap: 1.75rem;
   align-items: center;
 }
 
@@ -133,7 +135,8 @@ ul {
 }
 
 .nav-link {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   padding: 0.5rem 0;
   font-size: 0.9rem;
   font-weight: 700;
@@ -209,10 +212,32 @@ ul {
   border-top: 3px solid var(--primary-gold);
 }
 
+.wide-dropdown {
+  min-width: 480px;
+  display: none;
+  flex-wrap: wrap;
+}
+
+.dropdown-section {
+  flex: 1;
+  min-width: 220px;
+  padding: 0.5rem 0;
+}
+
+.dropdown-heading {
+  color: var(--primary-gold);
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 0.5rem 1.25rem;
+  margin-bottom: 0.25rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
 .dropdown-content a {
   color: var(--dark-gray);
   padding: 0.85rem 1.25rem;
-  display: block;
+  display: flex;
+  align-items: center;
   font-size: 0.85rem;
   font-weight: 600;
   transition: all 0.3s ease;
@@ -230,7 +255,7 @@ ul {
 }
 
 .dropdown:hover .dropdown-content {
-  display: block;
+  display: flex;
   animation: fadeIn 0.3s ease;
 }
 
@@ -247,6 +272,7 @@ ul {
 
 /* Social Media Icons */
 .social-container {
+  margin-left: 2rem;
   display: flex;
   gap: 0.75rem;
 }
@@ -285,7 +311,7 @@ ul {
   width: 25px;
   height: 3px;
   margin: 5px 0;
-  background-color: var(--dark-gray);
+  background-color: var(--light-gray);
   transition: all 0.3s ease;
 }
 
@@ -434,15 +460,24 @@ ul {
   display: block;
 }
 
-/* Top and Bottom Nav Separation */
-.top-nav {
-  margin-top: 14px;
-  margin-bottom: 0.75rem;
-}
+/* Media Queries */
+@media (max-width: 992px) {
+  .mobile-menu-toggle {
+    display: block;
+  }
 
-.bottom-nav {
- 
-  padding-top: 0.75rem;
+  .nav-container,
+  .social-container {
+    display: none;
+  }
+
+  .header-container {
+    justify-content: space-between;
+  }
+
+  .logo-container {
+    margin-right: 0;
+  }
 }
 
 /* Button Styles */
@@ -662,7 +697,7 @@ ul {
 
 .footer-logo {
   height: 50px;
-  width: auto;
+  width: 100px;
   margin-bottom: 1.5rem;
 }
 
@@ -1240,7 +1275,7 @@ ul {
   }
 
   .logo {
-    height: 55px;
+    height: 85px;
   }
 
   .valuations-container {
@@ -1271,7 +1306,7 @@ ul {
   }
 
   .logo {
-    height: 50px;
+    height: 80px;
   }
 
   .valuations-container {
@@ -1306,7 +1341,7 @@ ul {
 
   
   .logo {
-    height: 45px;
+    height: 85px;
   }
 
   .header-container {
@@ -1374,7 +1409,7 @@ ul {
 
 @media (max-width: 576px) {
   .logo {
-    height: 40px;
+    height: 80px;
   }
 
   .hero {
