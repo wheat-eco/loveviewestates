@@ -59,7 +59,7 @@ export default function AdminLoginPage() {
     <div className={styles.loginContainer}>
       <div className={styles.loginCard}>
         <div className={styles.logoContainer}>
-          <Image src="/img/love-view-logo.png" alt="Love View Estate" width={200} height={70} />
+          <Image src="/logo.png" alt="Love View Estate" width={200} height={70} />
         </div>
         <h1 className={styles.loginTitle}>Admin Login</h1>
 
