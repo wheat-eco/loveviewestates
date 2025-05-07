@@ -1,0 +1,340 @@
+/* Variables *
+  
+  /* Layout */
+  .container {
+    background: linear-gradient(to bottom, var(--background), var(--card));
+    min-height: 100vh;
+  }
+  
+  .wrapper {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: var(--spacing-16) var(--spacing-4);
+  }
+  
+  .header {
+    text-align: center;
+    margin-bottom: var(--spacing-12);
+  }
+  
+  .title {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--foreground);
+    margin-bottom: var(--spacing-4);
+  }
+  
+  .subtitle {
+    color: var(--muted-foreground);
+    max-width: 42rem;
+    margin: 0 auto;
+    font-size: 1.125rem;
+  }
+  
+  .contentGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-8);
+    margin-bottom: var(--spacing-16);
+  }
+  
+  @media (min-width: 1024px) {
+    .contentGrid {
+      grid-template-columns: 1fr 2fr;
+    }
+  }
+  
+  /* Cards */
+  .card {
+    background-color: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+  
+  .cardContent {
+    padding: var(--spacing-6);
+  }
+  
+  .cardTitle {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--foreground);
+    margin-bottom: var(--spacing-6);
+  }
+  
+  /* Form */
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-5);
+  }
+  
+  .formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+  
+  .formLabel {
+    color: var(--foreground);
+    font-weight: 500;
+  }
+  
+  .formInput,
+  .formTextarea {
+    padding: var(--spacing-3);
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius-sm);
+    font-size: 1rem;
+    width: 100%;
+    transition: var(--transition);
+  }
+  
+  .formInput:focus,
+  .formTextarea:focus {
+    outline: none;
+    border-color: var(--ring);
+    box-shadow: 0 0 0 2px var(--ring);
+  }
+  
+  .formTextarea {
+    min-height: 150px;
+    resize: vertical;
+  }
+  
+  .formButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    border: none;
+    border-radius: var(--border-radius-sm);
+    padding: var(--spacing-3) var(--spacing-4);
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    width: 100%;
+  }
+  
+  .formButton:hover:not(:disabled) {
+    background-color: var(--primary-hover);
+  }
+  
+  .formButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+  
+  /* Alerts */
+  .alert {
+    display: flex;
+    padding: var(--spacing-4);
+    border-radius: var(--border-radius-sm);
+    margin-bottom: var(--spacing-6);
+    align-items: flex-start;
+    gap: var(--spacing-3);
+  }
+  
+  .alertSuccess {
+    background-color: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    color: var(--chart-4);
+  }
+  
+  .alertError {
+    background-color: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: var(--destructive);
+  }
+  
+  .alertIcon {
+    flex-shrink: 0;
+  }
+  
+  .alertContent {
+    flex: 1;
+  }
+  
+  .alertTitle {
+    font-weight: 600;
+    margin-bottom: var(--spacing-1);
+  }
+  
+  /* Tabs */
+  .tabsContainer {
+    width: 100%;
+  }
+  
+  .tabsHeader {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-6);
+  }
+  
+  @media (min-width: 640px) {
+    .tabsHeader {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+  
+    .tabsTitle {
+      margin-bottom: 0;
+    }
+  }
+  
+  .tabsTitle {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--foreground);
+    margin-bottom: var(--spacing-4);
+  }
+  
+  .tabsList {
+    display: flex;
+    background-color: var(--muted);
+    border-radius: var(--border-radius-sm);
+    padding: var(--spacing-1);
+  }
+  
+  .tabsTrigger {
+    padding: var(--spacing-2) var(--spacing-4);
+    border-radius: var(--border-radius-sm);
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    background: none;
+  }
+  
+  .tabsTriggerActive {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+  }
+  
+  /* Location Card */
+  .locationGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  
+  @media (min-width: 768px) {
+    .locationGrid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  
+  .locationContent {
+    padding: var(--spacing-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-6);
+  }
+  
+  .locationTitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--foreground);
+  }
+  
+  .locationSubtitle {
+    color: var(--primary);
+    font-weight: 500;
+  }
+  
+  .locationDetails {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+  }
+  
+  .locationItem {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-3);
+  }
+  
+  .locationIcon {
+    color: var(--primary);
+    flex-shrink: 0;
+  }
+  
+  .locationItemContent {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .locationItemLabel {
+    color: var(--foreground);
+    font-weight: 500;
+  }
+  
+  .locationItemValue {
+    color: var(--muted-foreground);
+  }
+  
+  .locationItemValueBreak {
+    word-break: break-all;
+  }
+  
+  .mapContainer {
+    height: 300px;
+  }
+  
+  @media (min-width: 768px) {
+    .mapContainer {
+      height: 100%;
+    }
+  }
+  
+  .mapIframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  
+  /* FAQ Section */
+  .faqSection {
+    background-color: var(--muted);
+    border-radius: var(--radius);
+    padding: var(--spacing-8);
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .faqTitle {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--foreground);
+    margin-bottom: var(--spacing-6);
+    text-align: center;
+  }
+  
+  .faqGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+  }
+  
+  @media (min-width: 768px) {
+    .faqGrid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  
+  .faqItem {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+  
+  .faqQuestion {
+    font-weight: 500;
+    color: var(--foreground);
+  }
+  
+  .faqAnswer {
+    color: var(--muted-foreground);
+  }
