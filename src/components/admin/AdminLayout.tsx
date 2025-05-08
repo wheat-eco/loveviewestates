@@ -1,10 +1,10 @@
 "use client"
 
-import type React from "react"
-
+import React, { useEffect, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { LogOut } from "lucide-react"
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import styles from "./AdminLayout.module.css"
 
 interface AdminLayoutProps {
@@ -14,10 +14,57 @@ interface AdminLayoutProps {
 
 export default function AdminLayout({ children, title }: AdminLayoutProps) {
   const pathname = usePathname()
+  const supabase = createClientComponentClient()
+  const [user, setUser] = useState<{ full_name: string } | null>(null)
+  const [loading, setLoading] = useState(true)
 
-  // Mock user data - in a real app, this would come from authentication
-  const user = {
-    full_name: "Admin User",
+  useEffect(() => {
+    const fetchAdminInfo = async () => {
+      setLoading(true)
+      try {
+        // Get the authenticated user
+        const {
+          data: { user: authUser },
+          error: authError,
+        } = await supabase.auth.getUser()
+
+        if (authError || !authUser) {
+          console.error("Error fetching authenticated user:", authError)
+          setUser(null)
+          return
+        }
+
+        // Fetch the user's details from the "users" table
+        const { data: userData, error: userError } = await supabase
+          .from("users")
+          .select("full_name")
+          .eq("id", authUser.id)
+          .single()
+
+        if (userError) {
+          console.error("Error fetching user details:", userError)
+          setUser(null)
+          return
+        }
+
+        setUser(userData)
+      } catch (error) {
+        console.error("Error fetching admin info:", error)
+        setUser(null)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchAdminInfo()
+  }, [supabase])
+
+  if (loading) {
+    return <div className={styles.loading}>Loading...</div>
+  }
+
+  if (!user) {
+    return <div className={styles.error}>Failed to load admin info. Please log in again.</div>
   }
 
   return (
