@@ -2,6 +2,8 @@
 
 import { Resend } from "resend"
 import { createServerSupabaseClient } from "@/utils/supabase/serve"
+import ContactNotificationEmail from "@/emails/ContactNotification"
+import ContactConfirmationEmail from "@/emails/ContactConfirmation"
 
 // Initialize Resend with your API key
 const resend = new Resend(process.env.RESEND_API_KEY)
@@ -46,37 +48,30 @@ export async function submitContactForm(formData: FormData) {
 
     // Only send emails if database insertion was successful
     try {
-      // Send notification email to staff
+      // Send notification email to staff using React Email template
       await resend.emails.send({
-        from: "Love View Estate <contact@loveviewestates.co.uk>",
-        to: ["admin@loveviewestate.com"], // Replace with your staff email
+        from: "Love View Estates <contact@loveviewestates.co.uk>",
+        to: ["admin@loveviewestates.co.uk"], // Update with your actual admin email
         subject: `New Contact Form Submission: ${subject || "General Inquiry"}`,
-        html: `
-          <h1>New Contact Form Submission</h1>
-          <p><strong>From:</strong> ${name} (${email})</p>
-          <p><strong>Phone:</strong> ${phone || "Not provided"}</p>
-          <p><strong>Subject:</strong> ${subject || "General Inquiry"}</p>
-          <p><strong>Message:</strong></p>
-          <p>${message.replace(/\n/g, "<br>")}</p>
-        `,
+        react: ContactNotificationEmail({
+          name,
+          email,
+          phone: phone || undefined,
+          subject: subject || undefined,
+          message,
+        }),
       })
 
-      // Send confirmation email to user
+      // Send confirmation email to user using React Email template
       await resend.emails.send({
-        from: "Love View Estate <contact@loveviewestates.co.uk>",
+        from: "Love View Estates <contact@loveviewestates.co.uk>",
         to: [email],
-        subject: "Thank you for contacting Love View Estate",
-        html: `
-          <h1>Thank you for contacting Love View Estate</h1>
-          <p>Dear ${name},</p>
-          <p>We have received your inquiry and a member of our team will be in touch with you shortly.</p>
-          <p>For your reference, here's a copy of your message:</p>
-          <p><strong>Subject:</strong> ${subject || "General Inquiry"}</p>
-          <p><strong>Message:</strong></p>
-          <p>${message.replace(/\n/g, "<br>")}</p>
-          <p>Kind regards,</p>
-          <p>The Love View Estate Team</p>
-        `,
+        subject: "Thank you for contacting Love View Estates",
+        react: ContactConfirmationEmail({
+          name,
+          subject: subject || undefined,
+          message,
+        }),
       })
     } catch (emailError) {
       console.error("Email sending error:", emailError)

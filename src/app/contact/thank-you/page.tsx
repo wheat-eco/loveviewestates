@@ -3,8 +3,8 @@ import { CheckCircle } from "lucide-react"
 import styles from "./thank-you.module.css"
 
 export const metadata = {
-  title: "Thank You | Love View Estate",
-  description: "Thank you for contacting Love View Estate. We'll be in touch soon.",
+  title: "Thank You | Love View Estates",
+  description: "Thank you for contacting Love View Estates. We'll be in touch soon.",
 }
 
 export default function ThankYouPage() {
