@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { LogOut } from "lucide-react"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import styles from "./AdminLayout.module.css"
@@ -14,6 +14,7 @@ interface AdminLayoutProps {
 
 export default function AdminLayout({ children, title }: AdminLayoutProps) {
   const pathname = usePathname()
+  const router = useRouter()
   const supabase = createClientComponentClient()
   const [user, setUser] = useState<{ full_name: string } | null>(null)
   const [loading, setLoading] = useState(true)
@@ -22,7 +23,6 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
     const fetchAdminInfo = async () => {
       setLoading(true)
       try {
-        // Get the authenticated user
         const {
           data: { user: authUser },
           error: authError,
@@ -34,7 +34,6 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
           return
         }
 
-        // Fetch the user's details from the "users" table
         const { data: userData, error: userError } = await supabase
           .from("users")
           .select("full_name")
@@ -58,6 +57,15 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
 
     fetchAdminInfo()
   }, [supabase])
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut()
+      router.push("/login")
+    } catch (error) {
+      console.error("Error during logout:", error)
+    }
+  }
 
   if (loading) {
     return <div className={styles.loading}>Loading...</div>
@@ -118,9 +126,6 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
                 Valuation Requests
               </Link>
             </li>
-            <li>
-              <Link href="/admin/logout">Logout</Link>
-            </li>
           </ul>
         </nav>
       </aside>
@@ -131,9 +136,9 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
 
           <div className={styles.userInfo}>
             <span className={styles.userName}>Welcome, {user.full_name}</span>
-            <Link href="/admin/logout" className={styles.logoutBtn}>
+            <button onClick={handleLogout} className={styles.logoutBtn}>
               <LogOut size={16} className="mr-1" /> Logout
-            </Link>
+            </button>
           </div>
         </header>
 
