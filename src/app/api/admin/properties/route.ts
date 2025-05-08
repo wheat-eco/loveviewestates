@@ -1,4 +1,4 @@
-import { createClient } from "@/utils/supabase/server"
+import { createServerSupabaseClient } from "@/utils/supabase/serve"
 import { NextResponse } from "next/server"
 
 export async function GET(request: Request) {
@@ -6,7 +6,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const propertyType = searchParams.get("type") || "all"
 
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // Build query based on property type
     let query = supabase.from("properties").select(`

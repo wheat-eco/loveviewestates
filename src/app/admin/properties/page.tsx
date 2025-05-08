@@ -1,24 +1,30 @@
+// app/admin/properties/page.tsx
 import Link from "next/link"
 import { Suspense } from "react"
 import styles from "./admin-properties.module.css"
 import { Plus } from "lucide-react"
 import PropertiesTable from "./PropertiesTable"
 
-export default function AdminPropertiesPage({
+interface AdminPropertiesPageProps {
+  searchParams: Promise<{
+    [key: string]: string | string[] | undefined
+  }>
+}
+
+export default async function AdminPropertiesPage({
   searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined }
-}) {
-  // Get property type from query params (safely)
-  const typeParam = searchParams.type
+}: AdminPropertiesPageProps) {
+  // first await the entire searchParams object:
+  const params = await searchParams
+
+  // then pull out your individual values:
+  const typeParam    = params.type
+  const successParam = params.success
+  const errorParam   = params.error
+
   const propertyType = typeof typeParam === "string" ? typeParam : "all"
-
-  // Get success/error messages from query params (safely)
-  const successParam = searchParams.success
-  const success = typeof successParam === "string" ? successParam : undefined
-
-  const errorParam = searchParams.error
-  const error = typeof errorParam === "string" ? errorParam : undefined
+  const success      = typeof successParam === "string" ? successParam : undefined
+  const error        = typeof errorParam === "string" ? errorParam : undefined
 
   return (
     <div className={styles.adminContainer}>
@@ -27,7 +33,7 @@ export default function AdminPropertiesPage({
       </header>
 
       {success && <div className={styles.alertSuccess}>{success}</div>}
-      {error && <div className={styles.alertDanger}>{error}</div>}
+      {error   && <div className={styles.alertDanger}>{error}</div>}
 
       <div className={styles.card}>
         <div className={styles.cardHeader}>
