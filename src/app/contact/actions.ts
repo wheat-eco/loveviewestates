@@ -48,6 +48,45 @@ export async function submitContactForm(formData: FormData) {
 
     // Only send emails if database insertion was successful
     try {
+      // Create plain text versions of emails
+      const staffPlainText = `
+New Contact Form Submission
+
+From: ${name} (${email})
+Phone: ${phone || "Not provided"}
+Subject: ${subject || "General Inquiry"}
+
+Message:
+${message}
+
+---
+This is an automated notification from your website contact form.
+Love View Estates | https://loveviewestates.co.uk
+      `.trim()
+
+      const userPlainText = `
+Thank You For Contacting Us
+
+Dear ${name},
+
+Thank you for reaching out to Love View Estates. We have received your inquiry and a member of our team will be in touch with you shortly.
+
+We aim to respond to all inquiries within 24 hours during business days.
+
+Your Message:
+Subject: ${subject || "General Inquiry"}
+${message}
+
+Browse Our Properties: https://loveviewestates.co.uk/available-properties
+
+Kind regards,
+The Love View Estates Team
+
+Phone: 01234 567890 | Email: info@loveviewestates.co.uk
+Address: 123 Property Street, Ayrshire, Scotland, UK
+Website: https://loveviewestates.co.uk
+      `.trim()
+
       // Send notification email to staff using React Email template
       await resend.emails.send({
         from: "Love View Estates <contact@loveviewestates.co.uk>",
@@ -59,7 +98,9 @@ export async function submitContactForm(formData: FormData) {
           phone: phone || undefined,
           subject: subject || undefined,
           message,
+          domain: "loveviewestates.co.uk",
         }),
+        text: staffPlainText, // Add plain text version
       })
 
       // Send confirmation email to user using React Email template
@@ -71,7 +112,9 @@ export async function submitContactForm(formData: FormData) {
           name,
           subject: subject || undefined,
           message,
+          domain: "loveviewestates.co.uk",
         }),
+        text: userPlainText, // Add plain text version
       })
     } catch (emailError) {
       console.error("Email sending error:", emailError)

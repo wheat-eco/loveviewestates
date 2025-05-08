@@ -17,26 +17,36 @@ import {
     name: string
     subject?: string
     message: string
+    domain: string
   }
   
   export const ContactConfirmationEmail = ({
     name,
     subject = "General Inquiry",
     message,
+    domain = "loveviewestates.co.uk",
   }: ContactConfirmationEmailProps) => {
+    // Ensure all URLs use the correct domain
+    const websiteUrl = `https://${domain}`
+    const logoUrl = `https://${domain}/logo.png`
+    const propertiesUrl = `https://${domain}/available-properties`
+  
+    // Use the correct phone format
+    const phoneNumber = "01234567890" // Remove spaces and formatting
+    const phoneDisplay = "01234 567890" // Display format
+    const phoneUrl = `tel:+44${phoneNumber.startsWith("0") ? phoneNumber.substring(1) : phoneNumber}`
+  
+    // Email with correct domain
+    const emailAddress = `info@${domain}`
+    const emailUrl = `mailto:${emailAddress}`
+  
     return (
       <Html>
         <Head />
         <Preview>Thank you for contacting Love View Estates</Preview>
         <Body style={main}>
           <Container style={container}>
-            <Img
-              src="https://loveviewestates.co.uk/logo.png"
-              width="150"
-              height="50"
-              alt="Love View Estates"
-              style={logo}
-            />
+            <Img src={logoUrl} width="150" height="50" alt="Love View Estates" style={logo} />
             <Heading style={heading}>Thank You For Contacting Us</Heading>
   
             <Section style={section}>
@@ -59,7 +69,7 @@ import {
             </Section>
   
             <Section style={ctaSection}>
-              <Button style={button} href="https://loveviewestates.co.uk/available-properties">
+              <Button style={button} href={propertiesUrl}>
                 Browse Our Properties
               </Button>
             </Section>
@@ -70,26 +80,18 @@ import {
               <Text style={footerText}>Kind regards,</Text>
               <Text style={footerText}>The Love View Estates Team</Text>
               <Text style={footerContact}>
-                <Link href="tel:+441234567890" style={link}>
-                  +44 1234 567890
+                <Link href={phoneUrl} style={link}>
+                  {phoneDisplay}
                 </Link>{" "}
                 |{" "}
-                <Link href="mailto:info@loveviewestates.co.uk" style={link}>
-                  info@loveviewestates.co.uk
+                <Link href={emailUrl} style={link}>
+                  {emailAddress}
                 </Link>
               </Text>
               <Text style={footerAddress}>123 Property Street, Ayrshire, Scotland, UK</Text>
               <Text style={socialLinks}>
-                <Link href="https://facebook.com/loveviewestates" style={socialLink}>
-                  Facebook
-                </Link>
-                {" | "}
-                <Link href="https://instagram.com/loveviewestates" style={socialLink}>
-                  Instagram
-                </Link>
-                {" | "}
-                <Link href="https://twitter.com/loveviewestates" style={socialLink}>
-                  Twitter
+                <Link href={websiteUrl} style={socialLink}>
+                  Visit our website
                 </Link>
               </Text>
             </Section>

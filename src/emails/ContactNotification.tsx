@@ -6,6 +6,7 @@ interface ContactNotificationEmailProps {
   phone?: string
   subject?: string
   message: string
+  domain: string
 }
 
 export const ContactNotificationEmail = ({
@@ -14,20 +15,20 @@ export const ContactNotificationEmail = ({
   phone = "Not provided",
   subject = "General Inquiry",
   message,
+  domain = "loveviewestates.co.uk",
 }: ContactNotificationEmailProps) => {
+  // Ensure all URLs use the correct domain
+  const websiteUrl = `https://${domain}`
+  const logoUrl = `https://${domain}/logo.png`
+  const adminUrl = `https://${domain}/admin`
+
   return (
     <Html>
       <Head />
       <Preview>New contact form submission from {name}</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Img
-            src="https://loveviewestates.co.uk/logo.png"
-            width="150"
-            height="50"
-            alt="Love View Estates"
-            style={logo}
-          />
+          <Img src={logoUrl} width="150" height="50" alt="Love View Estates" style={logo} />
           <Heading style={heading}>New Contact Form Submission</Heading>
 
           <Section style={section}>
@@ -58,11 +59,11 @@ export const ContactNotificationEmail = ({
           <Section style={footer}>
             <Text style={footerText}>This is an automated notification from your website contact form.</Text>
             <Text style={footerText}>
-              <Link href="https://loveviewestates.co.uk" style={link}>
+              <Link href={websiteUrl} style={link}>
                 Love View Estates
               </Link>
               {" | "}
-              <Link href="https://loveviewestates.co.uk/admin" style={link}>
+              <Link href={adminUrl} style={link}>
                 Admin Portal
               </Link>
             </Text>
