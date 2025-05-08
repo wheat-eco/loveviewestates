@@ -1,6 +1,6 @@
 import Link from "next/link"
 import Image from "next/image"
-import { createClient } from "@/utils/supabase/server"
+import { createServerSupabaseClient } from "@/utils/supabase/serve"
 import { Bed, Bath, Home, MapPin, Calendar } from "lucide-react"
 import styles from "./available-properties.module.css"
 
@@ -10,7 +10,7 @@ export const metadata = {
 }
 
 async function getAvailableProperties() {
-  const supabase = await createClient()
+  const supabase = await createServerSupabaseClient()
 
   // Get all available properties (both for sale and rent)
   const { data: properties, error } = await supabase

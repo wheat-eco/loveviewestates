@@ -1,6 +1,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { Facebook, Twitter, Instagram, Mail, MapPin, Phone } from "lucide-react"
+import NewsletterForm from "./NewsletterForm"
 
 const Footer = () => {
   return (
@@ -9,9 +10,9 @@ const Footer = () => {
         <div className="footer-grid">
           <div className="footer-column brand-column">
             <Image
-              src="/logo.png"
+              src="/img/love-view-logo.png"
               alt="Love View Estate"
-              width={100}
+              width={150}
               height={50}
               className="footer-logo"
             />
@@ -90,18 +91,12 @@ const Footer = () => {
               </p>
               <p>
                 <Mail className="h-4 w-4 mr-2 inline-block text-primary-gold" />
-                info@loveviewestate.com
+                info@loveviewestates.co.uk
               </p>
             </address>
-            <div className="newsletter">
-              <h4>Subscribe to our newsletter</h4>
-              <form className="newsletter-form" action="/api/subscribe" method="post">
-                <input type="email" name="email" placeholder="Your email address" required />
-                <button type="submit" className="btn-submit">
-                  Subscribe
-                </button>
-              </form>
-            </div>
+
+            {/* Replace the old form with the new NewsletterForm component */}
+            <NewsletterForm />
           </div>
         </div>
 
