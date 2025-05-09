@@ -77,15 +77,13 @@ const Header = () => {
               <ul className="nav-list">
                 <li className="nav-item dropdown">
                   <Link
-                    href="/our-story"
-                    className={`nav-link ${isActive("/our-story") || isActive("/team") || isActive("/testimonials") ? "active" : ""}`}
+                    href="/about"
+                    className={`nav-link  || isActive("/team") || isActive("/testimonials") ? "active" : ""}`}
                   >
                     ABOUT <ChevronDown className="inline h-4 w-4 ml-1" />
                   </Link>
                   <div className="dropdown-content">
-                    <Link href="/our-story">
-                      <FileText className="h-4 w-4" /> Our Story
-                    </Link>
+                    
                     <Link href="/team">
                       <Users className="h-4 w-4" /> Team
                     </Link>
@@ -220,11 +218,7 @@ const Header = () => {
                     Team
                   </Link>
                 </li>
-                <li>
-                  <Link href="/testimonials" onClick={closeMobileMenu}>
-                    Testimonials
-                  </Link>
-                </li>
+               
               </ul>
             </li>
             <li>
@@ -272,24 +266,15 @@ const Header = () => {
                 </li>
                 <li>
                   <Link href="/to-rent-north-ayrshire" onClick={closeMobileMenu}>
-                    North Ayrshire
+                   For Rent North Ayrshire
                   </Link>
                 </li>
                 <li>
                   <Link href="/to-rent-east-ayrshire" onClick={closeMobileMenu}>
-                    East Ayrshire
+                   For Rent East Ayrshire
                   </Link>
                 </li>
-                <li>
-                  <Link href="/rental-guide" onClick={closeMobileMenu}>
-                    Rental Guide
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/apply-now" onClick={closeMobileMenu}>
-                    Apply Now
-                  </Link>
-                </li>
+               
               </ul>
             </li>
             <li>
