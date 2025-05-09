@@ -1,0 +1,158 @@
+.landlordContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.pageTitle {
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: var(--dark-gray);
+  text-align: center;
+  margin-bottom: 3rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.contentWrapper {
+  display: flex;
+  gap: 3rem;
+  margin-bottom: 3rem;
+}
+
+.imageContainer {
+  flex: 1;
+  max-width: 500px;
+}
+
+.propertyImage {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.textContent {
+  flex: 1;
+}
+
+.introText {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  color: var(--dark-gray);
+}
+
+.registrationNumber {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: var(--dark-gray);
+}
+
+.sectionTitle {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--dark-gray);
+  margin-bottom: 1.5rem;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.sectionTitle::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background-color: var(--primary-gold);
+}
+
+.servicesList {
+  list-style-type: none;
+  padding: 0;
+  margin-bottom: 2rem;
+}
+
+.servicesList li {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+}
+
+.servicesList li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.5rem;
+  width: 8px;
+  height: 8px;
+  background-color: var(--primary-gold);
+  border-radius: 50%;
+}
+
+.tenantFindSection {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid #eee;
+}
+
+.contactText {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-top: 1.5rem;
+  font-weight: 500;
+  color: var(--dark-gray);
+}
+
+/* Responsive styles */
+@media (max-width: 992px) {
+  .contentWrapper {
+    flex-direction: column;
+  }
+
+  .imageContainer {
+    max-width: 100%;
+    margin-bottom: 2rem;
+  }
+
+  .pageTitle {
+    font-size: 2.2rem;
+  }
+
+  .sectionTitle {
+    font-size: 1.6rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .landlordContainer {
+    padding: 1.5rem;
+  }
+
+  .pageTitle {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .introText,
+  .contactText {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .pageTitle {
+    font-size: 1.8rem;
+  }
+
+  .sectionTitle {
+    font-size: 1.4rem;
+  }
+
+  .servicesList li {
+    font-size: 0.95rem;
+  }
+}
