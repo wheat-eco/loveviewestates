@@ -165,10 +165,7 @@ const Header = () => {
           </div>
 
           <div className="social-container">
-            <Link href="tel:+441234567890" className="social-link" aria-label="Phone">
-              <Phone className="h-4 w-4" />
-            </Link>
-            <Link href="#" className="social-link" aria-label="Facebook">
+           <Link href="#" className="social-link" aria-label="Facebook">
               <Facebook className="h-4 w-4" />
             </Link>
             <Link href="#" className="social-link" aria-label="Twitter">
