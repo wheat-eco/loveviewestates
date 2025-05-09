@@ -24,15 +24,30 @@ interface ValuationRequest {
 export default async function ValuationRequestsPage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined }
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
-  // Get status filter from query params - convert to string safely
-  const statusFilter = typeof searchParams.status === "string" ? searchParams.status : "all"
-  const typeFilter = typeof searchParams.type === "string" ? searchParams.type : "all"
+  // Await the searchParams before accessing its properties
+  const resolvedSearchParams = await searchParams
+
+  // Safely access searchParams properties
+  const statusFilter =
+    resolvedSearchParams?.status && typeof resolvedSearchParams.status === "string"
+      ? resolvedSearchParams.status
+      : "all"
+
+  const typeFilter =
+    resolvedSearchParams?.type && typeof resolvedSearchParams.type === "string" ? resolvedSearchParams.type : "all"
 
   // Get success/error messages from query params
-  const success = typeof searchParams.success === "string" ? searchParams.success : undefined
-  const error = typeof searchParams.error === "string" ? searchParams.error : undefined
+  const success =
+    resolvedSearchParams?.success && typeof resolvedSearchParams.success === "string"
+      ? resolvedSearchParams.success
+      : undefined
+
+  const error =
+    resolvedSearchParams?.error && typeof resolvedSearchParams.error === "string"
+      ? resolvedSearchParams.error
+      : undefined
 
   // Create a read-only Supabase client for server components
   const supabase = await createServerSupabaseClient()

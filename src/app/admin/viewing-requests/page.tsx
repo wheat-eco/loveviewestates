@@ -3,20 +3,23 @@ import Link from "next/link"
 import styles from "./viewing-requests.module.css"
 import ViewingRequestsTable from "./ViewingRequestsTable"
 
-export default function ViewingRequestsPage({
+export default async function ViewingRequestsPage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined }
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
+  // Await the searchParams before accessing its properties
+  const resolvedSearchParams = await searchParams
+
   // Get status filter from query params (safely)
-  const statusParam = searchParams.status
+  const statusParam = resolvedSearchParams.status
   const statusFilter = typeof statusParam === "string" ? statusParam : "all"
 
   // Get success/error messages from query params (safely)
-  const successParam = searchParams.success
+  const successParam = resolvedSearchParams.success
   const success = typeof successParam === "string" ? successParam : undefined
 
-  const errorParam = searchParams.error
+  const errorParam = resolvedSearchParams.error
   const error = typeof errorParam === "string" ? errorParam : undefined
 
   return (

@@ -2,13 +2,17 @@ import { createClient } from "@/utils/supabase/server"
 import { notFound } from "next/navigation"
 import PropertyDetailPageClient from "./PropertyDetailPageClient"
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  // Await the params before accessing its properties
+  const resolvedParams = await params
+  const slug = resolvedParams.slug
+
   const supabase = await createClient()
 
   const { data: property } = await supabase
     .from("properties")
     .select("title, description, property_category")
-    .eq("slug", params.slug)
+    .eq("slug", slug)
     .single()
 
   if (!property) {
@@ -25,7 +29,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 async function getPropertyBySlug(slug: string) {
-  const supabase = await createClient();
+  const supabase = await createClient()
 
   const { data: property, error } = await supabase
     .from("properties")
@@ -97,8 +101,12 @@ async function getPropertyBySlug(slug: string) {
   }
 }
 
-export default async function PropertyDetailPage({ params }: { params: { slug: string } }) {
-  const property = await getPropertyBySlug(params.slug)
+export default async function PropertyDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  // Await the params before accessing its properties
+  const resolvedParams = await params
+  const slug = resolvedParams.slug
+
+  const property = await getPropertyBySlug(slug)
 
   if (!property) {
     notFound()
@@ -108,11 +116,5 @@ export default async function PropertyDetailPage({ params }: { params: { slug: s
   const area = property.areas ? property.areas.name : null
   const region = property.areas?.regions ? property.areas.regions.name : null
 
-  return (
-    <PropertyDetailPageClient
-      property={property}
-      area={area}
-      region={region}
-    />
-  )
+  return <PropertyDetailPageClient property={property} area={area} region={region} />
 }
