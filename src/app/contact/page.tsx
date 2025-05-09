@@ -110,7 +110,7 @@ export default function ContactPage() {
             <div className={styles.teamMember}>
               <div className={styles.teamImageContainer}>
                 <Image
-                  src="/placeholder.svg?height=300&width=300"
+                  src="/img/sarah.jpg"
                   alt="Sarah Johnson"
                   width={300}
                   height={300}
@@ -125,7 +125,7 @@ export default function ContactPage() {
             <div className={styles.teamMember}>
               <div className={styles.teamImageContainer}>
                 <Image
-                  src="/placeholder.svg?height=300&width=300"
+                  src="/img/john.jpg"
                   alt="Michael Thompson"
                   width={300}
                   height={300}
@@ -140,7 +140,7 @@ export default function ContactPage() {
             <div className={styles.teamMember}>
               <div className={styles.teamImageContainer}>
                 <Image
-                  src="/placeholder.svg?height=300&width=300"
+                  src="/img/david.jpg"
                   alt="Emma Wilson"
                   width={300}
                   height={300}

@@ -9,7 +9,7 @@ export default function LandlordsPage() {
       <div className={styles.contentWrapper}>
         <div className={styles.imageContainer}>
           <Image
-            src="/placeholder.svg?height=600&width=500&text=Property+Image"
+            src="/img/1.jpg"
             alt="Property managed by Love View Estate"
             width={500}
             height={600}

@@ -1,0 +1,168 @@
+/* Main Rental Pages Styles */
+.rentalSection {
+    padding: 4rem 0;
+    background-color: #f9f9f9;
+  }
+  
+  .rentalContainer {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+  
+  .rentalHeading {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: #323232;
+    text-align: center;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+  }
+  
+  .rentalSubheading {
+    font-size: 1.2rem;
+    color: #666;
+    text-align: center;
+    margin-bottom: 3rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+  }
+  
+  /* Rental Locations Grid */
+  .rentalLocations {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    margin: 3rem 0;
+  }
+  
+  .locationCard {
+    background-color: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: #323232;
+    display: block;
+  }
+  
+  .locationCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+  }
+  
+  .locationImage {
+    height: 250px;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .locationImg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+  
+  .locationCard:hover .locationImg {
+    transform: scale(1.05);
+  }
+  
+  .locationContent {
+    padding: 2rem;
+    text-align: center;
+  }
+  
+  .locationTitle {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #323232;
+  }
+  
+  .locationDescription {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #666;
+    margin-bottom: 1.5rem;
+  }
+  
+  .locationButton {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background-color: #e4b611;
+    color: #323232;
+    font-weight: 600;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  
+  .locationCard:hover .locationButton {
+    background-color: #f5c728;
+    transform: translateY(-2px);
+  }
+  
+  /* Rental Process Section */
+  .rentalProcess {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 2.5rem;
+    margin-top: 3rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  }
+  
+  .rentalProcess h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #323232;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  
+  .rentalProcess p {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #666;
+    margin-bottom: 1.5rem;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .rentalProcess a {
+    color: #e4b611;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  
+  .rentalProcess a:hover {
+    color: #c49a0f;
+    text-decoration: underline;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .rentalLocations {
+      grid-template-columns: 1fr;
+    }
+  
+    .rentalHeading {
+      font-size: 2rem;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .rentalContainer {
+      padding: 0 1rem;
+    }
+  
+    .rentalProcess {
+      padding: 1.5rem;
+    }
+  }
+  
