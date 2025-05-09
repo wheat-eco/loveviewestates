@@ -1,4 +1,4 @@
-import { createClient } from "@/utils/supabase/server"
+import { createServerSupabaseClient } from "@/utils/supabase/serve"
 import Link from "next/link"
 import styles from "./valuation-requests.module.css"
 import ValuationRequestActions from "./ValuationRequestActions"
@@ -7,6 +7,7 @@ import ValuationRequestActions from "./ValuationRequestActions"
 interface ValuationRequest {
   id: number
   name: string
+  full_name: string // Added property
   email: string
   phone: string
   address: string
@@ -14,7 +15,8 @@ interface ValuationRequest {
   property_type: string
   bedrooms: number
   request_type: string
-  message: string | null
+  valuation_type: string // Added property
+  message: string | undefined
   status: string
   created_at: string
 }
@@ -33,7 +35,7 @@ export default async function ValuationRequestsPage({
   const error = typeof searchParams.error === "string" ? searchParams.error : undefined
 
   // Create a read-only Supabase client for server components
-  const supabase = await createClient()
+  const supabase = await createServerSupabaseClient()
 
   // Build query based on filters
   let query = supabase.from("valuation_requests").select("*")

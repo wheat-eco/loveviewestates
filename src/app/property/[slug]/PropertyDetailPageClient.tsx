@@ -2,7 +2,25 @@
 import Image from "next/image"
 import Link from "next/link"
 import styles from "./property-detail.module.css"
-import { MapPin, FileText, ArrowLeft, Bed, Bath, Home, Calendar, Facebook, Twitter, Share2 } from "lucide-react"
+import {
+  MapPin,
+  FileText,
+  ArrowLeft,
+  Bed,
+  Bath,
+  Home,
+  Calendar,
+  Facebook,
+  Twitter,
+  Share2,
+  Check,
+  Info,
+  Mail,
+  Phone,
+  User,
+  MessageSquare,
+  CalendarIcon,
+} from "lucide-react"
 import { notFound } from "next/navigation"
 import { useState, useRef, type FormEvent } from "react"
 import { useRouter } from "next/navigation"
@@ -187,7 +205,7 @@ export default function PropertyDetailPageClient({ property }: PropertyDetailPag
 
       {/* Property Title */}
       <h1 className={styles.propertyTitle}>
-        {property.address}, {area?.name || ""}
+        {property.address}, {area?.name || ""} {region?.name ? `(${region.name})` : ""}
       </h1>
 
       {/* Property Status */}
@@ -212,7 +230,8 @@ export default function PropertyDetailPageClient({ property }: PropertyDetailPag
         {sortedImages.length > 1 && (
           <div className={styles.thumbnailControls}>
             <button className={styles.navButton} onClick={handlePrev}>
-              prev
+              <ArrowLeft size={16} />
+              <span>Prev</span>
             </button>
 
             <div className={styles.thumbnailGrid}>
@@ -234,7 +253,8 @@ export default function PropertyDetailPageClient({ property }: PropertyDetailPag
             </div>
 
             <button className={styles.navButton} onClick={handleNext}>
-              next
+              <span>Next</span>
+              <ArrowLeft size={16} style={{ transform: "rotate(180deg)" }} />
             </button>
           </div>
         )}
@@ -242,172 +262,248 @@ export default function PropertyDetailPageClient({ property }: PropertyDetailPag
 
       {/* Property Details */}
       <div className={styles.propertyDetails}>
-        {/* Price */}
-        <div className={styles.propertyPrice}>{formatPrice()}</div>
+        <div className={styles.propertyInfo}>
+          {/* Price */}
+          <div className={styles.propertyPrice}>{formatPrice()}</div>
 
-        {/* Key Details */}
-        <div className={styles.keyDetails}>
-          <div className={styles.keyDetail}>
-            <MapPin size={16} className={styles.detailIcon} />
-            <span>{area?.name || ""}</span>
-          </div>
-
-          <div className={styles.keyDetail}>
-            <Bed size={16} className={styles.detailIcon} />
-            <span>
-              {property.bedrooms} Bedroom{property.bedrooms !== 1 ? "s" : ""}
-            </span>
-          </div>
-
-          <div className={styles.keyDetail}>
-            <Bath size={16} className={styles.detailIcon} />
-            <span>
-              {property.bathrooms} Bathroom{property.bathrooms !== 1 ? "s" : ""}
-            </span>
-          </div>
-
-          <div className={styles.keyDetail}>
-            <Home size={16} className={styles.detailIcon} />
-            <span>{property.property_type}</span>
-          </div>
-
-          <div className={styles.keyDetail}>
-            <span>{property.postcode}</span>
-          </div>
-
-          {property.available_date && (
+          {/* Key Details */}
+          <div className={styles.keyDetails}>
             <div className={styles.keyDetail}>
-              <Calendar size={16} className={styles.detailIcon} />
-              <span>{new Date(property.available_date).toLocaleDateString("en-GB")}</span>
+              <MapPin size={18} className={styles.detailIcon} />
+              <span>
+                {area?.name || ""} {region?.name ? `(${region.name})` : ""}
+              </span>
+            </div>
+
+            <div className={styles.keyDetail}>
+              <Bed size={18} className={styles.detailIcon} />
+              <span>
+                {property.bedrooms} Bedroom{property.bedrooms !== 1 ? "s" : ""}
+              </span>
+            </div>
+
+            <div className={styles.keyDetail}>
+              <Bath size={18} className={styles.detailIcon} />
+              <span>
+                {property.bathrooms} Bathroom{property.bathrooms !== 1 ? "s" : ""}
+              </span>
+            </div>
+
+            <div className={styles.keyDetail}>
+              <Home size={18} className={styles.detailIcon} />
+              <span>{property.property_type}</span>
+            </div>
+
+            <div className={styles.keyDetail}>
+              <MapPin size={18} className={styles.detailIcon} />
+              <span>{property.postcode}</span>
+            </div>
+
+            {property.available_date && (
+              <div className={styles.keyDetail}>
+                <Calendar size={18} className={styles.detailIcon} />
+                <span>{new Date(property.available_date).toLocaleDateString("en-GB")}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Description Section */}
+          <div className={styles.contentSection}>
+            <h2 className={styles.sectionTitle}>Description</h2>
+            <div className={styles.descriptionContent}>
+              {property.description ? (
+                <p>{property.description}</p>
+              ) : (
+                <>
+                  <p>
+                    Love View Estate are delighted to present to the{" "}
+                    {property.property_category === "rent" ? "rental" : "sales"} market this {property.bedrooms} bedroom{" "}
+                    {property.property_type.toLowerCase()} situated in the heart of {area?.name || "north-ayrshire"}{" "}
+                    {region?.name ? `(${region.name})` : ""}.
+                  </p>
+                  <p>
+                    The property comprises of a secure entry and welcoming hallway with access to all rooms in the
+                    property.
+                  </p>
+                  <p>
+                    The property has been recently renovated to a high standard throughout, including a brand new modern
+                    fitted kitchen, stylish {property.bathrooms} piece bathroom suite, brand new wood flooring
+                    throughout and tasteful decor.
+                  </p>
+                  <p>
+                    The property benefits from gas central heating, double glazing, communal garden area, easy on street
+                    parking and located within walking distance to shops, supermarkets, schools, take away shops and
+                    train/bus links.
+                  </p>
+                  <p>Contact Love View Estate for more details on this property or to arrange a viewing.</p>
+                </>
+              )}
+            </div>
+
+            {/* Property Features */}
+            {property.property_features && property.property_features.length > 0 && (
+              <div className={styles.contentSection}>
+                <h2 className={styles.sectionTitle}>Features</h2>
+                <div className={styles.keyDetails}>
+                  {property.property_features.map((feature) => (
+                    <div key={feature.id} className={styles.keyDetail}>
+                      <Check size={18} className={styles.detailIcon} />
+                      <span>{feature.feature_name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Property Details */}
+            <div className={styles.contentSection}>
+              <h2 className={styles.sectionTitle}>Property Details</h2>
+              <div className={styles.keyDetails}>
+                {property.property_details?.furnished_status && (
+                  <div className={styles.keyDetail}>
+                    <Info size={18} className={styles.detailIcon} />
+                    <span>Furnished: {property.property_details.furnished_status}</span>
+                  </div>
+                )}
+
+                {property.property_details?.council_tax_band && (
+                  <div className={styles.keyDetail}>
+                    <Info size={18} className={styles.detailIcon} />
+                    <span>Council Tax Band: {property.property_details.council_tax_band}</span>
+                  </div>
+                )}
+
+                {property.property_details?.epc_rating && (
+                  <div className={styles.keyDetail}>
+                    <Info size={18} className={styles.detailIcon} />
+                    <span>EPC Rating: {property.property_details.epc_rating}</span>
+                  </div>
+                )}
+
+                {property.property_details?.deposit_amount > 0 && (
+                  <div className={styles.keyDetail}>
+                    <Info size={18} className={styles.detailIcon} />
+                    <span>Deposit: £{property.property_details.deposit_amount.toLocaleString()}</span>
+                  </div>
+                )}
+
+                {property.property_details?.pets_policy && (
+                  <div className={styles.keyDetail}>
+                    <Info size={18} className={styles.detailIcon} />
+                    <span>Pets: {property.property_details.pets_policy}</span>
+                  </div>
+                )}
+
+                {property.property_details?.smoking_policy && (
+                  <div className={styles.keyDetail}>
+                    <Info size={18} className={styles.detailIcon} />
+                    <span>Smoking: {property.property_details.smoking_policy}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* EPC Section */}
+            {epcDocument && (
+              <div className={styles.contentSection}>
+                <h2 className={styles.sectionTitle}>EPC</h2>
+                <a href={epcDocument.document_url} target="_blank" rel="noopener noreferrer" className={styles.epcLink}>
+                  <FileText size={18} />
+                  <span>View EPC Document</span>
+                </a>
+              </div>
+            )}
+
+            {/* Social Sharing */}
+            <div className={styles.socialSharing}>
+              <button className={styles.shareButton} onClick={handleFacebookShare}>
+                <Facebook size={16} />
+                <span>Share</span>
+              </button>
+              <button className={styles.shareButton} onClick={handleTwitterShare}>
+                <Twitter size={16} />
+                <span>Tweet</span>
+              </button>
+              <button className={styles.shareButton} onClick={handlePinterestShare}>
+                <Share2 size={16} />
+                <span>Pin It</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Request a Viewing Section */}
+        <div className={styles.contentSection}>
+          <h2 className={styles.sectionTitle}>Request a Viewing</h2>
+
+          {formSuccess && (
+            <div className={styles.successMessage}>
+              <Check size={18} />
+              {formSuccess}
             </div>
           )}
-        </div>
 
-        {/* Social Sharing */}
-        <div className={styles.socialSharing}>
-          <button className={styles.shareButton} onClick={handleFacebookShare}>
-            <Facebook size={16} />
-            <span>Like</span>
-          </button>
-          <button className={styles.shareButton} onClick={handleTwitterShare}>
-            <Twitter size={16} />
-            <span>Tweet</span>
-          </button>
-          <button className={styles.shareButton} onClick={handlePinterestShare}>
-            <Share2 size={16} />
-            <span>Pin It</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Description Section */}
-      <div className={styles.contentSection}>
-        <h2 className={styles.sectionTitle}>Description</h2>
-        <div className={styles.descriptionContent}>
-          {property.description ? (
-            <p>{property.description}</p>
-          ) : (
-            <>
-              <p>
-                Love View Estate are delighted to present to the{" "}
-                {property.property_category === "rent" ? "rental" : "sales"} market this {property.bedrooms} bedroom{" "}
-                {property.property_type.toLowerCase()} situated in the heart of {area?.name || "Ayrshire"}.
-              </p>
-              <p>
-                The property comprises of a secure entry and welcoming hallway with access to all rooms in the property.
-              </p>
-              <p>
-                The property has been recently renovated to a high standard throughout, including a brand new modern
-                fitted kitchen, stylish {property.bathrooms} piece bathroom suite, brand new wood flooring throughout
-                and tasteful decor.
-              </p>
-              <p>
-                The property benefits from gas central heating, double glazing, communal garden area, easy on street
-                parking and located within walking distance to shops, supermarkets, schools, take away shops and
-                train/bus links.
-              </p>
-              <p>Contact Love View Estate for more details on this property or to arrange a viewing.</p>
-            </>
+          {formError && (
+            <div className={styles.errorMessage}>
+              <Info size={18} />
+              {formError}
+            </div>
           )}
-        </div>
 
-        {/* Council Tax */}
-        {property.property_details?.council_tax_band && (
-          <div className={styles.propertyInfo}>
-            <p>Council Tax Band: {property.property_details.council_tax_band}</p>
-          </div>
-        )}
+          <form className={styles.viewingForm} onSubmit={handleSubmit}>
+            <input type="hidden" name="property_id" value={property.id} />
+            <input type="hidden" name="property_type" value={property.property_category} />
 
-        {/* Landlord Registration */}
-        <div className={styles.propertyInfo}>
-          <p>Landlord Registration: Pending</p>
-        </div>
-
-        {/* LARN */}
-        <div className={styles.propertyInfo}>
-          <p>LARN: LARN19080034</p>
-        </div>
-      </div>
-
-      {/* EPC Section */}
-      <div className={styles.contentSection}>
-        <h2 className={styles.sectionTitle}>EPC</h2>
-        {epcDocument ? (
-          <a href={epcDocument.document_url} target="_blank" rel="noopener noreferrer" className={styles.epcLink}>
-            <FileText size={16} />
-            <span>View EPC</span>
-          </a>
-        ) : (
-          <p>EPC information not available</p>
-        )}
-      </div>
-
-      {/* Request a Viewing Section */}
-      <div className={styles.contentSection}>
-        <h2 className={styles.sectionTitle}>Request a Viewing</h2>
-
-        {formSuccess && <div className={styles.successMessage}>{formSuccess}</div>}
-        {formError && <div className={styles.errorMessage}>{formError}</div>}
-
-        <form className={styles.viewingForm} onSubmit={handleSubmit}>
-          <input type="hidden" name="property_id" value={property.id} />
-          <input type="hidden" name="property_type" value={property.property_category} />
-
-          <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label>Name</label>
-              <input type="text" name="name" required />
+              <label>Full Name</label>
+              <div className={styles.inputWithIcon}>
+               
+                <input type="text" name="name" required placeholder="Your full name" />
+              </div>
             </div>
 
             <div className={styles.formGroup}>
               <label>Telephone</label>
-              <input type="tel" name="phone" required />
+              <div className={styles.inputWithIcon}>
+                
+                <input type="tel" name="phone" required placeholder="Your phone number" />
+              </div>
             </div>
 
             <div className={styles.formGroup}>
-              <label>Email</label>
-              <input type="email" name="email" required />
+              <label>Email Address</label>
+              <div className={styles.inputWithIcon}>
+               
+                <input type="email" name="email" required placeholder="Your email address" />
+              </div>
             </div>
-          </div>
 
-          <div className={styles.formGroup}>
-            <label>Preferred Date (Optional)</label>
-            <input type="date" name="preferred_date" />
-          </div>
+            <div className={styles.formGroup}>
+              <label>Preferred Date (Optional)</label>
+              <div className={styles.inputWithIcon}>
+              
+                <input type="date" name="preferred_date" />
+              </div>
+            </div>
 
-          <div className={styles.formGroup}>
-            <label>Request Message</label>
-            <textarea
-              name="message"
-              rows={5}
-              defaultValue={`Please may I book a viewing of this property "${property.title}" - Ref: ${property.slug}`}
-            ></textarea>
-          </div>
+            <div className={styles.formGroup}>
+              <label>Request Message</label>
+              <div className={styles.inputWithIcon}>
+             
+                <textarea
+                  name="message"
+                  rows={5}
+                  defaultValue={`Please may I book a viewing of this property "${property.title}" - Ref: ${property.slug}`}
+                  placeholder="Add any additional information about your viewing request"
+                ></textarea>
+              </div>
+            </div>
 
-          <button type="submit" className={styles.submitButton} disabled={isSubmitting}>
-            {isSubmitting ? "Sending..." : "Send Request"}
-          </button>
-        </form>
+            <button type="submit" className={styles.submitButton} disabled={isSubmitting}>
+              {isSubmitting ? "Sending..." : "Request Viewing"}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   )

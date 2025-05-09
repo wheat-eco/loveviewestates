@@ -1,30 +1,34 @@
 "use client"
 
-import { useState } from "react"
-import { updateValuationRequestStatus, deleteValuationRequest } from "./actions"
-import ValuationRequestModal from "@/components/admin/valuation-requests/ValuationRequestModal"
+import { SetStateAction, useState } from "react"
+import { updateRequestStatus, deleteRequest } from "./actions"
+import ViewingRequestModal from "@/components/admin/viewing-requests/ViewingRequestModal"
 
-interface ValuationRequest {
+interface Property {
   id: number
-  full_name: string
-  email: string
-  phone: string
-  postcode: string
-  property_type: string
-  bedrooms: number
-  valuation_type: string
-  message?: string
-  status: string
-  created_at: string
-  move_date?: string
+  title: string
+  slug: string
 }
 
-interface ValuationRequestActionsProps {
-  request: ValuationRequest
+interface ViewingRequest {
+  id: number
+  name: string
+  email: string
+  phone: string
+  message: string | null
+  preferred_date: string | null
+  preferred_time: string | null
+  status: string
+  created_at: string
+  property: Property
+}
+
+interface ViewingRequestActionsProps {
+  request: ViewingRequest
   styles: any
 }
 
-export default function ValuationRequestActions({ request, styles }: ValuationRequestActionsProps) {
+export default function ViewingRequestActions({ request, styles }: ViewingRequestActionsProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [currentStatus, setCurrentStatus] = useState(request.status)
@@ -35,13 +39,13 @@ export default function ValuationRequestActions({ request, styles }: ValuationRe
       formData.append("requestId", request.id.toString())
       formData.append("status", status)
 
-      const result = await updateValuationRequestStatus(formData)
+      const result = await updateRequestStatus(formData)
 
       if (result.success) {
         setCurrentStatus(status)
       } else {
-        console.error("Failed to update status:", result.error)
-        alert("Failed to update status: " + result.error)
+        console.error("Failed to update status:", result.message)
+        alert("Failed to update status: " + result.message)
       }
     } catch (error) {
       console.error("Error updating status:", error)
@@ -50,7 +54,7 @@ export default function ValuationRequestActions({ request, styles }: ValuationRe
   }
 
   const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this valuation request? This action cannot be undone.")) {
+    if (!confirm("Are you sure you want to delete this viewing request? This action cannot be undone.")) {
       return
     }
 
@@ -60,14 +64,14 @@ export default function ValuationRequestActions({ request, styles }: ValuationRe
       const formData = new FormData()
       formData.append("requestId", request.id.toString())
 
-      const result = await deleteValuationRequest(formData)
+      const result = await deleteRequest(formData)
 
       if (result.success) {
         // Redirect to refresh the page
-        window.location.href = "/admin/valuation-requests?success=Request deleted successfully"
+        window.location.href = "/admin/viewing-requests?success=Request deleted successfully"
       } else {
-        console.error("Failed to delete request:", result.error)
-        alert("Failed to delete request: " + result.error)
+        console.error("Failed to delete request:", result.message)
+        alert("Failed to delete request: " + result.message)
         setIsDeleting(false)
       }
     } catch (error) {
@@ -91,20 +95,20 @@ export default function ValuationRequestActions({ request, styles }: ValuationRe
         {currentStatus === "pending" && (
           <button
             className={`${styles.btn} ${styles.btnSuccess}`}
-            onClick={() => handleStatusChange("completed")}
-            title="Mark as completed"
+            onClick={() => handleStatusChange("approved")}
+            title="Approve request"
           >
-            Complete
+            Approve
           </button>
         )}
 
         {currentStatus === "pending" && (
           <button
             className={`${styles.btn} ${styles.btnWarning}`}
-            onClick={() => handleStatusChange("cancelled")}
-            title="Mark as cancelled"
+            onClick={() => handleStatusChange("rejected")}
+            title="Reject request"
           >
-            Cancel
+            Reject
           </button>
         )}
 
@@ -119,25 +123,26 @@ export default function ValuationRequestActions({ request, styles }: ValuationRe
       </div>
 
       {isModalOpen && (
-        <ValuationRequestModal
+        <ViewingRequestModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           request={{
             id: request.id,
-            name: request.full_name,
+            name: request.name,
             email: request.email,
             phone: request.phone,
-            address: request.postcode, // Using postcode as address since that's what we have
-            postcode: request.postcode,
-            property_type: request.property_type,
-            bedrooms: request.bedrooms,
-            request_type: request.valuation_type,
-            message: request.message || null,
+            message: request.message,
+            preferredDate: request.preferred_date,
+            preferredTime: request.preferred_time,
             status: currentStatus,
-            created_at: request.created_at,
-            move_date: request.move_date,
+            createdAt: request.created_at,
+            property: {
+              id: request.property.id,
+              title: request.property.title,
+              slug: request.property.slug,
+            },
           }}
-          onStatusChange={(newStatus) => {
+          onStatusChange={(newStatus: SetStateAction<string>) => {
             setCurrentStatus(newStatus)
           }}
         />

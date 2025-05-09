@@ -2,17 +2,22 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
 export async function createClient() {
-  const cookieStore = await cookies(); // No need to await here
+  const cookieStore = await cookies();
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
+        getAll: async () => {
+          const allCookies = cookieStore.getAll();
+          return allCookies.map((cookie: { name: any; value: any; }) => ({ name: cookie.name, value: cookie.value }));
         },
-        // Remove set and remove methods since they are not allowed here
+        setAll: async (cookies) => {
+          cookies.forEach(({ name, value, options }) => {
+            cookieStore.set({ name, value, ...options });
+          });
+        },
       },
     }
   );
