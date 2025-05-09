@@ -15,8 +15,12 @@ import {
   Home,
   DollarSign,
   Briefcase,
+  FileText,
+  Users,
+  Star,
+  Search,
+  Phone,
 } from "lucide-react"
-
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -52,6 +56,12 @@ const Header = () => {
     return () => window.removeEventListener("resize", handleResize)
   }, [mobileMenuOpen])
 
+  // Check if a path is active
+  const isActive = (path: string) => {
+    if (!pathname) return false
+    return pathname === path || pathname.startsWith(`${path}/`)
+  }
+
   return (
     <>
       <header className="header">
@@ -66,59 +76,87 @@ const Header = () => {
             <nav className="main-nav">
               <ul className="nav-list">
                 <li className="nav-item dropdown">
-                  <Link href="#" className="nav-link">
+                  <Link
+                    href="/our-story"
+                    className={`nav-link ${isActive("/our-story") || isActive("/team") || isActive("/testimonials") ? "active" : ""}`}
+                  >
                     ABOUT <ChevronDown className="inline h-4 w-4 ml-1" />
                   </Link>
                   <div className="dropdown-content">
-                    <Link href="/our-story">Our Story</Link>
-                    <Link href="/team">Team</Link>
-                    <Link href="/testimonials">Testimonials</Link>
+                    <Link href="/our-story">
+                      <FileText className="h-4 w-4" /> Our Story
+                    </Link>
+                    <Link href="/team">
+                      <Users className="h-4 w-4" /> Team
+                    </Link>
+                    <Link href="/testimonials">
+                      <Star className="h-4 w-4" /> Testimonials
+                    </Link>
                   </div>
                 </li>
+
                 <li className="nav-item">
-                  <Link href="/selling" className="nav-link">
+                  <Link href="/selling" className={`nav-link ${isActive("/selling") ? "active" : ""}`}>
                     SELLING
                   </Link>
                 </li>
+
                 <li className="nav-item dropdown">
-                  <Link href="#" className="nav-link">
-                    PROPERTIES <ChevronDown className="inline h-4 w-4 ml-1" />
+                  <Link
+                    href="/for-sale"
+                    className={`nav-link ${isActive("/for-sale") || isActive("/for-sale-north-ayrshire") || isActive("/for-sale-east-ayrshire") ? "active" : ""}`}
+                  >
+                    FOR SALE <ChevronDown className="inline h-4 w-4 ml-1" />
                   </Link>
-                  <div className="dropdown-content wide-dropdown">
-                    <div className="dropdown-section">
-                      <h4 className="dropdown-heading">For Sale</h4>
-                      <Link href="/for-sale-north-ayrshire">
-                        <MapPin className="inline h-4 w-4 mr-1" /> North Ayrshire
-                      </Link>
-                      <Link href="/for-sale-east-ayrshire">
-                        <MapPin className="inline h-4 w-4 mr-1" /> East Ayrshire
-                      </Link>
-                    </div>
-                    <div className="dropdown-section">
-                      <h4 className="dropdown-heading">For Rent</h4>
-                      <Link href="/available-properties">
-                        <Home className="inline h-4 w-4 mr-1" /> Available Properties
-                      </Link>
-                      <Link href="/to-rent-north-ayrshire">
-                        <MapPin className="inline h-4 w-4 mr-1" /> North Ayrshire
-                      </Link>
-                      <Link href="/to-rent-east-ayrshire">
-                        <MapPin className="inline h-4 w-4 mr-1" /> East Ayrshire
-                      </Link>
-                      <Link href="/rental-guide">Rental Guide</Link>
-                    </div>
-                  </div>
+                  <div className="dropdown-content">
+                    <div className="dropdown-heading">Properties For Sale</div>
+                    <Link href="/for-sale-north-ayrshire">
+                      <MapPin className="h-4 w-4" /> For Sale North Ayrshire
+                    </Link>
+                    <Link href="/for-sale-east-ayrshire">
+                      <MapPin className="h-4 w-4" />For Sale East Ayrshire
+                    </Link>
+                     </div>
+                    
+                   
                 </li>
+
+                <li className="nav-item dropdown">
+                  <Link
+                    href="/to-rent"
+                    className={`nav-link ${isActive("/to-rent") || isActive("/to-rent-north-ayrshire") || isActive("/to-rent-east-ayrshire") || isActive("/rental-guide") ? "active" : ""}`}
+                  >
+                    FOR RENT <ChevronDown className="inline h-4 w-4 ml-1" />
+                  </Link>
+                  <div className="dropdown-content">
+                    <div className="dropdown-heading">Properties For Rent</div>
+                    <Link href="/available-properties">
+                      <Home className="h-4 w-4" /> Available Properties
+                    </Link>
+                    <Link href="/to-rent-north-ayrshire">
+                      <MapPin className="h-4 w-4" /> To Rent North Ayrshire
+                    </Link>
+                    <Link href="/to-rent-east-ayrshire">
+                      <MapPin className="h-4 w-4" /> To Rent East Ayrshire
+                    </Link>
+                   </div>
+                </li>
+
                 <li className="nav-item">
-                  <Link href="/financial-services" className="nav-link">
-                     FINANCIAL
+                  <Link
+                    href="/financial-services"
+                    className={`nav-link ${isActive("/financial-services") ? "active" : ""}`}
+                  >
+                    FINANCIAL SERVICES
                   </Link>
                 </li>
+
                 <li className="nav-item">
-                  <Link href="/landlords" className="nav-link">
-                   LANDLORDS
-                  </Link>
-                </li>
+  <Link href="/landlords" className={`nav-link ${isActive("/landlords") ? "active" : ""}`}>
+    LANDLORDS
+  </Link>
+</li>
+
                 <li className="nav-item">
                   <Link href="/valuation" className="nav-link highlight-button">
                     INSTANT VALUATION
@@ -129,6 +167,9 @@ const Header = () => {
           </div>
 
           <div className="social-container">
+            <Link href="tel:+441234567890" className="social-link" aria-label="Phone">
+              <Phone className="h-4 w-4" />
+            </Link>
             <Link href="#" className="social-link" aria-label="Facebook">
               <Facebook className="h-4 w-4" />
             </Link>
@@ -138,7 +179,7 @@ const Header = () => {
             <Link href="#" className="social-link" aria-label="Instagram">
               <Instagram className="h-4 w-4" />
             </Link>
-            <Link href="#" className="social-link" aria-label="Email">
+            <Link href="mailto:info@loveviewestate.com" className="social-link" aria-label="Email">
               <Mail className="h-4 w-4" />
             </Link>
           </div>
@@ -151,7 +192,7 @@ const Header = () => {
         </div>
       </header>
 
-      {/* Mobile Menu - Keeping the existing mobile menu as it's already satisfactory */}
+      {/* Mobile Menu - Keeping the existing mobile menu as requested */}
       <div className={`mobile-menu ${mobileMenuOpen ? "active" : ""}`}>
         <button className="mobile-menu-close" onClick={closeMobileMenu} aria-label="Close menu">
           <XIcon className="h-6 w-6" />
@@ -192,6 +233,7 @@ const Header = () => {
               </Link>
             </li>
             <li>
+              {" "}
               <Link href="/for-sale-north-ayrshire" onClick={closeMobileMenu}>
                 FOR SALE NORTH AYRSHIRE
               </Link>
