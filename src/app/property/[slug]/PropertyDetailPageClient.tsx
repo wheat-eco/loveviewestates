@@ -15,11 +15,6 @@ import {
   Share2,
   Check,
   Info,
-  Mail,
-  Phone,
-  User,
-  MessageSquare,
-  CalendarIcon,
 } from "lucide-react"
 import { notFound } from "next/navigation"
 import { useState, useRef, type FormEvent } from "react"
@@ -40,15 +35,6 @@ interface Property {
   price: number
   available_date: string
   status: string
-  areas: {
-    id: string
-    name: string
-    region: {
-      id: string
-      name: string
-      slug: string
-    }
-  }[]
   property_images: {
     id: string
     image_url: string
@@ -80,9 +66,11 @@ interface Property {
 
 interface PropertyDetailPageProps {
   property: Property
+  area: string | null
+  region: string | null
 }
 
-export default function PropertyDetailPageClient({ property }: PropertyDetailPageProps) {
+export default function PropertyDetailPageClient({ property, area, region }: PropertyDetailPageProps) {
   if (!property) {
     notFound()
   }
@@ -133,10 +121,6 @@ export default function PropertyDetailPageClient({ property }: PropertyDetailPag
 
   // Get EPC document
   const epcDocument = property.property_documents?.find((doc) => doc.document_type === "EPC")
-
-  // Get area and region info - safely access the first area if it exists
-  const area = property.areas && property.areas.length > 0 ? property.areas[0] : null
-  const region = area?.region || null
 
   // Social sharing functions
   const handleFacebookShare = () => {
@@ -192,7 +176,6 @@ export default function PropertyDetailPageClient({ property }: PropertyDetailPag
       setIsSubmitting(false)
     }
   }
-
   return (
     <div className={styles.propertyDetailContainer}>
       {/* Back button */}
@@ -205,7 +188,7 @@ export default function PropertyDetailPageClient({ property }: PropertyDetailPag
 
       {/* Property Title */}
       <h1 className={styles.propertyTitle}>
-        {property.address}, {area?.name || ""} {region?.name ? `(${region.name})` : ""}
+        {property.address}, {area || ""} {region ? `(${region})` : ""}
       </h1>
 
       {/* Property Status */}
@@ -271,7 +254,7 @@ export default function PropertyDetailPageClient({ property }: PropertyDetailPag
             <div className={styles.keyDetail}>
               <MapPin size={18} className={styles.detailIcon} />
               <span>
-                {area?.name || ""} {region?.name ? `(${region.name})` : ""}
+                {area || ""} {region ? `(${region})` : ""}
               </span>
             </div>
 
@@ -318,8 +301,8 @@ export default function PropertyDetailPageClient({ property }: PropertyDetailPag
                   <p>
                     Love View Estate are delighted to present to the{" "}
                     {property.property_category === "rent" ? "rental" : "sales"} market this {property.bedrooms} bedroom{" "}
-                    {property.property_type.toLowerCase()} situated in the heart of {area?.name || "north-ayrshire"}{" "}
-                    {region?.name ? `(${region.name})` : ""}.
+                    {property.property_type.toLowerCase()} situated in the heart of {area || "north-ayrshire"}{" "}
+                    {region ? `(${region})` : ""}.
                   </p>
                   <p>
                     The property comprises of a secure entry and welcoming hallway with access to all rooms in the
@@ -457,7 +440,6 @@ export default function PropertyDetailPageClient({ property }: PropertyDetailPag
             <div className={styles.formGroup}>
               <label>Full Name</label>
               <div className={styles.inputWithIcon}>
-               
                 <input type="text" name="name" required placeholder="Your full name" />
               </div>
             </div>
@@ -465,7 +447,6 @@ export default function PropertyDetailPageClient({ property }: PropertyDetailPag
             <div className={styles.formGroup}>
               <label>Telephone</label>
               <div className={styles.inputWithIcon}>
-                
                 <input type="tel" name="phone" required placeholder="Your phone number" />
               </div>
             </div>
@@ -473,7 +454,6 @@ export default function PropertyDetailPageClient({ property }: PropertyDetailPag
             <div className={styles.formGroup}>
               <label>Email Address</label>
               <div className={styles.inputWithIcon}>
-               
                 <input type="email" name="email" required placeholder="Your email address" />
               </div>
             </div>
@@ -481,7 +461,6 @@ export default function PropertyDetailPageClient({ property }: PropertyDetailPag
             <div className={styles.formGroup}>
               <label>Preferred Date (Optional)</label>
               <div className={styles.inputWithIcon}>
-              
                 <input type="date" name="preferred_date" />
               </div>
             </div>
@@ -489,7 +468,6 @@ export default function PropertyDetailPageClient({ property }: PropertyDetailPag
             <div className={styles.formGroup}>
               <label>Request Message</label>
               <div className={styles.inputWithIcon}>
-             
                 <textarea
                   name="message"
                   rows={5}

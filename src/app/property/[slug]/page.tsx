@@ -2,17 +2,13 @@ import { createClient } from "@/utils/supabase/server"
 import { notFound } from "next/navigation"
 import PropertyDetailPageClient from "./PropertyDetailPageClient"
 
-export async function generateMetadata(props: { params: { slug: string } }) {
-  // Properly await params by using props
-  const { params } = props
-  const slug = params.slug
-
+export async function generateMetadata({ params }: { params: { slug: string } }) {
   const supabase = await createClient()
 
   const { data: property } = await supabase
     .from("properties")
     .select("title, description, property_category")
-    .eq("slug", slug)
+    .eq("slug", params.slug)
     .single()
 
   if (!property) {
@@ -29,7 +25,7 @@ export async function generateMetadata(props: { params: { slug: string } }) {
 }
 
 async function getPropertyBySlug(slug: string) {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
   const { data: property, error } = await supabase
     .from("properties")
@@ -85,7 +81,14 @@ async function getPropertyBySlug(slug: string) {
   }
 
   // Fetch property documents separately
-  const { data: documents } = await supabase.from("property_documents").select("*").eq("property_id", property.id)
+  const { data: documents, error: documentsError } = await supabase
+    .from("property_documents")
+    .select("*")
+    .eq("property_id", property.id)
+
+  if (documentsError) {
+    console.error("Error fetching property documents:", documentsError)
+  }
 
   // Add documents to property object
   return {
@@ -94,16 +97,22 @@ async function getPropertyBySlug(slug: string) {
   }
 }
 
-export default async function PropertyDetailPage(props: { params: { slug: string } }) {
-  // Properly await params by using props
-  const { params } = props
-  const slug = params.slug
-
-  const property = await getPropertyBySlug(slug)
+export default async function PropertyDetailPage({ params }: { params: { slug: string } }) {
+  const property = await getPropertyBySlug(params.slug)
 
   if (!property) {
     notFound()
   }
 
-  return <PropertyDetailPageClient property={property} />
+  // Extract area and region information
+  const area = property.areas ? property.areas.name : null
+  const region = property.areas?.regions ? property.areas.regions.name : null
+
+  return (
+    <PropertyDetailPageClient
+      property={property}
+      area={area}
+      region={region}
+    />
+  )
 }

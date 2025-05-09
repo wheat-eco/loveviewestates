@@ -105,11 +105,7 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
                 Regions & Areas
               </Link>
             </li>
-            <li>
-              <Link href="/admin/users" className={pathname === "/admin/users" ? styles.active : ""}>
-                Users
-              </Link>
-            </li>
+           
             <li>
               <Link
                 href="/admin/viewing-requests"
