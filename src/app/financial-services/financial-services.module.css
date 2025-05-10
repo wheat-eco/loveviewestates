@@ -1,0 +1,332 @@
+.financialContainer {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+  background-color: #ffffff;
+}
+
+.financialContent {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.financialHeading {
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: #323232;
+  text-align: center;
+  margin-bottom: 1rem;
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+.financialHeading::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background-color: #e4b611; /* Primary gold color */
+}
+
+/* Partnership Section */
+.partnershipSection {
+  display: flex;
+  gap: 2.5rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.partnerLogo {
+  flex: 0 0 150px;
+}
+
+.logoImage {
+  border-radius: 50%;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  background-color: #f9f9f9;
+  padding: 1rem;
+}
+
+.partnerInfo {
+  flex: 1;
+}
+
+.partnerInfo p {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #4a4a4a;
+  margin-bottom: 1.5rem;
+}
+
+.partnerInfo p:last-child {
+  margin-bottom: 0;
+}
+
+/* Services Section */
+.servicesSection {
+  margin-top: 1rem;
+}
+
+.servicesSection h2 {
+  font-size: 1.8rem;
+  color: #323232;
+  margin-bottom: 1.5rem;
+  position: relative;
+  padding-bottom: 0.75rem;
+}
+
+.servicesSection h2::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background-color: #e4b611; /* Primary gold color */
+}
+
+.servicesList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+  list-style: none;
+  padding: 0;
+}
+
+.serviceItem {
+  background-color: #f9f9f9;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 100%;
+  border-left: 3px solid #e4b611; /* Primary gold color */
+}
+
+.serviceItem:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.serviceItem h3 {
+  font-size: 1.3rem;
+  color: #323232;
+  margin-bottom: 0.75rem;
+}
+
+.serviceItem p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #4a4a4a;
+}
+
+/* Contact Section */
+.contactSection {
+  background-color: #f9f9f9;
+  padding: 2.5rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+}
+
+.contactSection h2 {
+  font-size: 1.8rem;
+  color: #323232;
+  margin-bottom: 1rem;
+}
+
+.contactSection p {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: #4a4a4a;
+  margin-bottom: 1.5rem;
+}
+
+.contactDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.contactItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.contactIcon {
+  color: #e4b611; /* Primary gold color */
+  width: 24px;
+  height: 24px;
+}
+
+.contactLink {
+  color: #323232;
+  font-size: 1.1rem;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.contactLink:hover {
+  color: #e4b611; /* Primary gold color */
+}
+
+.contactAddress {
+  font-style: normal;
+  color: #323232;
+  font-size: 1.1rem;
+}
+
+/* CTA Section */
+.ctaSection {
+  background-color: #323232;
+  padding: 2.5rem;
+  border-radius: 8px;
+  text-align: center;
+  color: #ffffff;
+  margin-top: 1rem;
+}
+
+.ctaSection h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: #ffffff;
+}
+
+.ctaSection p {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ctaButtons {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.primaryButton {
+  background-color: #e4b611; /* Primary gold color */
+  color: #323232;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.primaryButton:hover {
+  background-color: #c99e0f; /* Darker gold */
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.secondaryButton {
+  background-color: transparent;
+  color: #ffffff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 2px solid #ffffff;
+  transition: all 0.3s ease;
+}
+
+.secondaryButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .financialContainer {
+    padding: 3rem 1.5rem;
+  }
+
+  .financialHeading {
+    font-size: 2rem;
+  }
+
+  .partnershipSection {
+    flex-direction: column;
+    text-align: center;
+    gap: 1.5rem;
+  }
+
+  .partnerLogo {
+    flex: 0 0 auto;
+  }
+
+  .servicesSection h2 {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .servicesSection h2::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .servicesList {
+    grid-template-columns: 1fr;
+  }
+
+  .contactSection {
+    padding: 2rem 1.5rem;
+  }
+
+  .ctaSection {
+    padding: 2rem 1.5rem;
+  }
+
+  .ctaButtons {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .financialContainer {
+    padding: 2rem 1rem;
+  }
+
+  .financialHeading {
+    font-size: 1.75rem;
+  }
+
+  .partnerInfo p {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  .serviceItem {
+    padding: 1.25rem;
+  }
+
+  .serviceItem h3 {
+    font-size: 1.2rem;
+  }
+
+  .contactSection h2,
+  .ctaSection h2 {
+    font-size: 1.5rem;
+  }
+
+  .contactSection p,
+  .ctaSection p {
+    font-size: 1rem;
+  }
+
+  .contactLink,
+  .contactAddress {
+    font-size: 1rem;
+  }
+}

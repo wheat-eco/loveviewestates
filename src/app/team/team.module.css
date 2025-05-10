@@ -1,0 +1,201 @@
+.teamContainer {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+  background-color: #ffffff;
+}
+
+.teamContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.teamHeading {
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: #323232;
+  text-align: center;
+  margin-bottom: 1rem;
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+.teamHeading::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background-color: #e4b611; /* Primary gold color */
+}
+
+.teamIntro {
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: #4a4a4a;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto 2rem;
+}
+
+.teamGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+  gap: 3rem;
+}
+
+.teamMember {
+  display: flex;
+  gap: 2rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.teamMember:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.memberImageWrapper {
+  flex: 0 0 180px;
+}
+
+.memberImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.memberInfo {
+  flex: 1;
+  padding: 1.5rem 1.5rem 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.memberName {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #323232;
+}
+
+.memberPosition {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #e4b611; /* Primary gold color */
+  margin-bottom: 0.5rem;
+}
+
+.memberBio {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #4a4a4a;
+}
+
+.joinTeam {
+  background-color: #f9f9f9;
+  padding: 2.5rem;
+  border-radius: 8px;
+  margin-top: 2rem;
+  text-align: center;
+  border-left: 4px solid #e4b611; /* Primary gold color */
+}
+
+.joinTeam h2 {
+  font-size: 1.8rem;
+  color: #323232;
+  margin-bottom: 1rem;
+}
+
+.joinTeam p {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: #4a4a4a;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.joinTeam a {
+  color: #e4b611; /* Primary gold color */
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.joinTeam a:hover {
+  color: #c99e0f; /* Darker gold */
+  text-decoration: underline;
+}
+
+/* Responsive styles */
+@media (max-width: 992px) {
+  .teamGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .teamContainer {
+    padding: 3rem 1.5rem;
+  }
+
+  .teamHeading {
+    font-size: 2rem;
+  }
+
+  .teamIntro {
+    font-size: 1.1rem;
+  }
+
+  .teamMember {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .memberImageWrapper {
+    flex: 0 0 auto;
+    height: 250px;
+  }
+
+  .memberInfo {
+    padding: 1.5rem;
+  }
+
+  .joinTeam {
+    padding: 2rem 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .teamContainer {
+    padding: 2rem 1rem;
+  }
+
+  .teamHeading {
+    font-size: 1.75rem;
+  }
+
+  .memberName {
+    font-size: 1.3rem;
+  }
+
+  .memberPosition {
+    font-size: 1rem;
+  }
+
+  .joinTeam h2 {
+    font-size: 1.5rem;
+  }
+
+  .joinTeam p {
+    font-size: 1rem;
+  }
+}

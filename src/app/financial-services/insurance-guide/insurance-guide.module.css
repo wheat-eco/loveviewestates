@@ -1,0 +1,330 @@
+.guideContainer {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+  background-color: #ffffff;
+}
+
+.guideContent {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.guideHeading {
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: #323232;
+  text-align: center;
+  margin-bottom: 1rem;
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+.guideHeading::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background-color: #e4b611; /* Primary gold color */
+}
+
+.guideIntro {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #4a4a4a;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto 1rem;
+}
+
+/* Insurance Types */
+.insuranceTypes {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.insuranceCard {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 2rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.insuranceCard:nth-child(even) {
+  direction: rtl;
+}
+
+.insuranceCard:nth-child(even) .insuranceInfo {
+  direction: ltr;
+}
+
+.insuranceImage {
+  height: 100%;
+  overflow: hidden;
+}
+
+.typeImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.insuranceCard:hover .typeImage {
+  transform: scale(1.05);
+}
+
+.insuranceInfo {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.insuranceInfo h2 {
+  font-size: 1.8rem;
+  color: #323232;
+  margin-bottom: 0.5rem;
+  position: relative;
+  padding-bottom: 0.75rem;
+}
+
+.insuranceInfo h2::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background-color: #e4b611; /* Primary gold color */
+}
+
+.insuranceInfo p {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #4a4a4a;
+}
+
+.insuranceInfo h3 {
+  font-size: 1.2rem;
+  color: #323232;
+  margin-top: 0.5rem;
+}
+
+.insuranceInfo ul {
+  padding-left: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.insuranceInfo li {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #4a4a4a;
+  margin-bottom: 0.5rem;
+}
+
+/* FAQ Section */
+.faqSection {
+  background-color: #f9f9f9;
+  padding: 2.5rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+}
+
+.faqSection h2 {
+  font-size: 1.8rem;
+  color: #323232;
+  margin-bottom: 2rem;
+  text-align: center;
+  position: relative;
+  padding-bottom: 0.75rem;
+}
+
+.faqSection h2::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 2px;
+  background-color: #e4b611; /* Primary gold color */
+}
+
+.faqItem {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.faqItem:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.faqItem h3 {
+  font-size: 1.2rem;
+  color: #323232;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.faqItem p {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #4a4a4a;
+}
+
+/* CTA Section */
+.ctaSection {
+  background-color: #323232;
+  padding: 2.5rem;
+  border-radius: 8px;
+  text-align: center;
+  color: #ffffff;
+  margin-top: 1rem;
+}
+
+.ctaSection h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: #ffffff;
+}
+
+.ctaSection p {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ctaButtons {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.primaryButton {
+  background-color: #e4b611; /* Primary gold color */
+  color: #323232;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.primaryButton:hover {
+  background-color: #c99e0f; /* Darker gold */
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.secondaryButton {
+  background-color: transparent;
+  color: #ffffff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 2px solid #ffffff;
+  transition: all 0.3s ease;
+}
+
+.secondaryButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive styles */
+@media (max-width: 992px) {
+  .insuranceCard {
+    grid-template-columns: 1fr;
+  }
+
+  .insuranceCard:nth-child(even) {
+    direction: ltr;
+  }
+
+  .insuranceImage {
+    height: 250px;
+  }
+}
+
+@media (max-width: 768px) {
+  .guideContainer {
+    padding: 3rem 1.5rem;
+  }
+
+  .guideHeading {
+    font-size: 2rem;
+  }
+
+  .guideIntro {
+    font-size: 1rem;
+  }
+
+  .insuranceInfo {
+    padding: 1.5rem;
+  }
+
+  .insuranceInfo h2 {
+    font-size: 1.5rem;
+  }
+
+  .faqSection {
+    padding: 2rem 1.5rem;
+  }
+
+  .faqSection h2 {
+    font-size: 1.5rem;
+  }
+
+  .ctaSection {
+    padding: 2rem 1.5rem;
+  }
+
+  .ctaButtons {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .guideContainer {
+    padding: 2rem 1rem;
+  }
+
+  .guideHeading {
+    font-size: 1.75rem;
+  }
+
+  .insuranceInfo h2 {
+    font-size: 1.3rem;
+  }
+
+  .insuranceInfo h3 {
+    font-size: 1.1rem;
+  }
+
+  .faqItem h3 {
+    font-size: 1.1rem;
+  }
+
+  .ctaSection h2 {
+    font-size: 1.5rem;
+  }
+}
