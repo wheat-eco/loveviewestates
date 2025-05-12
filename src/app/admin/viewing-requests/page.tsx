@@ -2,6 +2,7 @@ import { Suspense } from "react"
 import Link from "next/link"
 import styles from "./viewing-requests.module.css"
 import ViewingRequestsTable from "./ViewingRequestsTable"
+import AdminLayout from "@/components/admin/AdminLayout"
 
 export default async function ViewingRequestsPage({
   searchParams,
@@ -23,6 +24,7 @@ export default async function ViewingRequestsPage({
   const error = typeof errorParam === "string" ? errorParam : undefined
 
   return (
+     <AdminLayout title=" Viewing Requests">
     <div className={styles.adminContainer}>
       <header className={styles.header}>
         <h1>Viewing Requests</h1>
@@ -68,5 +70,6 @@ export default async function ViewingRequestsPage({
         </Suspense>
       </div>
     </div>
+    </AdminLayout>
   )
 }

@@ -1,6 +1,7 @@
 import { createServerSupabaseClient } from "@/utils/supabase/serve"
 import Link from "next/link"
 import styles from "./valuation-requests.module.css"
+import AdminLayout from "@/components/admin/AdminLayout"
 import ValuationRequestActions from "./ValuationRequestActions"
 
 // Define valuation request type
@@ -102,6 +103,7 @@ export default async function ValuationRequestsPage({
   }
 
   return (
+     <AdminLayout title=" Valuation Requests">
     <div className={styles.adminContainer}>
       <header className={styles.header}>
         <h1>Valuation Requests</h1>
@@ -207,5 +209,6 @@ export default async function ValuationRequestsPage({
         </div>
       </div>
     </div>
+    </AdminLayout>
   )
 }

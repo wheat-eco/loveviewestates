@@ -3,6 +3,7 @@ import Link from "next/link"
 import { Suspense } from "react"
 import styles from "./admin-properties.module.css"
 import { Plus } from "lucide-react"
+import AdminLayout from "@/components/admin/AdminLayout"
 import PropertiesTable from "./PropertiesTable"
 
 interface AdminPropertiesPageProps {
@@ -27,6 +28,7 @@ export default async function AdminPropertiesPage({
   const error        = typeof errorParam === "string" ? errorParam : undefined
 
   return (
+    <AdminLayout title=" Properties">
     <div className={styles.adminContainer}>
       <header className={styles.header}>
         <h1>Manage Properties</h1>
@@ -70,5 +72,6 @@ export default async function AdminPropertiesPage({
         </Suspense>
       </div>
     </div>
+    </AdminLayout>
   )
 }
