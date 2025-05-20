@@ -121,8 +121,8 @@ const Header = () => {
 
                 <li className="nav-item dropdown">
                   <Link
-                    href="/to-rent"
-                    className={`nav-link ${isActive("/to-rent") || isActive("/to-rent-north-ayrshire") || isActive("/to-rent-east-ayrshire") || isActive("/rental-guide") ? "active" : ""}`}
+                    href="/for-rent"
+                    className={`nav-link ${isActive("/for-rent") || isActive("/to-rent-north-ayrshire") || isActive("/to-rent-east-ayrshire") || isActive("/rental-guide") ? "active" : ""}`}
                   >
                     FOR RENT <ChevronDown className="inline h-4 w-4 ml-1" />
                   </Link>

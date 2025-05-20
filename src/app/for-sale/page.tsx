@@ -39,7 +39,12 @@ async function getRegionsWithPropertiesForSale() {
       id: region.id,
       name: region.name,
       slug: region.slug,
-      property_count: region.areas.reduce((count, area) => count + area.properties.length, 0),
+      property_count: region.areas.reduce(
+        (count, area) =>
+          count +
+          area.properties.filter((p) => p.property_category === "sale").length,
+        0
+      ),
     }))
     .filter((region) => region.property_count > 0)
     .sort((a, b) => a.name.localeCompare(b.name))
