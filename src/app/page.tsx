@@ -86,8 +86,7 @@ export default function Home() {
       <section className="welcome-section">
         <div className="welcome-container">
           <h2 className="welcome-heading">WELCOME TO LOVE VIEW ESTATE LETTING & SALES</h2>
-          <h3 className="welcome-subheading">AWARD WINNING SPECIALISTS IN BOTH ESTATE AGENCY & LETTINGS.</h3>
-          <p className="welcome-text">
+           <p className="welcome-text">
             At Love View Estate we take pride in the service that we provide to our clients, always working with our
             clients best interest & with integrity. Our friendly, experienced team are on hand 7 days a week to assist
             you every step of the way. With 2 Branches in strategic locations in North Ayrshire (Saltcoats) & East
