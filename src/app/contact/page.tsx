@@ -45,10 +45,7 @@ export default function ContactPage() {
                   <div>
                     <h3>Call Us</h3>
                     <p>
-                      <a href="tel:+441234567890">+44 1234 567890</a>
-                    </p>
-                    <p>
-                      <a href="tel:+441234567891">+44 1234 567891</a> (Rentals)
+                      <a href="tel:+447399301948">+44 7399 301948</a>
                     </p>
                   </div>
                 </div>
@@ -103,57 +100,6 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <section className={styles.teamSection}>
-        <div className={styles.container}>
-          <h2>Our Team Is Ready To Help</h2>
-          <div className={styles.teamGrid}>
-            <div className={styles.teamMember}>
-              <div className={styles.teamImageContainer}>
-                <Image
-                  src="/img/sarah.jpg"
-                  alt="Sarah Johnson"
-                  width={300}
-                  height={300}
-                  className={styles.teamImage}
-                />
-              </div>
-              <h3>Sarah Johnson</h3>
-              <p>Sales Director</p>
-              <a href="mailto:sarah@loveviewestate.com">sarah@loveviewestate.com</a>
-            </div>
-
-            <div className={styles.teamMember}>
-              <div className={styles.teamImageContainer}>
-                <Image
-                  src="/img/john.jpg"
-                  alt="Michael Thompson"
-                  width={300}
-                  height={300}
-                  className={styles.teamImage}
-                />
-              </div>
-              <h3>Michael Thompson</h3>
-              <p>Lettings Manager</p>
-              <a href="mailto:michael@loveviewestate.com">michael@loveviewestate.com</a>
-            </div>
-
-            <div className={styles.teamMember}>
-              <div className={styles.teamImageContainer}>
-                <Image
-                  src="/img/david.jpg"
-                  alt="Emma Wilson"
-                  width={300}
-                  height={300}
-                  className={styles.teamImage}
-                />
-              </div>
-              <h3>Emma Wilson</h3>
-              <p>Property Valuer</p>
-              <a href="mailto:emma@loveviewestate.com">emma@loveviewestate.com</a>
-            </div>
-          </div>
-        </div>
-      </section>
     </main>
   )
 }

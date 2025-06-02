@@ -85,7 +85,7 @@ const Footer = () => {
               </p>
               <p>
                 <Phone className="h-4 w-4 mr-2 inline-block text-primary-gold" />
-                +44 1234 567890
+                +44 07399 301948
               </p>
               <p>
                 <Mail className="h-4 w-4 mr-2 inline-block text-primary-gold" />
