@@ -7,35 +7,16 @@ export const metadata = {
 }
 
 export default function TeamPage() {
-  const teamMembers = [
-    {
-      id: 1,
-      name: "Michael Connelly",
-      position: "Founder & Managing Director",
-      bio: "With over 16 years of experience in the property sector across North and East Ayrshire, Michael founded Love View Estate in 2018. His extensive knowledge of the local market and commitment to client satisfaction has been the driving force behind the company's success.",
-      image: "/placeholder.svg?height=400&width=400&text=Michael",
-    },
-    {
-      id: 2,
-      name: "Sarah Johnson",
-      position: "Head of Sales",
-      bio: "Sarah brings 10 years of real estate experience to Love View Estate. She oversees all sales operations and ensures our clients receive exceptional service throughout their property journey.",
-      image: "/placeholder.svg?height=400&width=400&text=Sarah",
-    },
-    {
-      id: 3,
-      name: "David Thompson",
-      position: "Lettings Manager",
-      bio: "David manages our growing rental portfolio with expertise and attention to detail. He works closely with landlords and tenants to create positive, long-lasting relationships.",
-      image: "/placeholder.svg?height=400&width=400&text=David",
-    },
-    {
-      id: 4,
-      name: "Emma Wilson",
-      position: "East Ayrshire Branch Manager",
-      bio: "Emma leads our Kilmarnock branch, bringing local knowledge and enthusiasm to the East Ayrshire market. She has been instrumental in establishing our presence in the area since 2020.",
-      image: "/placeholder.svg?height=400&width=400&text=Emma",
-    },
+  type TeamMember = {
+    id: number
+    name: string
+    position: string
+    bio: string
+    image?: string
+  }
+
+  const teamMembers: TeamMember[] = [
+    
   ]
 
   return (

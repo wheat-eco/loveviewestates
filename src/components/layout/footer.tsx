@@ -81,7 +81,7 @@ const Footer = () => {
             <address className="footer-contact">
               <p>
                 <MapPin className="h-4 w-4 mr-2 inline-block text-primary-gold" />
-                123 Estate Avenue, Ayrshire
+                41 Langside Ave, Kilmarnock KA1 4SP
               </p>
               <p>
                 <Phone className="h-4 w-4 mr-2 inline-block text-primary-gold" />

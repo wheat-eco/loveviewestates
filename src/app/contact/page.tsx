@@ -34,8 +34,8 @@ export default function ContactPage() {
                   <MapPin className={styles.infoIcon} />
                   <div>
                     <h3>Visit Us</h3>
-                    <p>123 Estate Avenue</p>
-                    <p>Ayrshire, KA12 8DP</p>
+                    <p>41 Langside Ave,</p>
+                    <p>Kilmarnock KA1 4SP</p>
                     <p>Scotland, UK</p>
                   </div>
                 </div>

@@ -88,7 +88,7 @@ import {
                   {emailAddress}
                 </Link>
               </Text>
-              <Text style={footerAddress}>123 Property Street, Ayrshire, Scotland, UK</Text>
+              <Text style={footerAddress}>41 Langside Ave, Kilmarnock KA1 4SP</Text>
               <Text style={socialLinks}>
                 <Link href={websiteUrl} style={socialLink}>
                   Visit our website
