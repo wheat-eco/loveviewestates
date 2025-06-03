@@ -87,8 +87,7 @@ export default function Home() {
         <div className="welcome-container">
           <h2 className="welcome-heading">WELCOME TO LOVE VIEW ESTATE LETTING & SALES</h2>
            <p className="welcome-text">
-            At Love View Estate we take pride in the service that we provide to our clients, always working with our
-            clients best interest & with integrity. Our friendly, experienced team are on hand 7 days a week to assist
+            At Love View Estate, we take pride in the service we provide to our clients, always working with their best interests in mind and with integrity. Our friendly, experienced team are on hand 7 days a week to assist
             you every step of the way. With 2 Branches in strategic locations in North Ayrshire (Saltcoats) & East
             Ayrshire (Kilmarnock) we have Ayrshire covered.
           </p>
@@ -110,8 +109,7 @@ export default function Home() {
           <div className="valuations-content">
             <h2 className="valuations-heading">Valuations for Selling or Renting</h2>
             <p className="valuations-text">
-              At Love View Estate we offer free valuations whether you are looking to Sell or Rent out your property.
-              Our team are on hand to provide knowledgable advice on the Ayrshire property market.
+             At Love View Estate, we offer free valuations whether you’re looking to sell or rent out your property. Our team is on hand to provide knowledgeable advice on the Ayrshire property market. If you have a property in Ayrshire, contact us to arrange your free, no-obligation property valuation
             </p>
             <p className="valuations-cta">
               If you have a property in Ayrshire Contact us to arrange your free no obligation property valuation
@@ -166,7 +164,7 @@ export default function Home() {
                 }}
               >
                 <div className="service-overlay"></div>
-                <h3 className="service-title">RENTING</h3>
+                <h3 className="service-title">Landlords</h3>
                 <div className="service-arrow">
                   <ArrowRight className="h-5 w-5" />
                 </div>
@@ -181,7 +179,7 @@ export default function Home() {
                 }}
               >
                 <div className="service-overlay"></div>
-                <h3 className="service-title">SELLING</h3>
+                <h3 className="service-title">Owners</h3>
                 <div className="service-arrow">
                   <ArrowRight className="h-5 w-5" />
                 </div>

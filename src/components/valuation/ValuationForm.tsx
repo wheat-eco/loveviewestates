@@ -319,11 +319,11 @@ export default function ValuationForm({ valuationType }: ValuationFormProps) {
                       className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
                       Please tick this box if you have read and accept our{" "}
-                      <Link href="/terms-of-service" className="text-primary-gold hover:underline">
+                      <Link href="#" className="text-primary-gold hover:underline">
                         Terms
                       </Link>{" "}
                       and{" "}
-                      <Link href="/privacy-policy" className="text-primary-gold hover:underline">
+                      <Link href="#" className="text-primary-gold hover:underline">
                         Privacy Policy
                       </Link>
                       .
