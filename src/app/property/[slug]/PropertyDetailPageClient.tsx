@@ -36,13 +36,17 @@ interface Property {
   description: string
   address: string
   postcode: string
-  property_type: string
-  property_category: string
   bedrooms: number
   bathrooms: number
   price: number
   available_date: string
   status: string
+  property_types?: {
+    display_name: string
+  } | null
+  property_categories?: {
+    name: string
+  } | null
   property_images: {
     id: string
     image_url: string
@@ -112,7 +116,7 @@ export default function PropertyDetailPageClient({ property, area, region }: Pro
   // Format price based on property type
   const formatPrice = () => {
     const formattedPrice = property.price?.toLocaleString() || "0"
-    return property.property_category === "rent" ? `£${formattedPrice} pcm` : `£${formattedPrice}`
+    return property.property_categories?.name === "rent" ? `£${formattedPrice} pcm` : `£${formattedPrice}`
   }
 
   // Get property status label
@@ -121,7 +125,7 @@ export default function PropertyDetailPageClient({ property, area, region }: Pro
     if (property.status === "sale_agreed") return "SALE AGREED"
     if (property.status === "under_offer") return "UNDER OFFER"
     if (property.status === "sold") return "SOLD"
-    return property.property_category === "rent" ? "TO LET" : "FOR SALE"
+    return property.property_categories?.name === "rent" ? "TO LET" : "FOR SALE"
   }
 
   // Get EPC document
@@ -322,7 +326,7 @@ export default function PropertyDetailPageClient({ property, area, region }: Pro
 
             <div className={styles.keyDetail}>
               <Home size={20} className={styles.detailIcon} />
-              <span>{property.property_type}</span>
+              <span>{property.property_types?.display_name}</span>
             </div>
 
             <div className={styles.keyDetail}>
@@ -348,8 +352,8 @@ export default function PropertyDetailPageClient({ property, area, region }: Pro
                 <>
                   <p>
                     Love View Estate are delighted to present to the{" "}
-                    {property.property_category === "rent" ? "rental" : "sales"} market this {property.bedrooms} bedroom{" "}
-                    {property.property_type?.toLowerCase()} situated in the heart of {area || "Ayrshire"}{" "}
+                    {property.property_categories?.name === "rent" ? "rental" : "sales"} market this {property.bedrooms} bedroom{" "}
+                    {property.property_types?.display_name?.toLowerCase()} situated in the heart of {area || "Ayrshire"}{" "}
                     {region ? `(${region})` : ""}.
                   </p>
                   <p>
@@ -495,7 +499,7 @@ export default function PropertyDetailPageClient({ property, area, region }: Pro
 
             <form className={styles.viewingForm} onSubmit={handleSubmit}>
               <input type="hidden" name="property_id" value={property.id} />
-              <input type="hidden" name="property_type" value={property.property_category} />
+              <input type="hidden" name="property_type" value={property.property_categories} />
 
               <div className={styles.formGroup}>
                 <label htmlFor="name">Full Name</label>

@@ -1,7 +1,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { createClient } from "@/utils/supabase/server"
-import styles from "./for-rent.module.css" // You might want to rename this file to for-sale.module.css
+import styles from "./for-rent.module.css"
 
 export const metadata = {
   title: "Properties For Sale | Love View Estate",
@@ -11,7 +11,7 @@ export const metadata = {
 async function getRegionsWithPropertiesForSale() {
   const supabase = await createClient()
 
-  // Query to get regions with properties for sale
+  // Query to get regions with properties for sale using the correct relationships
   const { data: regions, error } = await supabase
     .from("regions")
     .select(`
@@ -22,11 +22,14 @@ async function getRegionsWithPropertiesForSale() {
         id,
         properties!inner (
           id,
-          property_category
+          property_categories!inner (
+            name
+          )
         )
       )
     `)
-    .eq("areas.properties.property_category", "sale")
+    .eq("areas.properties.property_categories.name", "sale")
+    .eq("areas.properties.status", "available")
 
   if (error) {
     console.error("Error fetching regions:", error)
@@ -40,10 +43,8 @@ async function getRegionsWithPropertiesForSale() {
       name: region.name,
       slug: region.slug,
       property_count: region.areas.reduce(
-        (count, area) =>
-          count +
-          area.properties.filter((p) => p.property_category === "sale").length,
-        0
+        (count, area) => count + area.properties.filter((p) => p.property_categories?.name === "sale").length,
+        0,
       ),
     }))
     .filter((region) => region.property_count > 0)
@@ -71,7 +72,7 @@ export default async function ForSalePage() {
               <Link href={`/for-sale-${region.slug}`} key={region.id} className={styles.locationCard}>
                 <div className={styles.locationImage}>
                   <Image
-                    src={`/img/${region.id % 2 === 0 ? "2" : "1"}.jpg`}
+                    src={`/placeholder.svg?height=400&width=600&text=${region.name}`}
                     alt={`${region.name} Properties`}
                     width={600}
                     height={400}
@@ -96,16 +97,16 @@ export default async function ForSalePage() {
           <h2>Buying with Love View Estate</h2>
           <p>
             Our sales process is designed to be straightforward and hassle-free. We understand that finding the right
-            property is an important decision, and our experienced team is here to guide you through every step
-            of the buying process.
+            property is an important decision, and our experienced team is here to guide you through every step of the
+            buying process.
           </p>
           <p>
             To view our available properties, select a location above or visit our{" "}
             <Link href="/available-properties">Property Search</Link> page to see all current listings.
           </p>
           <p>
-            For more information about buying with Love View Estate, please{" "}
-            <Link href="/contact">contact us</Link> directly.
+            For more information about buying with Love View Estate, please <Link href="/contact">contact us</Link>{" "}
+            directly.
           </p>
         </div>
       </div>

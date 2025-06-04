@@ -12,7 +12,7 @@ export const metadata = {
 async function getAvailableProperties() {
   const supabase = await createClient()
 
-  // Get all available properties (both for sale and rent)
+  // Get all available properties (both for sale and rent) using the correct relationships
   const { data: properties, error } = await supabase
     .from("properties")
     .select(`
@@ -22,13 +22,13 @@ async function getAvailableProperties() {
       description,
       address,
       postcode,
-      property_category,
-      property_type,
       bedrooms,
       bathrooms,
+      reception_rooms,
       price,
       available_date,
       status,
+      featured,
       areas (
         id,
         name,
@@ -37,12 +37,25 @@ async function getAvailableProperties() {
           name
         )
       ),
+      property_categories (
+        id,
+        name,
+        display_name
+      ),
+      property_types (
+        id,
+        name,
+        display_name
+      ),
       property_images (
         id,
         image_url,
-        is_featured
+        is_featured,
+        display_order
       )
     `)
+    .eq("status", "available")
+    .order("featured", { ascending: false })
     .order("created_at", { ascending: false })
 
   if (error) {
@@ -68,16 +81,19 @@ export default async function AvailablePropertiesPage() {
         <div className={styles.propertiesList}>
           {properties.length > 0 ? (
             properties.map((property) => {
-              // Find featured image or use first image
-              const featuredImage =
-                property.property_images?.find((img) => img.is_featured) ||
-                (property.property_images?.length ? property.property_images[0] : null)
+              // Find featured image or use first image with proper sorting
+              const sortedImages = property.property_images?.sort((a, b) => a.display_order - b.display_order) || []
+              const featuredImage = sortedImages.find((img) => img.is_featured) || sortedImages[0]
 
-              const imageUrl = featuredImage?.image_url || "/img/property-placeholder.jpg"
+              const imageUrl = featuredImage?.image_url || "/placeholder.svg?height=400&width=600"
 
               // Get area and region information
               const area = property.areas ? property.areas.name : null
               const region = property.areas?.regions ? property.areas.regions.name : null
+
+              // Get category and type information
+              const category = property.property_categories?.name
+              const propertyType = property.property_types?.display_name
 
               return (
                 <div key={property.id} className={styles.propertyItem}>
@@ -90,9 +106,7 @@ export default async function AvailablePropertiesPage() {
                       className={styles.propertyImage}
                     />
                     {property.status && <div className={styles.propertyStatus}>{property.status}</div>}
-                    <div className={styles.propertyCategory}>
-                      {property.property_category === "rent" ? "TO RENT" : "FOR SALE"}
-                    </div>
+                    <div className={styles.propertyCategory}>{category === "rent" ? "TO RENT" : "FOR SALE"}</div>
                   </div>
                   <div className={styles.propertyDetails}>
                     <h2 className={styles.propertyTitle}>{property.title}</h2>
@@ -115,9 +129,11 @@ export default async function AvailablePropertiesPage() {
                         <Bath size={16} className={styles.iconGold} /> {property.bathrooms} Bathroom
                         {property.bathrooms !== 1 ? "s" : ""}
                       </div>
-                      <div className={styles.propertyFeature}>
-                        <Home size={16} className={styles.iconGold} /> {property.property_type}
-                      </div>
+                      {propertyType && (
+                        <div className={styles.propertyFeature}>
+                          <Home size={16} className={styles.iconGold} /> {propertyType}
+                        </div>
+                      )}
                       <div className={styles.propertyFeature}>
                         <MapPin size={16} className={styles.iconGold} /> {property.postcode}
                       </div>
@@ -131,8 +147,8 @@ export default async function AvailablePropertiesPage() {
 
                     <div className={styles.propertyPriceContainer}>
                       <div className={styles.propertyPrice}>
-                        £{property.price}{" "}
-                        {property.property_category === "rent" ? <span className={styles.pcm}>PCM</span> : null}
+                        £{property.price.toLocaleString()}{" "}
+                        {category === "rent" ? <span className={styles.pcm}>PCM</span> : null}
                       </div>
                       <Link href={`/property/${property.slug}`} className={styles.propertyButton}>
                         More Info

@@ -243,40 +243,68 @@
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
+  .propertiesContainer {
+    padding: 0 1rem;
+  }
+
   .propertiesHeading {
-    font-size: 2rem;
+    font-size: 1.8rem;
+  }
+
+  .propertiesSubheading {
+    font-size: 1rem;
   }
 
   .propertyTitle {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
   }
 
   .propertyFeatures {
     grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .propertyFeature {
+    font-size: 0.8rem;
   }
 
   .propertyPriceContainer {
     flex-direction: column;
     align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .propertyPrice {
+    font-size: 1.3rem;
   }
 
   .propertyButton {
     width: 100%;
     text-align: center;
-  }
-}
-
-@media (max-width: 576px) {
-  .propertiesContainer {
-    padding: 0 1rem;
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
   }
 
   .propertyDetails {
     padding: 1rem;
   }
+}
+
+@media (max-width: 576px) {
+  .propertiesContainer {
+    padding: 0 0.75rem;
+  }
+
+  .propertiesHeading {
+    font-size: 1.6rem;
+  }
 
   .propertyFeatures {
     grid-template-columns: 1fr;
-    gap: 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .propertyImageContainer {
+    height: 200px;
   }
 }

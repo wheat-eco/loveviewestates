@@ -37,8 +37,6 @@ async function getPropertyBySlug(slug: string) {
       description,
       address,
       postcode,
-      property_type,
-      property_category,
       bedrooms,
       bathrooms,
       price,
@@ -52,7 +50,9 @@ async function getPropertyBySlug(slug: string) {
           name,
           slug
         )
-      ),
+      ),property_types (
+  display_name
+)
       property_images (
         id,
         image_url,
@@ -71,6 +71,12 @@ async function getPropertyBySlug(slug: string) {
         deposit_amount,
         pets_policy,
         smoking_policy
+      ),
+      property_types (
+        display_name
+      ),
+      property_categories (
+        name
       )
     `)
     .eq("slug", slug)

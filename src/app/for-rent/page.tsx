@@ -11,7 +11,7 @@ export const metadata = {
 async function getRegionsWithRentalProperties() {
   const supabase = await createClient()
 
-  // Query to get regions with rental property counts
+  // Query to get regions with rental property counts using the correct relationships
   const { data: regions, error } = await supabase
     .from("regions")
     .select(`
@@ -22,11 +22,14 @@ async function getRegionsWithRentalProperties() {
         id,
         properties!inner (
           id,
-          property_category
+          property_categories!inner (
+            name
+          )
         )
       )
     `)
-    .eq("areas.properties.property_category", "rent")
+    .eq("areas.properties.property_categories.name", "rent")
+    .eq("areas.properties.status", "available")
 
   if (error) {
     console.error("Error fetching regions:", error)
@@ -40,10 +43,8 @@ async function getRegionsWithRentalProperties() {
       name: region.name,
       slug: region.slug,
       property_count: region.areas.reduce(
-        (count, area) =>
-          count +
-          area.properties.filter((p) => p.property_category === "rent").length,
-        0
+        (count, area) => count + area.properties.filter((p) => p.property_categories?.name === "rent").length,
+        0,
       ),
     }))
     .filter((region) => region.property_count > 0)
@@ -71,7 +72,7 @@ export default async function ForRentPage() {
               <Link href={`/to-rent-${region.slug}`} key={region.id} className={styles.locationCard}>
                 <div className={styles.locationImage}>
                   <Image
-                    src={`/img/${region.id % 2 === 0 ? "2" : "1"}.jpg`}
+                    src={`/placeholder.svg?height=400&width=600&text=${region.name}`}
                     alt={`${region.name} Properties`}
                     width={600}
                     height={400}
@@ -104,8 +105,8 @@ export default async function ForRentPage() {
             <Link href="/available-properties">Available Properties</Link> page to see all current listings.
           </p>
           <p>
-            For more information about renting with Love View Estate, please{" "}
-             <Link href="/contact">contact us</Link> directly.
+            For more information about renting with Love View Estate, please <Link href="/contact">contact us</Link>{" "}
+            directly.
           </p>
         </div>
       </div>

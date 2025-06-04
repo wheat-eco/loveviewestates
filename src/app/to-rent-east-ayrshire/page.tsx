@@ -12,14 +12,17 @@ export const metadata = {
 async function getEastAyrshireRentals() {
   const supabase = await createClient()
 
-  // Get East Ayrshire region ID
-  const { data: region } = await supabase.from("regions").select("id").eq("name", "East-Ayrshire").single()
+  // Get East Ayrshire region ID first
+  const { data: region } = await supabase.from("regions").select("id").eq("name", "East Ayrshire").single()
 
   if (!region) {
+    console.log("East Ayrshire region not found")
     return []
   }
 
-  // Fetch properties from database
+  console.log("Found East Ayrshire region with ID:", region.id)
+
+  // Fetch rental properties in East Ayrshire
   const { data: properties, error } = await supabase
     .from("properties")
     .select(`
@@ -28,8 +31,6 @@ async function getEastAyrshireRentals() {
       slug,
       address,
       postcode,
-      property_category,
-      property_type,
       bedrooms,
       bathrooms,
       price,
@@ -40,21 +41,29 @@ async function getEastAyrshireRentals() {
         name,
         region_id
       ),
+      property_categories!inner (
+        name
+      ),
+      property_types (
+        display_name
+      ),
       property_images (
         id,
         image_url,
-        is_featured
+        is_featured,
+        display_order
       )
     `)
     .eq("areas.region_id", region.id)
-    .eq("property_category", "rent")
+    .eq("property_categories.name", "rent")
     .order("created_at", { ascending: false })
 
   if (error) {
-    console.error("Error fetching properties:", error)
+    console.error("Error fetching East Ayrshire rentals:", error)
     return []
   }
 
+  console.log(`Found ${properties?.length || 0} rental properties in East Ayrshire`)
   return properties || []
 }
 
@@ -70,13 +79,11 @@ export default async function ToRentEastAyrshirePage() {
         <div className={styles.propertiesList}>
           {properties.length > 0 ? (
             properties.map((property) => {
-              // Find featured image or use first image
-              const featuredImage =
-                property.property_images?.find((img) => img.is_featured) ||
-                (property.property_images?.length ? property.property_images[0] : null)
+              // Find featured image or use first image with proper sorting
+              const sortedImages = property.property_images?.sort((a, b) => a.display_order - b.display_order) || []
+              const featuredImage = sortedImages.find((img) => img.is_featured) || sortedImages[0]
 
-              // Use a placeholder if no image is available
-              const imageUrl = featuredImage?.image_url || "/placeholder.svg?height=400&width=600&text=No+Image"
+              const imageUrl = featuredImage?.image_url || "/placeholder.svg?height=400&width=600"
 
               return (
                 <div key={property.id} className={styles.propertyItem}>
@@ -109,9 +116,11 @@ export default async function ToRentEastAyrshirePage() {
                         <Bath size={16} className="mr-1 text-primary-gold" /> {property.bathrooms} Bathroom
                         {property.bathrooms !== 1 ? "s" : ""}
                       </div>
-                      <div className={styles.propertyFeature}>
-                        <Home size={16} className="mr-1 text-primary-gold" /> {property.property_type}
-                      </div>
+                      {property.property_types?.display_name && (
+                        <div className={styles.propertyFeature}>
+                          <Home size={16} className="mr-1 text-primary-gold" /> {property.property_types.display_name}
+                        </div>
+                      )}
                       <div className={styles.propertyFeature}>
                         <MapPin size={16} className="mr-1 text-primary-gold" /> {property.postcode}
                       </div>

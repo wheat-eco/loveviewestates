@@ -3,7 +3,6 @@ import Image from "next/image"
 import { createClient } from "@/utils/supabase/server"
 import { MapPin, Bed, Bath, Home } from "lucide-react"
 import styles from "../for-sale-north-ayrshire/for-sale.module.css"
-import { Key, ReactElement, JSXElementConstructor, ReactNode, ReactPortal } from "react"
 
 export const metadata = {
   title: "East Ayrshire Properties For Sale | Love View Estate",
@@ -13,14 +12,17 @@ export const metadata = {
 async function getEastAyrshireProperties() {
   const supabase = await createClient()
 
-  // Get East Ayrshire region ID
-  const { data: region } = await supabase.from("regions").select("id").eq("name", "east-ayrshire").single()
+  // Get East Ayrshire region ID first
+  const { data: region } = await supabase.from("regions").select("id").eq("name", "East Ayrshire").single()
 
   if (!region) {
+    console.log("East Ayrshire region not found")
     return []
   }
 
-  // Fetch properties from database
+  console.log("Found East Ayrshire region with ID:", region.id)
+
+  // Fetch properties for sale in East Ayrshire
   const { data: properties, error } = await supabase
     .from("properties")
     .select(`
@@ -29,32 +31,39 @@ async function getEastAyrshireProperties() {
       slug,
       address,
       postcode,
-      property_category,
-      property_type,
       bedrooms,
       bathrooms,
       price,
       status,
       areas!inner (
         id,
-        name: name,
+        name,
         region_id
+      ),
+      property_categories!inner (
+        name
+      ),
+      property_types (
+        display_name
       ),
       property_images (
         id,
         image_url,
-        is_featured
+        is_featured,
+        display_order
       )
     `)
     .eq("areas.region_id", region.id)
-    .eq("property_category", "sale")
+    .eq("property_categories.name", "sale")
+    .eq("status", "available")
     .order("created_at", { ascending: false })
 
   if (error) {
-    console.error("Error fetching properties:", error)
+    console.error("Error fetching East Ayrshire properties:", error)
     return []
   }
 
+  console.log(`Found ${properties?.length || 0} properties for sale in East Ayrshire`)
   return properties || []
 }
 
@@ -71,13 +80,12 @@ export default async function ForSaleEastAyrshirePage() {
 
         <div className={styles.propertiesList}>
           {properties.length > 0 ? (
-            properties.map((property: { property_images: any[]; id: Key | null | undefined; title: string; status: string; address: string; areas: { id: any; name: string; region_id: any }[]; bedrooms: number; bathrooms: number; property_type: string; postcode: string; price: { toLocaleString: () => string }; slug: string }) => {
-              // Find featured image or use first image
-              const featuredImage =
-                property.property_images?.find((img) => img.is_featured) ||
-                (property.property_images?.length ? property.property_images[0] : null)
+            properties.map((property) => {
+              // Find featured image or use first image with proper sorting
+              const sortedImages = property.property_images?.sort((a, b) => a.display_order - b.display_order) || []
+              const featuredImage = sortedImages.find((img) => img.is_featured) || sortedImages[0]
 
-              const imageUrl = featuredImage?.image_url || "/img/property-placeholder.jpg"
+              const imageUrl = featuredImage?.image_url || "/placeholder.svg?height=400&width=600"
 
               return (
                 <div key={property.id} className={styles.propertyItem}>
@@ -100,7 +108,7 @@ export default async function ForSaleEastAyrshirePage() {
 
                     <div className={styles.propertyFeatures}>
                       <div className={styles.propertyFeature}>
-                        <MapPin size={16} className="mr-1 text-primary-gold" /> {property.areas?.[0]?.name}
+                        <MapPin size={16} className="mr-1 text-primary-gold" /> {property.areas?.name}
                       </div>
                       <div className={styles.propertyFeature}>
                         <Bed size={16} className="mr-1 text-primary-gold" /> {property.bedrooms} Bedroom
@@ -110,9 +118,11 @@ export default async function ForSaleEastAyrshirePage() {
                         <Bath size={16} className="mr-1 text-primary-gold" /> {property.bathrooms} Bathroom
                         {property.bathrooms !== 1 ? "s" : ""}
                       </div>
-                      <div className={styles.propertyFeature}>
-                        <Home size={16} className="mr-1 text-primary-gold" /> {property.property_type}
-                      </div>
+                      {property.property_types?.display_name && (
+                        <div className={styles.propertyFeature}>
+                          <Home size={16} className="mr-1 text-primary-gold" /> {property.property_types.display_name}
+                        </div>
+                      )}
                       <div className={styles.propertyFeature}>
                         <MapPin size={16} className="mr-1 text-primary-gold" /> {property.postcode}
                       </div>

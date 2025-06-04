@@ -12,14 +12,17 @@ export const metadata = {
 async function getNorthAyrshireProperties() {
   const supabase = await createClient()
 
-  // Get North Ayrshire region ID
-  const { data: region } = await supabase.from("regions").select("id").eq("name", "north-ayrshire").single()
+  // Get North Ayrshire region ID first
+  const { data: region } = await supabase.from("regions").select("id").eq("name", "North Ayrshire").single()
 
   if (!region) {
+    console.log("North Ayrshire region not found")
     return []
   }
 
-  // Fetch properties from database
+  console.log("Found North Ayrshire region with ID:", region.id)
+
+  // Fetch properties for sale in North Ayrshire
   const { data: properties, error } = await supabase
     .from("properties")
     .select(`
@@ -28,8 +31,6 @@ async function getNorthAyrshireProperties() {
       slug,
       address,
       postcode,
-      property_category,
-      property_type,
       bedrooms,
       bathrooms,
       price,
@@ -39,21 +40,30 @@ async function getNorthAyrshireProperties() {
         name,
         region_id
       ),
+      property_categories!inner (
+        name
+      ),
+      property_types (
+        display_name
+      ),
       property_images (
         id,
         image_url,
-        is_featured
+        is_featured,
+        display_order
       )
     `)
     .eq("areas.region_id", region.id)
-    .eq("property_category", "sale")
+    .eq("property_categories.name", "sale")
+    // .eq("status", "available") // <-- Remove or comment out this line
     .order("created_at", { ascending: false })
 
   if (error) {
-    console.error("Error fetching properties:", error)
+    console.error("Error fetching North Ayrshire properties:", error)
     return []
   }
 
+  console.log(`Found ${properties?.length || 0} properties for sale in North Ayrshire`)
   return properties || []
 }
 
@@ -71,13 +81,11 @@ export default async function ForSaleNorthAyrshirePage() {
         <div className={styles.propertiesList}>
           {properties.length > 0 ? (
             properties.map((property) => {
-              // Find featured image or use first image
-              const featuredImage =
-                property.property_images?.find((img) => img.is_featured) ||
-                (property.property_images?.length ? property.property_images[0] : null)
+              // Find featured image or use first image with proper sorting
+              const sortedImages = property.property_images?.sort((a, b) => a.display_order - b.display_order) || []
+              const featuredImage = sortedImages.find((img) => img.is_featured) || sortedImages[0]
 
-              // Use a placeholder if no image is available
-              const imageUrl = featuredImage?.image_url || "/placeholder.svg?height=400&width=600&text=No+Image"
+              const imageUrl = featuredImage?.image_url || "/placeholder.svg?height=400&width=600"
 
               return (
                 <div key={property.id} className={styles.propertyItem}>
@@ -110,9 +118,11 @@ export default async function ForSaleNorthAyrshirePage() {
                         <Bath size={16} className="mr-1 text-primary-gold" /> {property.bathrooms} Bathroom
                         {property.bathrooms !== 1 ? "s" : ""}
                       </div>
-                      <div className={styles.propertyFeature}>
-                        <Home size={16} className="mr-1 text-primary-gold" /> {property.property_type}
-                      </div>
+                      {property.property_types?.display_name && (
+                        <div className={styles.propertyFeature}>
+                          <Home size={16} className="mr-1 text-primary-gold" /> {property.property_types.display_name}
+                        </div>
+                      )}
                       <div className={styles.propertyFeature}>
                         <MapPin size={16} className="mr-1 text-primary-gold" /> {property.postcode}
                       </div>
