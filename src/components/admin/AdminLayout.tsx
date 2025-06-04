@@ -100,8 +100,7 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
     { href: "/admin/regions", label: "Regions & Areas", icon: MapPin },
     { href: "/admin/viewing-requests", label: "Viewing Requests", icon: Calendar },
     { href: "/admin/valuation-requests", label: "Valuation Requests", icon: FileText },
-    { href: "/admin/contacts", label: "Contact Messages", icon: Users },
-    { href: "/admin/settings", label: "Settings", icon: Settings },
+    
   ]
 
   return (
