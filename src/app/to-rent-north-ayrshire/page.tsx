@@ -75,7 +75,8 @@ export default async function ToRentNorthAyrshirePage() {
                 property.property_images?.find((img) => img.is_featured) ||
                 (property.property_images?.length ? property.property_images[0] : null)
 
-              const imageUrl = featuredImage?.image_url || "/img/property-placeholder.jpg"
+              // Use a placeholder if no image is available
+              const imageUrl = featuredImage?.image_url || "/placeholder.svg?height=400&width=600&text=No+Image"
 
               return (
                 <div key={property.id} className={styles.propertyItem}>

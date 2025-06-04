@@ -1,7 +1,9 @@
 "use client"
+
+import { useState, useRef, type FormEvent } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import styles from "./property-detail.module.css"
+import { useRouter } from "next/navigation"
 import {
   MapPin,
   FileText,
@@ -15,12 +17,18 @@ import {
   Share2,
   Check,
   Info,
+  ChevronLeft,
+  ChevronRight,
+  Mail,
+  Phone,
+  User,
+  MessageSquare,
+  Clock,
+  Maximize2,
 } from "lucide-react"
-import { notFound } from "next/navigation"
-import { useState, useRef, type FormEvent } from "react"
-import { useRouter } from "next/navigation"
+import styles from "./property-detail.module.css"
 
-// Update the Property interface to match the one in page.tsx
+// Property interface
 interface Property {
   id: string
   title: string
@@ -71,17 +79,14 @@ interface PropertyDetailPageProps {
 }
 
 export default function PropertyDetailPageClient({ property, area, region }: PropertyDetailPageProps) {
-  if (!property) {
-    notFound()
-  }
-
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formError, setFormError] = useState("")
   const [formSuccess, setFormSuccess] = useState("")
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false)
 
   // Sort images - featured first, then by display order
-  const sortedImages = [...property.property_images].sort((a, b) => {
+  const sortedImages = [...(property.property_images || [])].sort((a, b) => {
     if (a.is_featured && !b.is_featured) return -1
     if (!a.is_featured && b.is_featured) return 1
     return (a.display_order || 0) - (b.display_order || 0)
@@ -106,7 +111,7 @@ export default function PropertyDetailPageClient({ property, area, region }: Pro
 
   // Format price based on property type
   const formatPrice = () => {
-    const formattedPrice = property.price.toLocaleString()
+    const formattedPrice = property.price?.toLocaleString() || "0"
     return property.property_category === "rent" ? `£${formattedPrice} pcm` : `£${formattedPrice}`
   }
 
@@ -176,6 +181,12 @@ export default function PropertyDetailPageClient({ property, area, region }: Pro
       setIsSubmitting(false)
     }
   }
+
+  // Toggle fullscreen gallery
+  const toggleGallery = () => {
+    setIsGalleryOpen(!isGalleryOpen)
+  }
+
   return (
     <div className={styles.propertyDetailContainer}>
       {/* Back button */}
@@ -187,9 +198,12 @@ export default function PropertyDetailPageClient({ property, area, region }: Pro
       </div>
 
       {/* Property Title */}
-      <h1 className={styles.propertyTitle}>
+      <h1 className={styles.propertyTitle}>{property.title}</h1>
+
+      <p className={styles.propertyAddress}>
+        <MapPin size={16} className={styles.iconGold} />
         {property.address}, {area || ""} {region ? `(${region})` : ""}
-      </h1>
+      </p>
 
       {/* Property Status */}
       {property.status && <div className={styles.statusBadge}>{getStatusLabel()}</div>}
@@ -197,94 +211,128 @@ export default function PropertyDetailPageClient({ property, area, region }: Pro
       {/* Property Gallery */}
       <div className={styles.propertyGallery}>
         <div className={styles.mainImageContainer}>
-          {sortedImages.length > 0 && (
-            <Image
-              ref={mainImageRef}
-              src={sortedImages[currentImageIndex]?.image_url || "/placeholder.svg?height=600&width=800"}
-              alt={property.title}
-              width={800}
-              height={600}
-              className={styles.mainImage}
-              priority
-            />
+          {sortedImages.length > 0 ? (
+            <>
+              <Image
+                ref={mainImageRef}
+                src={sortedImages[currentImageIndex]?.image_url || "/placeholder.svg?height=600&width=800"}
+                alt={property.title}
+                width={800}
+                height={600}
+                className={styles.mainImage}
+                priority
+              />
+              <button className={styles.expandButton} onClick={toggleGallery}>
+                <Maximize2 size={20} />
+              </button>
+              {sortedImages.length > 1 && (
+                <>
+                  <button className={`${styles.navArrow} ${styles.prevArrow}`} onClick={handlePrev}>
+                    <ChevronLeft size={24} />
+                  </button>
+                  <button className={`${styles.navArrow} ${styles.nextArrow}`} onClick={handleNext}>
+                    <ChevronRight size={24} />
+                  </button>
+                </>
+              )}
+            </>
+          ) : (
+            <div className={styles.noImagePlaceholder}>
+              <Home size={48} />
+              <p>No images available</p>
+            </div>
           )}
         </div>
 
         {sortedImages.length > 1 && (
-          <div className={styles.thumbnailControls}>
-            <button className={styles.navButton} onClick={handlePrev}>
-              <ArrowLeft size={16} />
-              <span>Prev</span>
-            </button>
-
-            <div className={styles.thumbnailGrid}>
-              {sortedImages.map((image, index) => (
-                <div
-                  key={image.id}
-                  className={`${styles.thumbnailContainer} ${index === currentImageIndex ? styles.active : ""}`}
-                  onClick={() => handleThumbnailClick(index)}
-                >
-                  <Image
-                    src={image.image_url || "/placeholder.svg?height=100&width=100"}
-                    alt={image.caption || `${property.title} - Image ${index + 1}`}
-                    width={100}
-                    height={75}
-                    className={styles.thumbnail}
-                  />
-                </div>
-              ))}
-            </div>
-
-            <button className={styles.navButton} onClick={handleNext}>
-              <span>Next</span>
-              <ArrowLeft size={16} style={{ transform: "rotate(180deg)" }} />
-            </button>
+          <div className={styles.thumbnailGrid}>
+            {sortedImages.map((image, index) => (
+              <div
+                key={image.id}
+                className={`${styles.thumbnailContainer} ${index === currentImageIndex ? styles.active : ""}`}
+                onClick={() => handleThumbnailClick(index)}
+              >
+                <Image
+                  src={image.image_url || "/placeholder.svg?height=100&width=100"}
+                  alt={image.caption || `${property.title} - Image ${index + 1}`}
+                  width={100}
+                  height={75}
+                  className={styles.thumbnail}
+                />
+              </div>
+            ))}
           </div>
         )}
       </div>
 
+      {/* Fullscreen Gallery Modal */}
+      {isGalleryOpen && (
+        <div className={styles.galleryModal}>
+          <div className={styles.galleryModalContent}>
+            <button className={styles.closeGallery} onClick={toggleGallery}>
+              &times;
+            </button>
+
+            <div className={styles.galleryMainImage}>
+              <Image
+                src={sortedImages[currentImageIndex]?.image_url || "/placeholder.svg?height=1200&width=1600"}
+                alt={property.title}
+                width={1600}
+                height={1200}
+                className={styles.fullscreenImage}
+              />
+            </div>
+
+            <div className={styles.galleryControls}>
+              <button className={styles.galleryNavButton} onClick={handlePrev}>
+                <ChevronLeft size={24} />
+              </button>
+              <span className={styles.galleryCounter}>
+                {currentImageIndex + 1} / {sortedImages.length}
+              </span>
+              <button className={styles.galleryNavButton} onClick={handleNext}>
+                <ChevronRight size={24} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Property Details */}
-      <div className={styles.propertyDetails}>
-        <div className={styles.propertyInfo}>
+      <div className={styles.propertyDetailsGrid}>
+        <div className={styles.propertyMainInfo}>
           {/* Price */}
           <div className={styles.propertyPrice}>{formatPrice()}</div>
 
           {/* Key Details */}
           <div className={styles.keyDetails}>
             <div className={styles.keyDetail}>
-              <MapPin size={18} className={styles.detailIcon} />
-              <span>
-                {area || ""} {region ? `(${region})` : ""}
-              </span>
-            </div>
-
-            <div className={styles.keyDetail}>
-              <Bed size={18} className={styles.detailIcon} />
+              <Bed size={20} className={styles.detailIcon} />
               <span>
                 {property.bedrooms} Bedroom{property.bedrooms !== 1 ? "s" : ""}
               </span>
             </div>
 
             <div className={styles.keyDetail}>
-              <Bath size={18} className={styles.detailIcon} />
+              <Bath size={20} className={styles.detailIcon} />
               <span>
                 {property.bathrooms} Bathroom{property.bathrooms !== 1 ? "s" : ""}
               </span>
             </div>
 
             <div className={styles.keyDetail}>
-              <Home size={18} className={styles.detailIcon} />
+              <Home size={20} className={styles.detailIcon} />
               <span>{property.property_type}</span>
             </div>
 
             <div className={styles.keyDetail}>
-              <MapPin size={18} className={styles.detailIcon} />
+              <MapPin size={20} className={styles.detailIcon} />
               <span>{property.postcode}</span>
             </div>
 
             {property.available_date && (
               <div className={styles.keyDetail}>
-                <Calendar size={18} className={styles.detailIcon} />
+                <Calendar size={20} className={styles.detailIcon} />
                 <span>{new Date(property.available_date).toLocaleDateString("en-GB")}</span>
               </div>
             )}
@@ -301,7 +349,7 @@ export default function PropertyDetailPageClient({ property, area, region }: Pro
                   <p>
                     Love View Estate are delighted to present to the{" "}
                     {property.property_category === "rent" ? "rental" : "sales"} market this {property.bedrooms} bedroom{" "}
-                    {property.property_type.toLowerCase()} situated in the heart of {area || "north-ayrshire"}{" "}
+                    {property.property_type?.toLowerCase()} situated in the heart of {area || "Ayrshire"}{" "}
                     {region ? `(${region})` : ""}.
                   </p>
                   <p>
@@ -327,9 +375,9 @@ export default function PropertyDetailPageClient({ property, area, region }: Pro
             {property.property_features && property.property_features.length > 0 && (
               <div className={styles.contentSection}>
                 <h2 className={styles.sectionTitle}>Features</h2>
-                <div className={styles.keyDetails}>
+                <div className={styles.featuresGrid}>
                   {property.property_features.map((feature) => (
-                    <div key={feature.id} className={styles.keyDetail}>
+                    <div key={feature.id} className={styles.featureItem}>
                       <Check size={18} className={styles.detailIcon} />
                       <span>{feature.feature_name}</span>
                     </div>
@@ -341,46 +389,48 @@ export default function PropertyDetailPageClient({ property, area, region }: Pro
             {/* Property Details */}
             <div className={styles.contentSection}>
               <h2 className={styles.sectionTitle}>Property Details</h2>
-              <div className={styles.keyDetails}>
+              <div className={styles.detailsGrid}>
                 {property.property_details?.furnished_status && (
-                  <div className={styles.keyDetail}>
-                    <Info size={18} className={styles.detailIcon} />
-                    <span>Furnished: {property.property_details.furnished_status}</span>
+                  <div className={styles.detailItem}>
+                    <div className={styles.detailLabel}>Furnished Status</div>
+                    <div className={styles.detailValue}>{property.property_details.furnished_status}</div>
                   </div>
                 )}
 
                 {property.property_details?.council_tax_band && (
-                  <div className={styles.keyDetail}>
-                    <Info size={18} className={styles.detailIcon} />
-                    <span>Council Tax Band: {property.property_details.council_tax_band}</span>
+                  <div className={styles.detailItem}>
+                    <div className={styles.detailLabel}>Council Tax Band</div>
+                    <div className={styles.detailValue}>{property.property_details.council_tax_band}</div>
                   </div>
                 )}
 
                 {property.property_details?.epc_rating && (
-                  <div className={styles.keyDetail}>
-                    <Info size={18} className={styles.detailIcon} />
-                    <span>EPC Rating: {property.property_details.epc_rating}</span>
+                  <div className={styles.detailItem}>
+                    <div className={styles.detailLabel}>EPC Rating</div>
+                    <div className={styles.detailValue}>{property.property_details.epc_rating}</div>
                   </div>
                 )}
 
                 {property.property_details?.deposit_amount > 0 && (
-                  <div className={styles.keyDetail}>
-                    <Info size={18} className={styles.detailIcon} />
-                    <span>Deposit: £{property.property_details.deposit_amount.toLocaleString()}</span>
+                  <div className={styles.detailItem}>
+                    <div className={styles.detailLabel}>Deposit</div>
+                    <div className={styles.detailValue}>
+                      £{property.property_details.deposit_amount.toLocaleString()}
+                    </div>
                   </div>
                 )}
 
                 {property.property_details?.pets_policy && (
-                  <div className={styles.keyDetail}>
-                    <Info size={18} className={styles.detailIcon} />
-                    <span>Pets: {property.property_details.pets_policy}</span>
+                  <div className={styles.detailItem}>
+                    <div className={styles.detailLabel}>Pets Policy</div>
+                    <div className={styles.detailValue}>{property.property_details.pets_policy}</div>
                   </div>
                 )}
 
                 {property.property_details?.smoking_policy && (
-                  <div className={styles.keyDetail}>
-                    <Info size={18} className={styles.detailIcon} />
-                    <span>Smoking: {property.property_details.smoking_policy}</span>
+                  <div className={styles.detailItem}>
+                    <div className={styles.detailLabel}>Smoking Policy</div>
+                    <div className={styles.detailValue}>{property.property_details.smoking_policy}</div>
                   </div>
                 )}
               </div>
@@ -390,8 +440,13 @@ export default function PropertyDetailPageClient({ property, area, region }: Pro
             {epcDocument && (
               <div className={styles.contentSection}>
                 <h2 className={styles.sectionTitle}>EPC</h2>
-                <a href={epcDocument.document_url} target="_blank" rel="noopener noreferrer" className={styles.epcLink}>
-                  <FileText size={18} />
+                <a
+                  href={epcDocument.document_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.documentLink}
+                >
+                  <FileText size={18} className={styles.documentIcon} />
                   <span>View EPC Document</span>
                 </a>
               </div>
@@ -399,88 +454,148 @@ export default function PropertyDetailPageClient({ property, area, region }: Pro
 
             {/* Social Sharing */}
             <div className={styles.socialSharing}>
-              <button className={styles.shareButton} onClick={handleFacebookShare}>
-                <Facebook size={16} />
-                <span>Share</span>
-              </button>
-              <button className={styles.shareButton} onClick={handleTwitterShare}>
-                <Twitter size={16} />
-                <span>Tweet</span>
-              </button>
-              <button className={styles.shareButton} onClick={handlePinterestShare}>
-                <Share2 size={16} />
-                <span>Pin It</span>
-              </button>
+              <h3>Share this property</h3>
+              <div className={styles.shareButtons}>
+                <button className={styles.shareButton} onClick={handleFacebookShare}>
+                  <Facebook size={18} />
+                  <span>Facebook</span>
+                </button>
+                <button className={styles.shareButton} onClick={handleTwitterShare}>
+                  <Twitter size={18} />
+                  <span>Twitter</span>
+                </button>
+                <button className={styles.shareButton} onClick={handlePinterestShare}>
+                  <Share2 size={18} />
+                  <span>Pinterest</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Request a Viewing Section */}
-        <div className={styles.contentSection}>
-          <h2 className={styles.sectionTitle}>Request a Viewing</h2>
+        <div className={styles.viewingRequestSection}>
+          <div className={styles.viewingCard}>
+            <h2 className={styles.viewingTitle}>Request a Viewing</h2>
+            <p className={styles.viewingSubtitle}>Fill in the form below to request a viewing of this property</p>
 
-          {formSuccess && (
-            <div className={styles.successMessage}>
-              <Check size={18} />
-              {formSuccess}
+            {formSuccess && (
+              <div className={styles.successMessage}>
+                <Check size={18} />
+                {formSuccess}
+              </div>
+            )}
+
+            {formError && (
+              <div className={styles.errorMessage}>
+                <Info size={18} />
+                {formError}
+              </div>
+            )}
+
+            <form className={styles.viewingForm} onSubmit={handleSubmit}>
+              <input type="hidden" name="property_id" value={property.id} />
+              <input type="hidden" name="property_type" value={property.property_category} />
+
+              <div className={styles.formGroup}>
+                <label htmlFor="name">Full Name</label>
+                <div className={styles.inputWithIcon}>
+                  <User size={18} className={styles.inputIcon} />
+                  <input type="text" id="name" name="name" required placeholder="Your full name" />
+                </div>
+              </div>
+
+              <div className={styles.formGroup}>
+                <label htmlFor="phone">Telephone</label>
+                <div className={styles.inputWithIcon}>
+                  <Phone size={18} className={styles.inputIcon} />
+                  <input type="tel" id="phone" name="phone" required placeholder="Your phone number" />
+                </div>
+              </div>
+
+              <div className={styles.formGroup}>
+                <label htmlFor="email">Email Address</label>
+                <div className={styles.inputWithIcon}>
+                  <Mail size={18} className={styles.inputIcon} />
+                  <input type="email" id="email" name="email" required placeholder="Your email address" />
+                </div>
+              </div>
+
+              <div className={styles.formGroup}>
+                <label htmlFor="preferred_date">Preferred Date (Optional)</label>
+                <div className={styles.inputWithIcon}>
+                  <Calendar size={18} className={styles.inputIcon} />
+                  <input type="date" id="preferred_date" name="preferred_date" />
+                </div>
+              </div>
+
+              <div className={styles.formGroup}>
+                <label htmlFor="preferred_time">Preferred Time (Optional)</label>
+                <div className={styles.inputWithIcon}>
+                  <Clock size={18} className={styles.inputIcon} />
+                  <select id="preferred_time" name="preferred_time">
+                    <option value="">Select a time</option>
+                    <option value="morning">Morning (9am - 12pm)</option>
+                    <option value="afternoon">Afternoon (12pm - 5pm)</option>
+                    <option value="evening">Evening (5pm - 8pm)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className={styles.formGroup}>
+                <label htmlFor="message">Request Message</label>
+                <div className={styles.inputWithIcon}>
+                  <MessageSquare size={18} className={styles.inputIcon} />
+                  <textarea
+                    id="message"
+                    name="message"
+                    rows={4}
+                    defaultValue={`Please may I book a viewing of this property "${property.title}" - Ref: ${property.slug}`}
+                    placeholder="Add any additional information about your viewing request"
+                  ></textarea>
+                </div>
+              </div>
+
+              <button type="submit" className={styles.submitButton} disabled={isSubmitting}>
+                {isSubmitting ? "Sending..." : "Request Viewing"}
+              </button>
+            </form>
+
+            <div className={styles.contactAlternative}>
+              <p>Alternatively, call us directly:</p>
+              <a href="tel:+441234567890" className={styles.phoneLink}>
+                <Phone size={18} />
+                01234 567 890
+              </a>
             </div>
-          )}
+          </div>
 
-          {formError && (
-            <div className={styles.errorMessage}>
-              <Info size={18} />
-              {formError}
-            </div>
-          )}
-
-          <form className={styles.viewingForm} onSubmit={handleSubmit}>
-            <input type="hidden" name="property_id" value={property.id} />
-            <input type="hidden" name="property_type" value={property.property_category} />
-
-            <div className={styles.formGroup}>
-              <label>Full Name</label>
-              <div className={styles.inputWithIcon}>
-                <input type="text" name="name" required placeholder="Your full name" />
+          <div className={styles.agentCard}>
+            <div className={styles.agentInfo}>
+              <div className={styles.agentImage}>
+                <Image
+                  src="/placeholder.svg?height=100&width=100&text=Agent"
+                  alt="Estate Agent"
+                  width={80}
+                  height={80}
+                />
+              </div>
+              <div>
+                <h3>Love View Estate</h3>
+                <p>Your trusted property partner</p>
               </div>
             </div>
-
-            <div className={styles.formGroup}>
-              <label>Telephone</label>
-              <div className={styles.inputWithIcon}>
-                <input type="tel" name="phone" required placeholder="Your phone number" />
-              </div>
+            <div className={styles.agentContact}>
+              <a href="tel:+441234567890" className={styles.agentButton}>
+                <Phone size={18} />
+                Call
+              </a>
+              <a href="mailto:info@loveviewestate.com" className={styles.agentButton}>
+                <Mail size={18} />
+                Email
+              </a>
             </div>
-
-            <div className={styles.formGroup}>
-              <label>Email Address</label>
-              <div className={styles.inputWithIcon}>
-                <input type="email" name="email" required placeholder="Your email address" />
-              </div>
-            </div>
-
-            <div className={styles.formGroup}>
-              <label>Preferred Date (Optional)</label>
-              <div className={styles.inputWithIcon}>
-                <input type="date" name="preferred_date" />
-              </div>
-            </div>
-
-            <div className={styles.formGroup}>
-              <label>Request Message</label>
-              <div className={styles.inputWithIcon}>
-                <textarea
-                  name="message"
-                  rows={5}
-                  defaultValue={`Please may I book a viewing of this property "${property.title}" - Ref: ${property.slug}`}
-                  placeholder="Add any additional information about your viewing request"
-                ></textarea>
-              </div>
-            </div>
-
-            <button type="submit" className={styles.submitButton} disabled={isSubmitting}>
-              {isSubmitting ? "Sending..." : "Request Viewing"}
-            </button>
-          </form>
+          </div>
         </div>
       </div>
     </div>

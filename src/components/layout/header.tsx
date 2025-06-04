@@ -4,23 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
-import {
-  Facebook,
-  Twitter,
-  Instagram,
-  Mail,
-  ChevronDown,
-  XIcon,
-  MapPin,
-  Home,
-  DollarSign,
-  Briefcase,
-  FileText,
-  Users,
-  Star,
-  Search,
-  Phone,
-} from "lucide-react"
+import { Facebook, Twitter, Instagram, Mail, ChevronDown, XIcon, MapPin, Home, Users } from "lucide-react"
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -78,17 +62,13 @@ const Header = () => {
                 <li className="nav-item dropdown">
                   <Link
                     href="/about"
-                    className={`nav-link  || isActive("/team") || isActive("/testimonials") ? "active" : ""}`}
+                    className={`nav-link ${isActive("/about") || isActive("/team") || isActive("/testimonials") ? "active" : ""}`}
                   >
                     ABOUT <ChevronDown className="inline h-4 w-4 ml-1" />
                   </Link>
                   <div className="dropdown-content">
-                    
                     <Link href="/team">
                       <Users className="h-4 w-4" /> Team
-                    </Link>
-                    <Link href="/testimonials">
-                      <Star className="h-4 w-4" /> Testimonials
                     </Link>
                   </div>
                 </li>
@@ -112,11 +92,10 @@ const Header = () => {
                       <MapPin className="h-4 w-4" /> For Sale North Ayrshire
                     </Link>
                     <Link href="/for-sale-east-ayrshire">
-                      <MapPin className="h-4 w-4" />For Sale East Ayrshire
+                      <MapPin className="h-4 w-4" />
+                      For Sale East Ayrshire
                     </Link>
-                     </div>
-                    
-                   
+                  </div>
                 </li>
 
                 <li className="nav-item dropdown">
@@ -137,23 +116,14 @@ const Header = () => {
                     <Link href="/to-rent-east-ayrshire">
                       <MapPin className="h-4 w-4" /> To Rent East Ayrshire
                     </Link>
-                   </div>
+                  </div>
                 </li>
 
                 <li className="nav-item">
-                  <Link
-                    href="/financial-services"
-                    className={`nav-link ${isActive("/financial-services") ? "active" : ""}`}
-                  >
-                    FINANCIAL SERVICES
+                  <Link href="/landlords" className={`nav-link ${isActive("/landlords") ? "active" : ""}`}>
+                    LANDLORDS
                   </Link>
                 </li>
-
-                <li className="nav-item">
-  <Link href="/landlords" className={`nav-link ${isActive("/landlords") ? "active" : ""}`}>
-    LANDLORDS
-  </Link>
-</li>
 
                 <li className="nav-item">
                   <Link href="/valuation" className="nav-link highlight-button">
@@ -165,7 +135,7 @@ const Header = () => {
           </div>
 
           <div className="social-container">
-           <Link href="#" className="social-link" aria-label="Facebook">
+            <Link href="#" className="social-link" aria-label="Facebook">
               <Facebook className="h-4 w-4" />
             </Link>
             <Link href="#" className="social-link" aria-label="Twitter">
@@ -187,7 +157,7 @@ const Header = () => {
         </div>
       </header>
 
-      {/* Mobile Menu - Keeping the existing mobile menu as requested */}
+      {/* Mobile Menu */}
       <div className={`mobile-menu ${mobileMenuOpen ? "active" : ""}`}>
         <button className="mobile-menu-close" onClick={closeMobileMenu} aria-label="Close menu">
           <XIcon className="h-6 w-6" />
@@ -206,16 +176,10 @@ const Header = () => {
               </a>
               <ul className="mobile-dropdown-content">
                 <li>
-                  <Link href="/our-story" onClick={closeMobileMenu}>
-                    Our Story
-                  </Link>
-                </li>
-                <li>
                   <Link href="/team" onClick={closeMobileMenu}>
                     Team
                   </Link>
                 </li>
-               
               </ul>
             </li>
             <li>
@@ -223,22 +187,28 @@ const Header = () => {
                 SELLING
               </Link>
             </li>
-            <li>
-              {" "}
-              <Link href="/for-sale-north-ayrshire" onClick={closeMobileMenu}>
-                FOR SALE NORTH AYRSHIRE
-              </Link>
-            </li>
-            <li>
-              <Link href="/for-sale-east-ayrshire" onClick={closeMobileMenu}>
-                FOR SALE EAST AYRSHIRE
-              </Link>
-            </li>
-            <li>
-              {" "}
-              <Link href="/financial-services" onClick={closeMobileMenu}>
-                FINANCIAL SERVICES
-              </Link>
+            <li className={`mobile-dropdown ${activeDropdowns.includes("forsale") ? "active" : ""}`}>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault()
+                  toggleMobileDropdown("forsale")
+                }}
+              >
+                FOR SALE <ChevronDown className="inline h-4 w-4 ml-1" />
+              </a>
+              <ul className="mobile-dropdown-content">
+                <li>
+                  <Link href="/for-sale-north-ayrshire" onClick={closeMobileMenu}>
+                    For Sale North Ayrshire
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/for-sale-east-ayrshire" onClick={closeMobileMenu}>
+                    For Sale East Ayrshire
+                  </Link>
+                </li>
+              </ul>
             </li>
             <li>
               <Link href="/landlords" onClick={closeMobileMenu}>
@@ -263,15 +233,14 @@ const Header = () => {
                 </li>
                 <li>
                   <Link href="/to-rent-north-ayrshire" onClick={closeMobileMenu}>
-                   For Rent North Ayrshire
+                    For Rent North Ayrshire
                   </Link>
                 </li>
                 <li>
                   <Link href="/to-rent-east-ayrshire" onClick={closeMobileMenu}>
-                   For Rent East Ayrshire
+                    For Rent East Ayrshire
                   </Link>
                 </li>
-               
               </ul>
             </li>
             <li>

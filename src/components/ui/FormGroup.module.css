@@ -1,0 +1,19 @@
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 250px;
+}
+
+.formGroup label {
+  font-weight: 500;
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 768px) {
+  .formGroup {
+    min-width: 100%;
+  }
+}

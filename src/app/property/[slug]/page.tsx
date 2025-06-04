@@ -2,11 +2,8 @@ import { createClient } from "@/utils/supabase/server"
 import { notFound } from "next/navigation"
 import PropertyDetailPageClient from "./PropertyDetailPageClient"
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-  // Await the params before accessing its properties
-  const resolvedParams = await params
-  const slug = resolvedParams.slug
-
+export async function generateMetadata({ params }: { params: { slug: string } }) {
+  const slug = params.slug
   const supabase = await createClient()
 
   const { data: property } = await supabase
@@ -101,11 +98,8 @@ async function getPropertyBySlug(slug: string) {
   }
 }
 
-export default async function PropertyDetailPage({ params }: { params: Promise<{ slug: string }> }) {
-  // Await the params before accessing its properties
-  const resolvedParams = await params
-  const slug = resolvedParams.slug
-
+export default async function PropertyDetailPage({ params }: { params: { slug: string } }) {
+  const slug = params.slug
   const property = await getPropertyBySlug(slug)
 
   if (!property) {

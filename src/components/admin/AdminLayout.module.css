@@ -1,114 +1,255 @@
 .adminContainer {
-    display: flex;
-    min-height: 100vh;
+  display: flex;
+  min-height: 100vh;
+  background-color: #f8fafc;
+}
+
+.sidebar {
+  width: 280px;
+  background: linear-gradient(180deg, #1e293b 0%, #334155 100%);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.sidebarHeader {
+  padding: 2rem 1.5rem;
+  border-bottom: 1px solid #475569;
+}
+
+.sidebarHeader h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #e4b611;
+}
+
+.sidebarHeader p {
+  margin: 0.5rem 0 0 0;
+  font-size: 0.875rem;
+  color: #94a3b8;
+}
+
+.sidebarNav {
+  flex: 1;
+  padding: 1rem 0;
+}
+
+.sidebarNav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sidebarNav li {
+  margin: 0;
+}
+
+.sidebarNav a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.5rem;
+  color: #cbd5e1;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+}
+
+.sidebarNav a:hover {
+  background-color: #475569;
+  color: white;
+  border-left-color: #e4b611;
+}
+
+.sidebarNav a.active {
+  background-color: #334155;
+  color: #e4b611;
+  border-left-color: #e4b611;
+  font-weight: 600;
+}
+
+.sidebarNav a span {
+  font-size: 0.875rem;
+}
+
+.sidebarFooter {
+  padding: 1.5rem;
+  border-top: 1px solid #475569;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.userAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #e4b611;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.125rem;
+}
+
+.userDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.userName {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: white;
+}
+
+.userEmail {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.logoutBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.logoutBtn:hover {
+  background-color: #b91c1c;
+}
+
+.mainContent {
+  flex: 1;
+  margin-left: 280px;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  background: white;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: between;
+  align-items: center;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.welcomeText {
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.content {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.loadingContainer,
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f8fafc;
+  gap: 1rem;
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e2e8f0;
+  border-top: 4px solid #e4b611;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
   }
-  
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loginButton {
+  padding: 0.75rem 1.5rem;
+  background-color: #e4b611;
+  color: #1e293b;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.loginButton:hover {
+  background-color: #d1a710;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
   .sidebar {
-    width: 250px;
-    background-color: #323232;
-    color: #fff;
-    padding: 1rem 0;
-    position: fixed;
-    height: 100vh;
-    overflow-y: auto;
+    width: 260px;
   }
-  
-  .sidebarHeader {
-    padding: 1rem;
-    text-align: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    margin-bottom: 1rem;
-  }
-  
-  .sidebarNav ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .sidebarNav li {
-    margin-bottom: 0.25rem;
-  }
-  
-  .sidebarNav a {
-    display: block;
-    padding: 0.75rem 1.5rem;
-    color: #fff;
-    text-decoration: none;
-    transition: background-color 0.3s;
-  }
-  
-  .sidebarNav a:hover,
-  .sidebarNav a.active {
-    background-color: rgba(255, 255, 255, 0.1);
-  }
-  
+
   .mainContent {
-    flex: 1;
-    padding: 2rem;
-    margin-left: 250px;
-    background-color: #f5f5f5;
-    min-height: 100vh;
+    margin-left: 260px;
   }
-  
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    position: relative;
+    height: auto;
+  }
+
+  .mainContent {
+    margin-left: 0;
+  }
+
   .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
+    padding: 1rem;
   }
-  
-  .header h1 {
-    margin: 0;
-    font-size: 1.8rem;
-    color: #323232;
+
+  .content {
+    padding: 1rem;
   }
-  
-  .userInfo {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-  
-  .userName {
-    font-weight: 500;
-  }
-  
-  .logoutBtn {
-    padding: 0.5rem 1rem;
-    background-color: #e4b611;
-    color: #323232;
-    text-decoration: none;
-    border-radius: 4px;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-  }
-  
-  .logoutBtn:hover {
-    background-color: #c99e0f;
-  }
-  
-  @media (max-width: 768px) {
-    .sidebar {
-      width: 100%;
-      height: auto;
-      position: relative;
-      z-index: 10;
-    }
-  
-    .mainContent {
-      margin-left: 0;
-    }
-  
-    .adminContainer {
-      flex-direction: column;
-    }
-  
-    .header {
-      flex-direction: column;
-      gap: 1rem;
-      align-items: flex-start;
-    }
-  }
-  
+}

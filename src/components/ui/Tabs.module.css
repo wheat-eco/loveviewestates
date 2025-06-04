@@ -1,0 +1,52 @@
+.tabs {
+  width: 100%;
+}
+
+.tabsList {
+  display: flex;
+  background-color: #f3f4f6;
+  border-radius: 6px;
+  padding: 0.25rem;
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+}
+
+.tabsTrigger {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.tabsTrigger:hover {
+  color: #374151;
+}
+
+.tabsTrigger.active {
+  background-color: white;
+  color: #111827;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.tabsContent {
+  outline: none;
+}
+
+@media (max-width: 768px) {
+  .tabsList {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  .tabsTrigger {
+    flex: none;
+    min-width: max-content;
+  }
+}

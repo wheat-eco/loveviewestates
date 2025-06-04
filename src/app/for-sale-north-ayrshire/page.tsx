@@ -76,7 +76,8 @@ export default async function ForSaleNorthAyrshirePage() {
                 property.property_images?.find((img) => img.is_featured) ||
                 (property.property_images?.length ? property.property_images[0] : null)
 
-              const imageUrl = featuredImage?.image_url || "/img/property-placeholder.jpg"
+              // Use a placeholder if no image is available
+              const imageUrl = featuredImage?.image_url || "/placeholder.svg?height=400&width=600&text=No+Image"
 
               return (
                 <div key={property.id} className={styles.propertyItem}>
@@ -99,7 +100,7 @@ export default async function ForSaleNorthAyrshirePage() {
 
                     <div className={styles.propertyFeatures}>
                       <div className={styles.propertyFeature}>
-                        <MapPin size={16} className="mr-1 text-primary-gold" /> {property.areas?.[0]?.name}
+                        <MapPin size={16} className="mr-1 text-primary-gold" /> {property.areas?.name}
                       </div>
                       <div className={styles.propertyFeature}>
                         <Bed size={16} className="mr-1 text-primary-gold" /> {property.bedrooms} Bedroom

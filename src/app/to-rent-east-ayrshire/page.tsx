@@ -13,7 +13,7 @@ async function getEastAyrshireRentals() {
   const supabase = await createClient()
 
   // Get East Ayrshire region ID
-  const { data: region } = await supabase.from("regions").select("id").eq("name", "east-ayrshire").single()
+  const { data: region } = await supabase.from("regions").select("id").eq("name", "East-Ayrshire").single()
 
   if (!region) {
     return []
@@ -75,7 +75,8 @@ export default async function ToRentEastAyrshirePage() {
                 property.property_images?.find((img) => img.is_featured) ||
                 (property.property_images?.length ? property.property_images[0] : null)
 
-              const imageUrl = featuredImage?.image_url || "/img/property-placeholder.jpg"
+              // Use a placeholder if no image is available
+              const imageUrl = featuredImage?.image_url || "/placeholder.svg?height=400&width=600&text=No+Image"
 
               return (
                 <div key={property.id} className={styles.propertyItem}>

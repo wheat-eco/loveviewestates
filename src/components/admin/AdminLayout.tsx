@@ -1,9 +1,10 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import type React from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { LogOut } from "lucide-react"
+import { LogOut, Home, Building, MapPin, Calendar, FileText, Users, Settings } from "lucide-react"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import styles from "./AdminLayout.module.css"
 
@@ -16,7 +17,7 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClientComponentClient()
-  const [user, setUser] = useState<{ full_name: string } | null>(null)
+  const [user, setUser] = useState<{ full_name: string; email: string } | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -30,33 +31,38 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
 
         if (authError || !authUser) {
           console.error("Error fetching authenticated user:", authError)
-          setUser(null)
+          router.push("/admin/login")
           return
         }
 
+        // Check if user has admin role
         const { data: userData, error: userError } = await supabase
-          .from("users")
-          .select("full_name")
+          .from("admin")
+          .select("full_name, email, role")
           .eq("id", authUser.id)
           .single()
 
-        if (userError) {
-          console.error("Error fetching user details:", userError)
-          setUser(null)
+        if (userError || userData?.role !== "admin") {
+          console.error("User not authorized or not found:", userError)
+          await supabase.auth.signOut()
+          router.push("/admin/login")
           return
         }
 
-        setUser(userData)
+        setUser({
+          full_name: userData.full_name || authUser.email?.split("@")[0] || "Admin",
+          email: userData.email || authUser.email || "",
+        })
       } catch (error) {
         console.error("Error fetching admin info:", error)
-        setUser(null)
+        router.push("/admin/login")
       } finally {
         setLoading(false)
       }
     }
 
     fetchAdminInfo()
-  }, [supabase])
+  }, [supabase, router])
 
   const handleLogout = async () => {
     try {
@@ -68,12 +74,35 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
   }
 
   if (loading) {
-    return <div className={styles.loading}>Loading...</div>
+    return (
+      <div className={styles.loadingContainer}>
+        <div className={styles.loadingSpinner}></div>
+        <p>Loading admin panel...</p>
+      </div>
+    )
   }
 
   if (!user) {
-    return <div className={styles.error}>Failed to load admin info. Please log in again.</div>
+    return (
+      <div className={styles.errorContainer}>
+        <p>Failed to load admin info. Please log in again.</p>
+        <button onClick={() => router.push("/admin/login")} className={styles.loginButton}>
+          Go to Login
+        </button>
+      </div>
+    )
   }
+
+  const navigationItems = [
+    { href: "/admin", label: "Dashboard", icon: Home, exact: true },
+    { href: "/admin/properties", label: "Properties", icon: Building },
+    { href: "/admin/properties/add", label: "Add Property", icon: Building },
+    { href: "/admin/regions", label: "Regions & Areas", icon: MapPin },
+    { href: "/admin/viewing-requests", label: "Viewing Requests", icon: Calendar },
+    { href: "/admin/valuation-requests", label: "Valuation Requests", icon: FileText },
+    { href: "/admin/contacts", label: "Contact Messages", icon: Users },
+    { href: "/admin/settings", label: "Settings", icon: Settings },
+  ]
 
   return (
     <div className={styles.adminContainer}>
@@ -85,60 +114,45 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
 
         <nav className={styles.sidebarNav}>
           <ul>
-            <li>
-              <Link href="/admin" className={pathname === "/admin" ? styles.active : ""}>
-                Dashboard
-              </Link>
-            </li>
-            <li>
-              <Link href="/admin/properties" className={pathname === "/admin/properties" ? styles.active : ""}>
-                Properties
-              </Link>
-            </li>
-            <li>
-              <Link href="/admin/properties/add" className={pathname === "/admin/properties/add" ? styles.active : ""}>
-                Add Property
-              </Link>
-            </li>
-            <li>
-              <Link href="/admin/regions" className={pathname === "/admin/regions" ? styles.active : ""}>
-                Regions & Areas
-              </Link>
-            </li>
-           
-            <li>
-              <Link
-                href="/admin/viewing-requests"
-                className={pathname === "/admin/viewing-requests" ? styles.active : ""}
-              >
-                Viewing Requests
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/admin/valuation-requests"
-                className={pathname === "/admin/valuation-requests" ? styles.active : ""}
-              >
-                Valuation Requests
-              </Link>
-            </li>
+            {navigationItems.map((item) => {
+              const isActive = item.exact ? pathname === item.href : pathname.startsWith(item.href)
+
+              return (
+                <li key={item.href}>
+                  <Link href={item.href} className={isActive ? styles.active : ""}>
+                    <item.icon size={18} />
+                    <span>{item.label}</span>
+                  </Link>
+                </li>
+              )
+            })}
           </ul>
         </nav>
+
+        <div className={styles.sidebarFooter}>
+          <div className={styles.userInfo}>
+            <div className={styles.userAvatar}>{user.full_name.charAt(0).toUpperCase()}</div>
+            <div className={styles.userDetails}>
+              <span className={styles.userName}>{user.full_name}</span>
+              <span className={styles.userEmail}>{user.email}</span>
+            </div>
+          </div>
+          <button onClick={handleLogout} className={styles.logoutBtn}>
+            <LogOut size={16} />
+            <span>Logout</span>
+          </button>
+        </div>
       </aside>
 
       <main className={styles.mainContent}>
         <header className={styles.header}>
           <h1>{title}</h1>
-
-          <div className={styles.userInfo}>
-            <span className={styles.userName}>Welcome, {user.full_name}</span>
-            <button onClick={handleLogout} className={styles.logoutBtn}>
-              <LogOut size={16} className="mr-1" /> Logout
-            </button>
+          <div className={styles.headerActions}>
+            <span className={styles.welcomeText}>Welcome back, {user.full_name}</span>
           </div>
         </header>
 
-        {children}
+        <div className={styles.content}>{children}</div>
       </main>
     </div>
   )
