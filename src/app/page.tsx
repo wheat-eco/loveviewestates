@@ -10,7 +10,7 @@ export default function Home() {
   const slides = [
     { id: 1, image: "/img/7.jpeg" },
     { id: 2, image: "/img/5.jpg" },
-    { id: 3, image: "/img/10.jpeg" },
+    { id: 3, image: "/img/9.jpeg" },
   ]
 
   useEffect(() => {
