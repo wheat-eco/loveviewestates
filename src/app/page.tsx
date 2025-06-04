@@ -8,9 +8,9 @@ import Link from "next/link"
 export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0)
   const slides = [
-    { id: 1, image: "/img/1.jpg" },
-    { id: 2, image: "/img/2.jpg" },
-    { id: 3, image: "/img/3.jpg" },
+    { id: 1, image: "/img/7.jpeg" },
+    { id: 2, image: "/img/5.jpg" },
+    { id: 3, image: "/img/10.jpeg" },
   ]
 
   useEffect(() => {
@@ -99,7 +99,7 @@ export default function Home() {
         <div className="valuations-container">
           <div className="valuations-image">
             <Image
-              src="/img/2.jpg"
+              src="/img/7.jpeg"
               alt="Interior of a modern property"
               width={600}
               height={400}
@@ -109,8 +109,7 @@ export default function Home() {
           <div className="valuations-content">
             <h2 className="valuations-heading">Valuations for Selling or Renting</h2>
             <p className="valuations-text">
-             At Love View Estate, we offer free valuations whether you’re looking to sell or rent out your property. Our team is on hand to provide knowledgeable advice on the Ayrshire property market. If you have a property in Ayrshire, contact us to arrange your free, no-obligation property valuation
-            </p>
+             At Love View Estate, we offer free valuations whether you’re looking to sell or rent out your property. Our team is on hand to provide knowledgeable advice on the Ayrshire property market. </p>
             <p className="valuations-cta">
               If you have a property in Ayrshire Contact us to arrange your free no obligation property valuation
             </p>
@@ -126,11 +125,11 @@ export default function Home() {
         <div className="services-overlay"></div>
         <div className="services-container">
           <div className="services-grid">
-            <Link href="/for-sale-north-ayrshire" className="service-card">
+            <Link href="/for-sale" className="service-card">
               <div
                 className="service-image"
                 style={{
-                  backgroundImage: "url('/img/1.jpg')",
+                  backgroundImage: "url('/img/8.jpeg')",
                 }}
               >
                 <div className="service-overlay"></div>
@@ -145,7 +144,7 @@ export default function Home() {
               <div
                 className="service-image"
                 style={{
-                  backgroundImage: "url('/img/2.jpg')",
+                  backgroundImage: "url('/img/9.jpeg')",
                 }}
               >
                 <div className="service-overlay"></div>
@@ -156,11 +155,11 @@ export default function Home() {
               </div>
             </Link>
 
-            <Link href="/rental-guide" className="service-card">
+            <Link href="/landlords" className="service-card">
               <div
                 className="service-image"
                 style={{
-                  backgroundImage: "url('/img/3.jpg')",
+                  backgroundImage: "url('/img/7.jpeg')",
                 }}
               >
                 <div className="service-overlay"></div>

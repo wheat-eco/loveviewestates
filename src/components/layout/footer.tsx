@@ -10,7 +10,7 @@ const Footer = () => {
         <div className="footer-grid">
           <div className="footer-column brand-column">
             <Image
-              src="/logo.png"
+              src="/logo-1.png"
               alt="Love View Estate"
               width={150}
               height={50}
