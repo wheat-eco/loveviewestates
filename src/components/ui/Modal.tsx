@@ -5,7 +5,7 @@ import type React from "react"
 import { useEffect } from "react"
 import { createPortal } from "react-dom"
 import { X } from "lucide-react"
-import { Button } from "./Button"
+import { Button } from "./button"
 import styles from "./Modal.module.css"
 
 interface ModalProps {
