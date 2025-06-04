@@ -3,8 +3,8 @@
 import type React from "react"
 
 import { useState } from "react"
-import { Input } from "@/components/ui/Input"
-import { Button } from "@/components/ui/Button"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 import { X, Plus } from "lucide-react"
 import styles from "../PropertyForm.module.css"
 

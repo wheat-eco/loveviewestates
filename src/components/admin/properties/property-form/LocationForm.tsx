@@ -3,9 +3,9 @@
 import type React from "react"
 
 import { FormGroup } from "@/components/ui/FormGroup"
-import { Input } from "@/components/ui/Input"
-import { Select } from "@/components/ui/Select"
-import { Button } from "@/components/ui/Button"
+import { Input } from "@/components/ui/input"
+import { Select } from "@/components/ui/select"
+import { Button } from "@/components/ui/button"
 import type { Region, Area } from "@/lib/supabase-client"
 import { PlusCircle } from "lucide-react"
 import styles from "../PropertyForm.module.css"

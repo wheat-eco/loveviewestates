@@ -3,8 +3,8 @@
 import type React from "react"
 
 import { FormGroup } from "@/components/ui/FormGroup"
-import { Input } from "@/components/ui/Input"
-import { Select } from "@/components/ui/Select"
+import { Input } from "@/components/ui/input"
+import { Select } from "@/components/ui/select"
 import styles from "../PropertyForm.module.css"
 
 interface RentalDetailsFormProps {

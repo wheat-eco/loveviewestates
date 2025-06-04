@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useRef } from "react"
-import { Button } from "@/components/ui/Button"
+import { Button } from "@/components/ui/button"
 import { Upload, X, Star } from "lucide-react"
 import styles from "../PropertyForm.module.css"
 
