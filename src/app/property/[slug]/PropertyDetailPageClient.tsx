@@ -567,9 +567,9 @@ export default function PropertyDetailPageClient({ property, area, region }: Pro
 
             <div className={styles.contactAlternative}>
               <p>Alternatively, call us directly:</p>
-              <a href="tel:+441234567890" className={styles.phoneLink}>
+              <a href="tel:+4407399301948" className={styles.phoneLink}>
                 <Phone size={18} />
-                01234 567 890
+                07399 301948
               </a>
             </div>
           </div>
@@ -590,11 +590,11 @@ export default function PropertyDetailPageClient({ property, area, region }: Pro
               </div>
             </div>
             <div className={styles.agentContact}>
-              <a href="tel:+441234567890" className={styles.agentButton}>
+              <a href="tel:+4407399301948" className={styles.agentButton}>
                 <Phone size={18} />
                 Call
               </a>
-              <a href="mailto:info@loveviewestate.com" className={styles.agentButton}>
+              <a href="mailto:info@loveviewestate.co.uk" className={styles.agentButton}>
                 <Mail size={18} />
                 Email
               </a>

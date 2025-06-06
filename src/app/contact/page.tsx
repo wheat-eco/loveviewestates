@@ -55,10 +55,10 @@ export default function ContactPage() {
                   <div>
                     <h3>Email Us</h3>
                     <p>
-                      <a href="mailto:info@loveviewestate.com">info@loveviewestate.com</a>
+                      <a href="mailto:info@loveviewestate.com">info@loveviewestate.co.uk</a>
                     </p>
                     <p>
-                      <a href="mailto:rentals@loveviewestate.com">rentals@loveviewestate.com</a>
+                      <a href="mailto:rentals@loveviewestate.com">rentals@loveviewestate.co.uk</a>
                     </p>
                   </div>
                 </div>
