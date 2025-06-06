@@ -175,9 +175,15 @@ const Header = () => {
                 ABOUT <ChevronDown className="inline h-4 w-4 ml-1" />
               </a>
               <ul className="mobile-dropdown-content">
+                
                 <li>
                   <Link href="/team" onClick={closeMobileMenu}>
                     Team
+                  </Link>
+                </li>
+                 <li>
+                  <Link href="/about" onClick={closeMobileMenu}>
+                  Our Story
                   </Link>
                 </li>
               </ul>
@@ -185,6 +191,12 @@ const Header = () => {
             <li>
               <Link href="/selling" onClick={closeMobileMenu}>
                 SELLING
+              </Link>
+            </li>
+            
+            <li>
+              <Link href="/landlords" onClick={closeMobileMenu}>
+                LANDLORDS
               </Link>
             </li>
             <li className={`mobile-dropdown ${activeDropdowns.includes("forsale") ? "active" : ""}`}>
@@ -209,11 +221,6 @@ const Header = () => {
                   </Link>
                 </li>
               </ul>
-            </li>
-            <li>
-              <Link href="/landlords" onClick={closeMobileMenu}>
-                LANDLORDS
-              </Link>
             </li>
             <li className={`mobile-dropdown ${activeDropdowns.includes("rent") ? "active" : ""}`}>
               <a

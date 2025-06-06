@@ -578,7 +578,7 @@ export default function PropertyDetailPageClient({ property, area, region }: Pro
             <div className={styles.agentInfo}>
               <div className={styles.agentImage}>
                 <Image
-                  src="/placeholder.svg?height=100&width=100&text=Agent"
+                  src="/logo-1.png"
                   alt="Estate Agent"
                   width={80}
                   height={80}
