@@ -2,15 +2,12 @@ import { createClient } from "@/utils/supabase/server"
 import { notFound } from "next/navigation"
 import PropertyDetailPageClient from "./PropertyDetailPageClient"
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
-  const slug = params.slug
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const resolvedParams = await params
+  const slug = resolvedParams.slug
   const supabase = await createClient()
 
-  const { data: property } = await supabase
-    .from("properties")
-    .select("title, description, property_category")
-    .eq("slug", slug)
-    .single()
+  const { data: property } = await supabase.from("properties").select("title, description").eq("slug", slug).single()
 
   if (!property) {
     return {
@@ -50,9 +47,10 @@ async function getPropertyBySlug(slug: string) {
           name,
           slug
         )
-      ),property_types (
-  display_name
-)
+      ),
+      property_types (
+        display_name
+      ),
       property_images (
         id,
         image_url,
@@ -71,9 +69,6 @@ async function getPropertyBySlug(slug: string) {
         deposit_amount,
         pets_policy,
         smoking_policy
-      ),
-      property_types (
-        display_name
       ),
       property_categories (
         name
@@ -104,8 +99,9 @@ async function getPropertyBySlug(slug: string) {
   }
 }
 
-export default async function PropertyDetailPage({ params }: { params: { slug: string } }) {
-  const slug = params.slug
+export default async function PropertyDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const resolvedParams = await params
+  const slug = resolvedParams.slug
   const property = await getPropertyBySlug(slug)
 
   if (!property) {
