@@ -31,7 +31,7 @@ export default function AddPropertyPage() {
 
         // Check if user has admin role
         const { data: userData, error: userError } = await supabase
-          .from("admin")
+          .from("users")
           .select("role")
           .eq("id", session.user.id)
           .single()

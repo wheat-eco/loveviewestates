@@ -1,0 +1,1 @@
+INSERT INTO "public"."users" ("id", "full_name", "email", "phone", "role", "created_at", "updated_at") VALUES ('ad5596a2-3758-4719-97e0-0006056201b8', 'Admin', 'quetech45@gmail.com', null, 'admin', '2025-07-01 08:13:00.066161+00', '2025-07-01 08:13:00.066161+00');

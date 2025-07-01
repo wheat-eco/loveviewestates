@@ -47,6 +47,53 @@
   color: #6b7280;
 }
 
+.success {
+  text-align: center;
+}
+
+.successIconContainer {
+  margin: 0 auto 1rem;
+  width: 4rem;
+  height: 4rem;
+  background-color: #dcfce7;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.successIcon {
+  color: #16a34a;
+}
+
+.success h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.success p {
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+}
+
+.loginButton {
+  width: 100%;
+  background-color: #2563eb;
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.loginButton:hover {
+  background-color: #1d4ed8;
+}
+
 .error {
   background-color: #fef2f2;
   border: 1px solid #fecaca;
@@ -156,23 +203,22 @@
   }
 }
 
-.footer {
+.debugInfo {
   margin-top: 1.5rem;
-  text-align: center;
+  padding: 1rem;
+  background-color: #f3f4f6;
+  border-radius: 0.5rem;
 }
 
-.footer p {
-  font-size: 0.875rem;
-  color: #6b7280;
-}
-
-.footerLink {
-  color: #2563eb;
-  text-decoration: none;
+.debugInfo h4 {
   font-weight: 500;
-  cursor: pointer;
+  color: #111827;
+  margin-bottom: 0.5rem;
 }
 
-.footerLink:hover {
-  color: #1d4ed8;
+.debugInfo pre {
+  font-size: 0.75rem;
+  color: #6b7280;
+  overflow: auto;
+  white-space: pre-wrap;
 }

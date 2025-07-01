@@ -4,7 +4,7 @@ import type React from "react"
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { LogOut, Home, Building, MapPin, Calendar, FileText, Users, Settings } from "lucide-react"
+import { LogOut, Home, Building, MapPin, Calendar, FileText } from "lucide-react"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import styles from "./AdminLayout.module.css"
 
@@ -13,56 +13,69 @@ interface AdminLayoutProps {
   title: string
 }
 
+interface UserData {
+  id: string
+  full_name: string
+  email: string
+  role: string
+}
+
 export default function AdminLayout({ children, title }: AdminLayoutProps) {
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClientComponentClient()
-  const [user, setUser] = useState<{ full_name: string; email: string } | null>(null)
+
+  const [user, setUser] = useState<UserData | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const fetchAdminInfo = async () => {
-      setLoading(true)
-      try {
-        const {
-          data: { user: authUser },
-          error: authError,
-        } = await supabase.auth.getUser()
-
-        if (authError || !authUser) {
-          console.error("Error fetching authenticated user:", authError)
-          router.push("/admin/login")
-          return
-        }
-
-        // Check if user has admin role
-        const { data: userData, error: userError } = await supabase
-          .from("admin")
-          .select("full_name, email, role")
-          .eq("id", authUser.id)
-          .single()
-
-        if (userError || userData?.role !== "admin") {
-          console.error("User not authorized or not found:", userError)
-          await supabase.auth.signOut()
-          router.push("/admin/login")
-          return
-        }
-
-        setUser({
-          full_name: userData.full_name || authUser.email?.split("@")[0] || "Admin",
-          email: userData.email || authUser.email || "",
-        })
-      } catch (error) {
-        console.error("Error fetching admin info:", error)
-        router.push("/admin/login")
-      } finally {
-        setLoading(false)
-      }
-    }
-
     fetchAdminInfo()
-  }, [supabase, router])
+  }, [])
+
+  const fetchAdminInfo = async () => {
+    try {
+      setLoading(true)
+
+      // Get current session
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession()
+
+      if (sessionError || !session) {
+        console.error("No valid session:", sessionError)
+        router.push("/admin/login")
+        return
+      }
+
+      // Check if user has admin role in the "users" table (not "admin" table)
+      const { data: userData, error: userError } = await supabase
+        .from("users")
+        .select("id, full_name, email, role")
+        .eq("id", session.user.id)
+        .single()
+
+      if (userError) {
+        console.error("Failed to fetch user info:", userError)
+        router.push("/admin/login")
+        return
+      }
+
+      if (!userData || (userData.role !== "admin" && userData.role !== "superadmin")) {
+        console.error("Access denied. User role:", userData?.role)
+        await supabase.auth.signOut()
+        router.push("/admin/login")
+        return
+      }
+
+      setUser(userData)
+    } catch (error) {
+      console.error("Error fetching admin info:", error)
+      router.push("/admin/login")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleLogout = async () => {
     try {
@@ -100,7 +113,6 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
     { href: "/admin/regions", label: "Regions & Areas", icon: MapPin },
     { href: "/admin/viewing-requests", label: "Viewing Requests", icon: Calendar },
     { href: "/admin/valuation-requests", label: "Valuation Requests", icon: FileText },
-    
   ]
 
   return (
@@ -115,7 +127,6 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
           <ul>
             {navigationItems.map((item) => {
               const isActive = item.exact ? pathname === item.href : pathname.startsWith(item.href)
-
               return (
                 <li key={item.href}>
                   <Link href={item.href} className={isActive ? styles.active : ""}>
@@ -134,6 +145,7 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
             <div className={styles.userDetails}>
               <span className={styles.userName}>{user.full_name}</span>
               <span className={styles.userEmail}>{user.email}</span>
+              <span className={styles.userRole}>{user.role}</span>
             </div>
           </div>
           <button onClick={handleLogout} className={styles.logoutBtn}>

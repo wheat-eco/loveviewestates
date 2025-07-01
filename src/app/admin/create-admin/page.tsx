@@ -1,11 +1,10 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
-import { Shield, User, Mail, Lock, ArrowRight, CheckCircle } from "lucide-react"
+import { Shield, User, Mail, Lock, ArrowRight, CheckCircle, AlertCircle } from "lucide-react"
 import styles from "./create-admin.module.css"
 
 export default function CreateFirstAdminPage() {
@@ -40,29 +39,25 @@ export default function CreateFirstAdminPage() {
       // Validate inputs
       if (!formData.email || !formData.password || !formData.fullName) {
         setError("Please fill in all required fields")
-        setLoading(false)
         return
       }
 
       if (!formData.email.includes("@")) {
         setError("Please enter a valid email address")
-        setLoading(false)
         return
       }
 
       if (formData.password.length < 8) {
         setError("Password must be at least 8 characters long")
-        setLoading(false)
         return
       }
 
       if (formData.password !== formData.confirmPassword) {
         setError("Passwords do not match")
-        setLoading(false)
         return
       }
 
-      // First, sign up the user
+      // Step 1: Create the auth user
       const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
@@ -74,14 +69,14 @@ export default function CreateFirstAdminPage() {
       })
 
       if (signUpError) {
-        throw new Error(signUpError.message)
+        throw new Error(`Authentication error: ${signUpError.message}`)
       }
 
       if (!authData.user) {
-        throw new Error("Failed to create user")
+        throw new Error("Failed to create user account")
       }
 
-      // Then, make an API call to set the user as admin
+      // Step 2: Add user to database with admin role
       const response = await fetch("/api/admin/create-admin", {
         method: "POST",
         headers: {
@@ -97,7 +92,6 @@ export default function CreateFirstAdminPage() {
       const responseData = await response.json()
 
       if (!response.ok) {
-        // For debugging
         setDebugInfo(responseData)
         throw new Error(responseData.message || "Failed to set admin role")
       }
@@ -105,7 +99,7 @@ export default function CreateFirstAdminPage() {
       // Success!
       setSuccess(true)
 
-      // Redirect after 3 seconds
+      // Auto-redirect after 3 seconds
       setTimeout(() => {
         router.push("/admin/login")
       }, 3000)
@@ -121,14 +115,18 @@ export default function CreateFirstAdminPage() {
     <div className={styles.container}>
       <div className={styles.card}>
         <div className={styles.header}>
-          <Shield className={styles.icon} size={40} />
+          <div className={styles.iconContainer}>
+            <Shield className={styles.icon} size={32} />
+          </div>
           <h1>Create First Admin</h1>
           <p>Set up the first administrator account for your system</p>
         </div>
 
         {success ? (
           <div className={styles.success}>
-            <CheckCircle size={50} className={styles.successIcon} />
+            <div className={styles.successIconContainer}>
+              <CheckCircle className={styles.successIcon} size={32} />
+            </div>
             <h2>Admin Created Successfully!</h2>
             <p>Your administrator account has been created. You will be redirected to the login page shortly.</p>
             <button onClick={() => router.push("/admin/login")} className={styles.loginButton}>
@@ -137,13 +135,18 @@ export default function CreateFirstAdminPage() {
           </div>
         ) : (
           <>
-            {error && <div className={styles.error}>{error}</div>}
+            {error && (
+              <div className={styles.error}>
+                <AlertCircle className={styles.errorIcon} size={20} />
+                <p className={styles.errorText}>{error}</p>
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className={styles.form}>
               <div className={styles.formGroup}>
                 <label htmlFor="fullName">Full Name</label>
                 <div className={styles.inputWrapper}>
-                  <User className={styles.inputIcon} size={18} />
+                  <User className={styles.inputIcon} size={20} />
                   <input
                     type="text"
                     id="fullName"
@@ -159,7 +162,7 @@ export default function CreateFirstAdminPage() {
               <div className={styles.formGroup}>
                 <label htmlFor="email">Email Address</label>
                 <div className={styles.inputWrapper}>
-                  <Mail className={styles.inputIcon} size={18} />
+                  <Mail className={styles.inputIcon} size={20} />
                   <input
                     type="email"
                     id="email"
@@ -175,7 +178,7 @@ export default function CreateFirstAdminPage() {
               <div className={styles.formGroup}>
                 <label htmlFor="password">Password</label>
                 <div className={styles.inputWrapper}>
-                  <Lock className={styles.inputIcon} size={18} />
+                  <Lock className={styles.inputIcon} size={20} />
                   <input
                     type="password"
                     id="password"
@@ -191,7 +194,7 @@ export default function CreateFirstAdminPage() {
               <div className={styles.formGroup}>
                 <label htmlFor="confirmPassword">Confirm Password</label>
                 <div className={styles.inputWrapper}>
-                  <Lock className={styles.inputIcon} size={18} />
+                  <Lock className={styles.inputIcon} size={20} />
                   <input
                     type="password"
                     id="confirmPassword"
