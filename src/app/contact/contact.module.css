@@ -129,73 +129,44 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     padding: 2rem;
   }
-  
-  .teamSection {
-    background-color: #f9f9f9;
+
+  .faqSection {
     padding: 5rem 0;
+    background-color: #f9f9f9;
   }
   
-  .teamSection h2 {
+  .faqTitle {
     text-align: center;
     font-size: 2rem;
     margin-bottom: 3rem;
     color: #333;
   }
-  
-  .teamGrid {
+
+  .faqGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
     gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
   }
-  
-  .teamMember {
+
+  .faqItem {
     background-color: white;
+    padding: 1.5rem;
     border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    padding: 2rem;
-    text-align: center;
-    transition: transform 0.3s;
+    border-left: 3px solid #e4b611;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   }
-  
-  .teamMember:hover {
-    transform: translateY(-5px);
+
+  .faqItem h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.75rem;
+    color: #323232;
   }
-  
-  .teamImageContainer {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    overflow: hidden;
-    margin: 0 auto 1.5rem;
-    border: 3px solid #e4b611;
-  }
-  
-  .teamImage {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  
-  .teamMember h3 {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
-    color: #333;
-  }
-  
-  .teamMember p {
+
+  .faqItem p {
     color: #666;
-    margin-bottom: 1rem;
-  }
-  
-  .teamMember a {
-    color: #e4b611;
-    text-decoration: none;
-    font-weight: 500;
-    transition: opacity 0.3s;
-  }
-  
-  .teamMember a:hover {
-    opacity: 0.8;
+    line-height: 1.6;
   }
   
   @media (max-width: 768px) {
@@ -212,14 +183,8 @@
       padding: 1.5rem;
     }
   
-    .teamSection {
-      padding: 3rem 0;
-    }
-  
-    .teamGrid {
+    .faqGrid {
       grid-template-columns: 1fr;
-      max-width: 350px;
-      margin: 0 auto;
     }
   }
   

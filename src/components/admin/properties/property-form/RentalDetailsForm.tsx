@@ -1,3 +1,4 @@
+
 "use client"
 
 import type React from "react"
@@ -18,7 +19,7 @@ export function RentalDetailsForm({ formData, onChange }: RentalDetailsFormProps
       <h2>Rental Property Details</h2>
 
       <div className={styles.formRow}>
-        <FormGroup>
+        <FormGroup className={styles.formGroup}>
           <label htmlFor="furnished_status">
             Furnished Status <span className={styles.required}>*</span>
           </label>
@@ -36,7 +37,7 @@ export function RentalDetailsForm({ formData, onChange }: RentalDetailsFormProps
           </Select>
         </FormGroup>
 
-        <FormGroup>
+        <FormGroup className={styles.formGroup}>
           <label htmlFor="deposit_amount">Deposit Amount</label>
           <Input
             type="number"
@@ -52,7 +53,7 @@ export function RentalDetailsForm({ formData, onChange }: RentalDetailsFormProps
       </div>
 
       <div className={styles.formRow}>
-        <FormGroup>
+        <FormGroup className={styles.formGroup}>
           <label htmlFor="minimum_tenancy">Minimum Tenancy (months)</label>
           <Input
             type="number"
@@ -65,7 +66,7 @@ export function RentalDetailsForm({ formData, onChange }: RentalDetailsFormProps
           />
         </FormGroup>
 
-        <FormGroup>
+        <FormGroup className={styles.formGroup}>
           <label htmlFor="maximum_tenancy">Maximum Tenancy (months)</label>
           <Input
             type="number"
@@ -80,7 +81,7 @@ export function RentalDetailsForm({ formData, onChange }: RentalDetailsFormProps
       </div>
 
       <div className={styles.formRow}>
-        <FormGroup>
+        <FormGroup className={styles.formGroup}>
           <label htmlFor="pets_policy">Pets Policy</label>
           <Select id="pets_policy" name="pets_policy" value={formData.pets_policy} onChange={onChange}>
             <option value="">Select Policy</option>
@@ -90,7 +91,7 @@ export function RentalDetailsForm({ formData, onChange }: RentalDetailsFormProps
           </Select>
         </FormGroup>
 
-        <FormGroup>
+        <FormGroup className={styles.formGroup}>
           <label htmlFor="smoking_policy">Smoking Policy</label>
           <Select id="smoking_policy" name="smoking_policy" value={formData.smoking_policy} onChange={onChange}>
             <option value="">Select Policy</option>
@@ -102,7 +103,7 @@ export function RentalDetailsForm({ formData, onChange }: RentalDetailsFormProps
       </div>
 
       <div className={styles.formRow}>
-        <FormGroup>
+        <FormGroup className={styles.formGroup}>
           <label htmlFor="epc_rating">EPC Rating</label>
           <Select id="epc_rating" name="epc_rating" value={formData.epc_rating} onChange={onChange}>
             <option value="">Select Rating</option>
@@ -117,7 +118,7 @@ export function RentalDetailsForm({ formData, onChange }: RentalDetailsFormProps
           </Select>
         </FormGroup>
 
-        <FormGroup>
+        <FormGroup className={styles.formGroup}>
           <label htmlFor="council_tax_band">Council Tax Band</label>
           <Select id="council_tax_band" name="council_tax_band" value={formData.council_tax_band} onChange={onChange}>
             <option value="">Select Band</option>

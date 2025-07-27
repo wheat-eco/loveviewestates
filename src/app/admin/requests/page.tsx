@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react"
@@ -12,10 +13,11 @@ import {
   type ValuationRequest,
   type ContactInquiry,
 } from "@/lib/supabase-client"
+import AdminLayout from "@/components/admin/AdminLayout"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select } from "@/components/ui/select"
-import { Tabs } from "@/components/ui/tabs"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Alert } from "@/components/ui/alert"
 import { Spinner } from "@/components/ui/spinner"
 import { Modal } from "@/components/ui/Modal"
@@ -56,31 +58,27 @@ export default function RequestsPage() {
   const [estimatedValue, setEstimatedValue] = useState("")
 
   useEffect(() => {
-    loadRequests()
-  }, [activeTab, statusFilter])
+    loadRequests(activeTab)
+  }, [activeTab, statusFilter, searchTerm])
 
-  const loadRequests = async () => {
+  const loadRequests = async (tab: string) => {
     try {
       setLoading(true)
       setError(null)
+      const commonFilters = {
+          status: statusFilter || undefined,
+          searchTerm: searchTerm || undefined,
+          limit: 100,
+      }
 
-      if (activeTab === "viewing") {
-        const { data } = await fetchViewingRequests({
-          status: statusFilter || undefined,
-          limit: 100,
-        })
+      if (tab === "viewing") {
+        const { data } = await fetchViewingRequests(commonFilters)
         setViewingRequests(data)
-      } else if (activeTab === "valuation") {
-        const { data } = await fetchValuationRequests({
-          status: statusFilter || undefined,
-          limit: 100,
-        })
+      } else if (tab === "valuation") {
+        const { data } = await fetchValuationRequests(commonFilters)
         setValuationRequests(data)
-      } else if (activeTab === "contact") {
-        const { data } = await fetchContactInquiries({
-          status: statusFilter || undefined,
-          limit: 100,
-        })
+      } else if (tab === "contact") {
+        const { data } = await fetchContactInquiries(commonFilters)
         setContactInquiries(data)
       }
     } catch (err) {
@@ -88,6 +86,11 @@ export default function RequestsPage() {
     } finally {
       setLoading(false)
     }
+  }
+  const handleTabChange = (newTab: string) => {
+    setActiveTab(newTab)
+    setStatusFilter("")
+    setSearchTerm("")
   }
 
   const handleViewRequest = (request: any) => {
@@ -118,7 +121,7 @@ export default function RequestsPage() {
       }
 
       setModalOpen(false)
-      loadRequests()
+      loadRequests(activeTab)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update request")
     } finally {
@@ -145,22 +148,18 @@ export default function RequestsPage() {
     }).format(price)
   }
 
-  const getStatusIcon = (status: string) => {
+  const getStatusInfo = (status: string) => {
     switch (status) {
-      case "pending":
-        return <Clock size={16} className={styles.statusIconPending} />
+      case "pending": return { icon: <Clock size={16} />, text: "Pending", className: styles.statusPending };
+      case "new": return { icon: <Clock size={16} />, text: "New", className: styles.statusPending };
       case "confirmed":
-      case "scheduled":
-      case "in_progress":
-        return <Calendar size={16} className={styles.statusIconConfirmed} />
+      case "scheduled": return { icon: <Calendar size={16} />, text: "Scheduled", className: styles.statusConfirmed };
+      case "in_progress": return { icon: <Calendar size={16} />, text: "In Progress", className: styles.statusConfirmed };
       case "completed":
-      case "resolved":
-        return <CheckCircle size={16} className={styles.statusIconCompleted} />
+      case "resolved": return { icon: <CheckCircle size={16} />, text: "Completed", className: styles.statusCompleted };
       case "cancelled":
-      case "closed":
-        return <XCircle size={16} className={styles.statusIconCancelled} />
-      default:
-        return <Clock size={16} className={styles.statusIconPending} />
+      case "closed": return { icon: <XCircle size={16} />, text: "Cancelled", className: styles.statusCancelled };
+      default: return { icon: <Clock size={16} />, text: status.replace("_", " "), className: styles.statusPending };
     }
   }
 
@@ -192,345 +191,334 @@ export default function RequestsPage() {
     }
   }
 
-  const filterRequests = (requests: any[]) => {
-    if (!searchTerm) return requests
-
-    return requests.filter(
-      (request) =>
-        request.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        request.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (request.phone && request.phone.includes(searchTerm)) ||
-        (request.properties?.title && request.properties.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (request.property_address && request.property_address.toLowerCase().includes(searchTerm.toLowerCase())),
-    )
-  }
-
   const getCurrentRequests = () => {
     switch (activeTab) {
-      case "viewing":
-        return filterRequests(viewingRequests)
-      case "valuation":
-        return filterRequests(valuationRequests)
-      case "contact":
-        return filterRequests(contactInquiries)
-      default:
-        return []
+      case "viewing": return viewingRequests;
+      case "valuation": return valuationRequests;
+      case "contact": return contactInquiries;
+      default: return [];
     }
   }
 
-  const tabs = [
-    { id: "viewing", label: "Viewing Requests", count: viewingRequests.length },
-    { id: "valuation", label: "Valuation Requests", count: valuationRequests.length },
-    { id: "contact", label: "Contact Inquiries", count: contactInquiries.length },
-  ]
+  const renderRequestCard = (request: any) => {
+    const statusInfo = getStatusInfo(request.status)
+
+    return (
+        <div key={request.id} className={styles.requestCard}>
+        <div className={styles.requestHeader}>
+            <div className={styles.requestInfo}>
+            <h3>{request.name}</h3>
+            <div className={styles.contactInfo}>
+                <span className={styles.email}>
+                <Mail size={14} />
+                {request.email}
+                </span>
+                {request.phone && (
+                <span className={styles.phone}>
+                    <Phone size={14} />
+                    {request.phone}
+                </span>
+                )}
+            </div>
+            </div>
+            <div className={styles.requestMeta}>
+            <div className={`${styles.status} ${statusInfo.className}`}>
+                {statusInfo.icon}
+                <span>{statusInfo.text}</span>
+            </div>
+            <div className={styles.date}>{formatDate(request.created_at)}</div>
+            </div>
+        </div>
+
+        <div className={styles.requestBody}>
+            {activeTab === "viewing" && (
+            <>
+                {request.properties && (
+                <div className={styles.propertyInfo}>
+                    <Home size={16} />
+                    <div>
+                    <strong>{request.properties.title}</strong>
+                    <p>
+                        {request.properties.address}, {request.properties.postcode}
+                    </p>
+                    {request.properties.price && <p>{formatPrice(request.properties.price)}</p>}
+                    </div>
+                </div>
+                )}
+                {request.preferred_date && (
+                    <div className={styles.viewingDetails}>
+                    <div className={styles.preferredTime}>
+                        <Calendar size={16} />
+                        <div>
+                        <strong>Preferred:</strong> {new Date(request.preferred_date).toLocaleDateString()}
+                        {request.preferred_time && ` at ${request.preferred_time}`}
+                        {request.alternative_date && (
+                            <div>
+                            <strong>Alternative:</strong> {new Date(request.alternative_date).toLocaleDateString()}
+                            {request.alternative_time && ` at ${request.alternative_time}`}
+                            </div>
+                        )}
+                        </div>
+                    </div>
+                    </div>
+                )}
+            </>
+            )}
+
+            {activeTab === "valuation" && (
+            <div className={styles.valuationDetails}>
+                <div className={styles.propertyInfo}>
+                <MapPin size={16} />
+                <div>
+                    <strong>{request.address}</strong>
+                    <p>{request.postcode}</p>
+                    <p>
+                    {request.property_types?.display_name} • {request.bedrooms} bed
+                    </p>
+                </div>
+                </div>
+                {request.estimated_value && (
+                <div className={styles.estimatedValue}>
+                    <strong>Estimated Value:</strong> {formatPrice(request.estimated_value)}
+                </div>
+                )}
+                <div className={styles.contactPreference}>
+                <strong>Preferred Contact:</strong> {request.preferred_contact_method}
+                </div>
+            </div>
+            )}
+
+            {activeTab === "contact" && (
+            <div className={styles.contactDetails}>
+                <div className={styles.inquiryType}>
+                <strong>Type:</strong> {request.subject?.replace("_", " ") || "General Inquiry"}
+                </div>
+                {request.properties && (
+                <div className={styles.propertyInfo}>
+                    <Home size={16} />
+                    <span>{request.properties.title}</span>
+                </div>
+                )}
+            </div>
+            )}
+
+            {request.message && (
+            <div className={styles.message}>
+                <strong>Message:</strong>
+                <p>{request.message}</p>
+            </div>
+            )}
+
+            {request.admin_notes && (
+            <div className={styles.adminNotes}>
+                <strong>Admin Notes:</strong>
+                <p>{request.admin_notes}</p>
+            </div>
+            )}
+        </div>
+
+        <div className={styles.requestActions}>
+            <Button variant="outline" size="small" onClick={() => handleViewRequest(request)}>
+            <Eye size={16} />
+            View & Update
+            </Button>
+        </div>
+        </div>
+    )
+    }
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>Request Management</h1>
-        <p className={styles.subtitle}>Manage viewing requests, valuations, and contact inquiries</p>
-      </div>
-
-      {error && (
-        <Alert type="error" title="Error" className={styles.alert}>
-          {error}
-        </Alert>
-      )}
-
-      {/* Filters */}
-      <div className={styles.filters}>
-        <div className={styles.searchBox}>
-          <Search size={20} />
-          <Input
-            placeholder="Search by name, email, phone, or property..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className={styles.searchInput}
-          />
+    <AdminLayout title="Request Management">
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <h1 className={styles.title}>Request Management</h1>
+          <p className={styles.subtitle}>Manage viewing requests, valuations, and contact inquiries</p>
         </div>
-        <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className={styles.statusFilter}>
-          <option value="">All Statuses</option>
-          {getStatusOptions().map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </Select>
-      </div>
 
-      {/* Tabs */}
-      <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} className={styles.tabs} />
-
-      {/* Content */}
-      <div className={styles.content}>
-        {loading ? (
-          <div className={styles.loading}>
-            <Spinner size="large" />
-            <p>Loading requests...</p>
+        {error && (
+          <Alert variant="error" className={styles.alert}>
+            {error}
+          </Alert>
+        )}
+        <Tabs value={activeTab} onValueChange={handleTabChange}>
+          <TabsList className={styles.tabsList}>
+            <TabsTrigger value="viewing">Viewing Requests</TabsTrigger>
+            <TabsTrigger value="valuation">Valuation Requests</TabsTrigger>
+            <TabsTrigger value="contact">Contact Inquiries</TabsTrigger>
+          </TabsList>
+          {/* Filters */}
+          <div className={styles.filters}>
+            <div className={styles.searchBox}>
+              <Search size={20} />
+              <Input
+                placeholder="Search by name, email, property..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className={styles.searchInput}
+              />
+            </div>
+            <Select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className={styles.statusFilter}
+            >
+              <option value="">All Statuses</option>
+              {getStatusOptions().map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </Select>
           </div>
-        ) : (
-          <div className={styles.requestsList}>
-            {getCurrentRequests().length === 0 ? (
-              <div className={styles.emptyState}>
-                <MessageSquare size={48} />
-                <h3>No requests found</h3>
-                <p>
-                  {searchTerm || statusFilter
-                    ? "No requests match your current filters."
-                    : `No ${activeTab} requests yet.`}
-                </p>
+          {/* Content */}
+          <div className={styles.content}>
+            {loading ? (
+              <div className={styles.loading}>
+                <Spinner size="large" />
+                <p>Loading requests...</p>
               </div>
             ) : (
-              getCurrentRequests().map((request) => (
-                <div key={request.id} className={styles.requestCard}>
-                  <div className={styles.requestHeader}>
-                    <div className={styles.requestInfo}>
-                      <h3>{request.name}</h3>
-                      <div className={styles.contactInfo}>
-                        <span className={styles.email}>
-                          <Mail size={14} />
-                          {request.email}
-                        </span>
-                        {request.phone && (
-                          <span className={styles.phone}>
-                            <Phone size={14} />
-                            {request.phone}
-                          </span>
-                        )}
-                      </div>
+              <div className={styles.requestsList}>
+                  {getCurrentRequests().length === 0 ? (
+                    <div className={styles.emptyState}>
+                      <MessageSquare size={48} />
+                      <h3>No requests found</h3>
+                      <p>
+                        {searchTerm || statusFilter
+                          ? "No requests match your current filters."
+                          : `No ${activeTab} requests yet.`}
+                      </p>
                     </div>
-                    <div className={styles.requestMeta}>
-                      <div className={styles.status}>
-                        {getStatusIcon(request.status)}
-                        <span className={`${styles.statusText} ${styles[request.status]}`}>
-                          {request.status.replace("_", " ")}
-                        </span>
-                      </div>
-                      <div className={styles.date}>{formatDate(request.created_at)}</div>
-                    </div>
-                  </div>
-
-                  <div className={styles.requestBody}>
-                    {/* Viewing Request Details */}
-                    {activeTab === "viewing" && (
-                      <>
-                        {request.properties && (
-                          <div className={styles.propertyInfo}>
-                            <Home size={16} />
-                            <div>
-                              <strong>{request.properties.title}</strong>
-                              <p>
-                                {request.properties.address}, {request.properties.postcode}
-                              </p>
-                              <p>{formatPrice(request.properties.price)}</p>
-                            </div>
-                          </div>
-                        )}
-                        <div className={styles.viewingDetails}>
-                          <div className={styles.preferredTime}>
-                            <Calendar size={16} />
-                            <div>
-                              <strong>Preferred:</strong> {new Date(request.preferred_date).toLocaleDateString()} at{" "}
-                              {request.preferred_time}
-                              {request.alternative_date && (
-                                <div>
-                                  <strong>Alternative:</strong>{" "}
-                                  {new Date(request.alternative_date).toLocaleDateString()} at{" "}
-                                  {request.alternative_time}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </>
-                    )}
-
-                    {/* Valuation Request Details */}
-                    {activeTab === "valuation" && (
-                      <div className={styles.valuationDetails}>
-                        <div className={styles.propertyInfo}>
-                          <MapPin size={16} />
-                          <div>
-                            <strong>{request.property_address}</strong>
-                            <p>{request.postcode}</p>
-                            <p>
-                              {request.property_type} • {request.bedrooms} bed • {request.bathrooms} bath
-                            </p>
-                          </div>
-                        </div>
-                        {request.estimated_value && (
-                          <div className={styles.estimatedValue}>
-                            <strong>Estimated Value:</strong> {formatPrice(request.estimated_value)}
-                          </div>
-                        )}
-                        <div className={styles.contactPreference}>
-                          <strong>Preferred Contact:</strong> {request.preferred_contact_method}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Contact Inquiry Details */}
-                    {activeTab === "contact" && (
-                      <div className={styles.contactDetails}>
-                        <div className={styles.inquiryType}>
-                          <strong>Type:</strong> {request.inquiry_type.replace("_", " ")}
-                        </div>
-                        {request.subject && (
-                          <div className={styles.subject}>
-                            <strong>Subject:</strong> {request.subject}
-                          </div>
-                        )}
-                        {request.properties && (
-                          <div className={styles.propertyInfo}>
-                            <Home size={16} />
-                            <span>{request.properties.title}</span>
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    {request.message && (
-                      <div className={styles.message}>
-                        <strong>Message:</strong>
-                        <p>{request.message}</p>
-                      </div>
-                    )}
-
-                    {request.admin_notes && (
-                      <div className={styles.adminNotes}>
-                        <strong>Admin Notes:</strong>
-                        <p>{request.admin_notes}</p>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className={styles.requestActions}>
-                    <Button variant="ghost" size="small" onClick={() => handleViewRequest(request)}>
-                      <Eye size={16} />
-                      View & Update
-                    </Button>
-                  </div>
+                  ) : (
+                    getCurrentRequests().map((request) => renderRequestCard(request))
+                  )}
                 </div>
-              ))
             )}
           </div>
-        )}
-      </div>
+        </Tabs>
 
-      {/* Request Detail Modal */}
-      <Modal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        title={`${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Request Details`}
-        size="large"
-      >
-        {selectedRequest && (
-          <div className={styles.modalContent}>
-            <div className={styles.modalHeader}>
-              <h3>{selectedRequest.name}</h3>
-              <div className={styles.contactInfo}>
-                <span>
-                  <Mail size={14} /> {selectedRequest.email}
-                </span>
-                {selectedRequest.phone && (
+        {/* Request Detail Modal */}
+        <Modal
+          isOpen={modalOpen}
+          onClose={() => setModalOpen(false)}
+          title={`${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Request Details`}
+          size="large"
+        >
+          {selectedRequest && (
+            <div className={styles.modalContent}>
+              <div className={styles.modalHeader}>
+                <h3>{selectedRequest.name}</h3>
+                <div className={styles.contactInfo}>
                   <span>
-                    <Phone size={14} /> {selectedRequest.phone}
+                    <Mail size={14} /> {selectedRequest.email}
                   </span>
-                )}
-              </div>
-            </div>
-
-            <div className={styles.modalBody}>
-              {/* Status Update */}
-              <div className={styles.formGroup}>
-                <label>Status</label>
-                <Select value={newStatus} onChange={(e) => setNewStatus(e.target.value)}>
-                  {getStatusOptions().map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </Select>
+                  {selectedRequest.phone && (
+                    <span>
+                      <Phone size={14} /> {selectedRequest.phone}
+                    </span>
+                  )}
+                </div>
               </div>
 
-              {/* Estimated Value (for valuations) */}
-              {activeTab === "valuation" && (
+              <div className={styles.modalBody}>
+                {/* Status Update */}
                 <div className={styles.formGroup}>
-                  <label>Estimated Value (£)</label>
-                  <Input
-                    type="number"
-                    value={estimatedValue}
-                    onChange={(e) => setEstimatedValue(e.target.value)}
-                    placeholder="Enter estimated value"
+                  <label>Status</label>
+                  <Select value={newStatus} onChange={(e) => setNewStatus(e.target.value)}>
+                    {getStatusOptions().map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </Select>
+                </div>
+
+                {/* Estimated Value (for valuations) */}
+                {activeTab === "valuation" && (
+                  <div className={styles.formGroup}>
+                    <label>Estimated Value (£)</label>
+                    <Input
+                      type="number"
+                      value={estimatedValue}
+                      onChange={(e) => setEstimatedValue(e.target.value)}
+                      placeholder="Enter estimated value"
+                    />
+                  </div>
+                )}
+
+                {/* Admin Notes */}
+                <div className={styles.formGroup}>
+                  <label>Admin Notes</label>
+                  <Textarea
+                    value={adminNotes}
+                    onChange={(e) => setAdminNotes(e.target.value)}
+                    placeholder="Add internal notes..."
+                    rows={4}
                   />
                 </div>
-              )}
 
-              {/* Admin Notes */}
-              <div className={styles.formGroup}>
-                <label>Admin Notes</label>
-                <Textarea
-                  value={adminNotes}
-                  onChange={(e) => setAdminNotes(e.target.value)}
-                  placeholder="Add internal notes..."
-                  rows={4}
-                />
-              </div>
+                {/* Request Details */}
+                <div className={styles.requestDetails}>
+                  <h4>Request Details</h4>
 
-              {/* Request Details */}
-              <div className={styles.requestDetails}>
-                <h4>Request Details</h4>
+                  {activeTab === "viewing" && selectedRequest.properties && (
+                    <div className={styles.detailSection}>
+                      <strong>Property:</strong>
+                      <p>{selectedRequest.properties.title}</p>
+                      <p>
+                        {selectedRequest.properties.address}, {selectedRequest.properties.postcode}
+                      </p>
+                      {selectedRequest.properties.price && <p>{formatPrice(selectedRequest.properties.price)}</p>}
+                    </div>
+                  )}
 
-                {activeTab === "viewing" && selectedRequest.properties && (
+                  {activeTab === "valuation" && (
+                    <div className={styles.detailSection}>
+                      <strong>Property Details:</strong>
+                      <p>{selectedRequest.address}</p>
+                      <p>{selectedRequest.postcode}</p>
+                      <p>{selectedRequest.property_types?.display_name}</p>
+                      <p>
+                        {selectedRequest.bedrooms} bedrooms
+                      </p>
+                      <p>Preferred contact: {selectedRequest.preferred_contact_method}</p>
+                    </div>
+                  )}
+                   {activeTab === "contact" && (
+                     <div className={styles.detailSection}>
+                       <strong>Subject:</strong>
+                       <p>{selectedRequest.subject}</p>
+                     </div>
+                   )}
+
+                  {selectedRequest.message && (
+                    <div className={styles.detailSection}>
+                      <strong>Message:</strong>
+                      <p>{selectedRequest.message}</p>
+                    </div>
+                  )}
+
                   <div className={styles.detailSection}>
-                    <strong>Property:</strong>
-                    <p>{selectedRequest.properties.title}</p>
-                    <p>
-                      {selectedRequest.properties.address}, {selectedRequest.properties.postcode}
-                    </p>
-                    <p>{formatPrice(selectedRequest.properties.price)}</p>
+                    <strong>Submitted:</strong>
+                    <p>{formatDate(selectedRequest.created_at)}</p>
                   </div>
-                )}
-
-                {activeTab === "valuation" && (
-                  <div className={styles.detailSection}>
-                    <strong>Property Details:</strong>
-                    <p>{selectedRequest.property_address}</p>
-                    <p>{selectedRequest.postcode}</p>
-                    <p>{selectedRequest.property_type}</p>
-                    <p>
-                      {selectedRequest.bedrooms} bedrooms, {selectedRequest.bathrooms} bathrooms
-                    </p>
-                    <p>Preferred contact: {selectedRequest.preferred_contact_method}</p>
-                  </div>
-                )}
-
-                {selectedRequest.message && (
-                  <div className={styles.detailSection}>
-                    <strong>Message:</strong>
-                    <p>{selectedRequest.message}</p>
-                  </div>
-                )}
-
-                <div className={styles.detailSection}>
-                  <strong>Submitted:</strong>
-                  <p>{formatDate(selectedRequest.created_at)}</p>
                 </div>
               </div>
-            </div>
 
-            <div className={styles.modalActions}>
-              <Button variant="ghost" onClick={() => setModalOpen(false)} disabled={updating}>
-                Cancel
-              </Button>
-              <Button onClick={handleUpdateRequest} disabled={updating}>
-                {updating ? <Spinner size="small" /> : null}
-                {updating ? "Updating..." : "Update Request"}
-              </Button>
+              <div className={styles.modalActions}>
+                <Button variant="ghost" onClick={() => setModalOpen(false)} disabled={updating}>
+                  Cancel
+                </Button>
+                <Button onClick={handleUpdateRequest} disabled={updating}>
+                  {updating ? <Spinner size="small" /> : null}
+                  {updating ? "Updating..." : "Update Request"}
+                </Button>
+              </div>
             </div>
-          </div>
-        )}
-      </Modal>
-    </div>
+          )}
+        </Modal>
+      </div>
+    </AdminLayout>
   )
 }
+    

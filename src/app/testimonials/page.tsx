@@ -1,9 +1,23 @@
 import styles from "./testimonials.module.css"
+import type { Metadata } from 'next';
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Testimonials | Love View Estate",
-  description: "Read what our clients have to say about their experience with Love View Estate.",
-}
+  description: "Read what our clients have to say about their experience with Love View Estate. Real stories from satisfied buyers, sellers, and landlords in Ayrshire.",
+  openGraph: {
+    title: "Testimonials | Love View Estate",
+    description: "Read what our clients have to say about their experience with Love View Estate.",
+    url: '/testimonials',
+    images: [
+      {
+        url: '/img/sarah.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Happy clients of Love View Estate',
+      },
+    ],
+  },
+};
 
 export default function TestimonialsPage() {
   const testimonials = [
@@ -80,7 +94,7 @@ export default function TestimonialsPage() {
           <h2>Share Your Experience</h2>
           <p>
             We value feedback from all our clients. If you've recently used our services and would like to share your
-            experience, please email us at <a href="mailto:feedback@loveviewestate.com">feedback@loveviewestate.com</a>{" "}
+            experience, please email us at <a href="mailto:feedback@loveviewestate.co.uk">feedback@loveviewestate.co.uk</a>{" "}
             or leave a review on our{" "}
             <a href="#" target="_blank" rel="noopener noreferrer">
               Google Business

@@ -1,170 +1,84 @@
+
 "use client"
 
-import type React from "react"
-import { useEffect, useState } from "react"
-import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
-import { LogOut, Home, Building, MapPin, Calendar, FileText } from "lucide-react"
+import Head from 'next/head'
+import Link from 'next/link'
+import { useRouter, usePathname } from 'next/navigation'
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
-import styles from "./AdminLayout.module.css"
+import styles from './AdminLayout.module.css'
+import {
+    LayoutDashboard,
+    Home,
+    Map,
+    MailQuestion,
+    Users,
+    Settings,
+    LogOut,
+    Building
+} from 'lucide-react'
 
 interface AdminLayoutProps {
-  children: React.ReactNode
-  title: string
+  children: React.ReactNode;
+  title?: string;
 }
 
-interface UserData {
-  id: string
-  full_name: string
-  email: string
-  role: string
-}
-
-export default function AdminLayout({ children, title }: AdminLayoutProps) {
-  const pathname = usePathname()
-  const router = useRouter()
-  const supabase = createClientComponentClient()
-
-  const [user, setUser] = useState<UserData | null>(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    fetchAdminInfo()
-  }, [])
-
-  const fetchAdminInfo = async () => {
-    try {
-      setLoading(true)
-
-      // Get current session
-      const {
-        data: { session },
-        error: sessionError,
-      } = await supabase.auth.getSession()
-
-      if (sessionError || !session) {
-        console.error("No valid session:", sessionError)
-        router.push("/admin/login")
-        return
-      }
-
-      // Check if user has admin role in the "users" table (not "admin" table)
-      const { data: userData, error: userError } = await supabase
-        .from("users")
-        .select("id, full_name, email, role")
-        .eq("id", session.user.id)
-        .single()
-
-      if (userError) {
-        console.error("Failed to fetch user info:", userError)
-        router.push("/admin/login")
-        return
-      }
-
-      if (!userData || (userData.role !== "admin" && userData.role !== "superadmin")) {
-        console.error("Access denied. User role:", userData?.role)
-        await supabase.auth.signOut()
-        router.push("/admin/login")
-        return
-      }
-
-      setUser(userData)
-    } catch (error) {
-      console.error("Error fetching admin info:", error)
-      router.push("/admin/login")
-    } finally {
-      setLoading(false)
-    }
-  }
+export default function AdminLayout({ children, title = "Admin" }: AdminLayoutProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const supabase = createClientComponentClient();
 
   const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut()
-      router.push("/admin/login")
-    } catch (error) {
-      console.error("Error during logout:", error)
-    }
-  }
+    await supabase.auth.signOut();
+    router.push('/admin/login');
+    router.refresh(); // Ensure the layout re-renders and middleware kicks in
+  };
 
-  if (loading) {
-    return (
-      <div className={styles.loadingContainer}>
-        <div className={styles.loadingSpinner}></div>
-        <p>Loading admin panel...</p>
-      </div>
-    )
-  }
-
-  if (!user) {
-    return (
-      <div className={styles.errorContainer}>
-        <p>Failed to load admin info. Please log in again.</p>
-        <button onClick={() => router.push("/admin/login")} className={styles.loginButton}>
-          Go to Login
-        </button>
-      </div>
-    )
-  }
-
-  const navigationItems = [
-    { href: "/admin", label: "Dashboard", icon: Home, exact: true },
-    { href: "/admin/properties", label: "Properties", icon: Building },
-    { href: "/admin/properties/add", label: "Add Property", icon: Building },
-    { href: "/admin/regions", label: "Regions & Areas", icon: MapPin },
-    { href: "/admin/viewing-requests", label: "Viewing Requests", icon: Calendar },
-    { href: "/admin/valuation-requests", label: "Valuation Requests", icon: FileText },
-  ]
+  const navLinks = [
+    { href: "/admin", icon: <LayoutDashboard size={18} />, label: "Dashboard" },
+    { href: "/admin/properties", icon: <Building size={18} />, label: "Properties" },
+    { href: "/admin/regions", icon: <Map size={18} />, label: "Regions & Areas" },
+    { href: "/admin/requests", icon: <MailQuestion size={18} />, label: "Requests" },
+    { href: "/admin/users", icon: <Users size={18} />, label: "Users" },
+    { href: "/admin/settings", icon: <Settings size={18} />, label: "Settings" },
+  ];
 
   return (
-    <div className={styles.adminContainer}>
-      <aside className={styles.sidebar}>
-        <div className={styles.sidebarHeader}>
-          <h2>Love View Estate</h2>
-          <p>Admin Panel</p>
-        </div>
-
-        <nav className={styles.sidebarNav}>
-          <ul>
-            {navigationItems.map((item) => {
-              const isActive = item.exact ? pathname === item.href : pathname.startsWith(item.href)
-              return (
-                <li key={item.href}>
-                  <Link href={item.href} className={isActive ? styles.active : ""}>
-                    <item.icon size={18} />
-                    <span>{item.label}</span>
-                  </Link>
-                </li>
-              )
-            })}
-          </ul>
-        </nav>
-
-        <div className={styles.sidebarFooter}>
-          <div className={styles.userInfo}>
-            <div className={styles.userAvatar}>{user.full_name.charAt(0).toUpperCase()}</div>
-            <div className={styles.userDetails}>
-              <span className={styles.userName}>{user.full_name}</span>
-              <span className={styles.userEmail}>{user.email}</span>
-              <span className={styles.userRole}>{user.role}</span>
-            </div>
+    <>
+      <Head>
+        <title>{title} | Love View Estate Admin</title>
+      </Head>
+      <div className={styles.adminLayout}>
+        <aside className={styles.sidebar}>
+          <div className={styles.sidebarHeader}>
+            <Link href="/admin">
+              <span className={styles.sidebarTitle}>Admin Panel</span>
+            </Link>
           </div>
-          <button onClick={handleLogout} className={styles.logoutBtn}>
-            <LogOut size={16} />
-            <span>Logout</span>
-          </button>
-        </div>
-      </aside>
-
-      <main className={styles.mainContent}>
-        <header className={styles.header}>
-          <h1>{title}</h1>
-          <div className={styles.headerActions}>
-            <span className={styles.welcomeText}>Welcome back, {user.full_name}</span>
+          <nav className={styles.sidebarNav}>
+            {navLinks.map(link => (
+                <Link key={link.href} href={link.href} className={`${styles.navLink} ${pathname === link.href ? styles.active : ''}`}>
+                    {link.icon}
+                    <span>{link.label}</span>
+                </Link>
+            ))}
+          </nav>
+          <div className={styles.sidebarFooter}>
+            <button onClick={handleLogout} className={styles.logoutButton}>
+                <LogOut size={18} />
+                <span>Logout</span>
+            </button>
+            <Link href="/" className={styles.viewSiteLink} target="_blank">
+                <Home size={18}/>
+                <span>View Site</span>
+            </Link>
           </div>
-        </header>
-
-        <div className={styles.content}>{children}</div>
-      </main>
-    </div>
+        </aside>
+        <div className={styles.mainContent}>
+          <main className={styles.pageContent}>
+            {children}
+          </main>
+        </div>
+      </div>
+    </>
   )
 }

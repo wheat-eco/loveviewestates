@@ -1,3 +1,4 @@
+
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 
 export const supabase = createClientComponentClient()
@@ -158,22 +159,19 @@ export interface PropertyDocument {
   created_at: string
 }
 
-// New types for viewing and valuation requests
 export interface ViewingRequest {
   id: number
   property_id: number
   name: string
   email: string
   phone?: string
-  preferred_date: string
-  preferred_time: string
-  alternative_date?: string
-  alternative_time?: string
   message?: string
+  preferred_date?: string
+  alternative_date?: string
   status: "pending" | "confirmed" | "completed" | "cancelled"
-  admin_notes?: string
   created_at: string
   updated_at: string
+  admin_notes?: string
   properties?: Property
 }
 
@@ -182,78 +180,39 @@ export interface ValuationRequest {
   name: string
   email: string
   phone?: string
-  property_address: string
+  address: string
   postcode: string
-  property_type: string
-  bedrooms?: number
-  bathrooms?: number
-  preferred_contact_method: "email" | "phone" | "either"
-  preferred_date?: string
-  preferred_time?: string
+  property_type_id: number
+  bedrooms: number
+  preferred_contact_method: "email" | "phone"
   message?: string
   status: "pending" | "scheduled" | "completed" | "cancelled"
   estimated_value?: number
   admin_notes?: string
   created_at: string
   updated_at: string
+  property_types?: PropertyType
 }
 
 export interface ContactInquiry {
   id: number
-  property_id?: number
   name: string
   email: string
   phone?: string
-  inquiry_type: "general" | "property" | "viewing" | "valuation" | "other"
   subject?: string
   message: string
   status: "new" | "in_progress" | "resolved" | "closed"
   admin_notes?: string
+  property_id?: number
   created_at: string
   updated_at: string
   properties?: Property
 }
 
-export interface Admin {
-  id: string
-  email: string
-  full_name?: string
-  role: "admin" | "super_admin"
-  is_active: boolean
-  permissions: {
-    properties: boolean
-    requests: boolean
-    users: boolean
-    settings: boolean
-  }
-  last_login?: string
-  created_at: string
-  updated_at: string
-}
-
-export const getAdminProfile = async (userId: string): Promise<Admin | null> => {
-  const { data, error } = await supabase.from("admin").select("*").eq("id", userId).single()
-
-  if (error) {
-    console.error("Error fetching admin profile:", error)
-    return null
-  }
-
-  return data
-}
-
-export const updateAdminLastLogin = async (userId: string) => {
-  const { error } = await supabase
-    .from("admin")
-    .update({
-      last_login: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", userId)
-
-  if (error) {
-    console.error("Error updating admin last login:", error)
-  }
+interface RequestFilters {
+  status?: string;
+  searchTerm?: string;
+  limit?: number;
 }
 
 // Utility functions
@@ -279,6 +238,22 @@ export const fetchAreasByRegion = async (regionId: number): Promise<Area[]> => {
     .eq("region_id", regionId)
     .eq("is_active", true)
     .order("display_order", { ascending: true })
+    .order("name", { ascending: true })
+
+  if (error) throw error
+  return data || []
+}
+
+export const fetchAllAreas = async (): Promise<Area[]> => {
+  const { data, error } = await supabase
+    .from("areas")
+    .select(`
+        *,
+        regions (
+          id,
+          name
+        )
+      `)
     .order("name", { ascending: true })
 
   if (error) throw error
@@ -368,13 +343,13 @@ export const fetchProperties = async (filters?: {
   let query = supabase.from("properties").select(
     `
     *,
-    areas (
+    areas!inner(
       *,
-      regions (*)
+      regions!inner(*)
     ),
-    property_categories (*),
-    property_types (*),
-    property_images (*)
+    property_categories!inner(*),
+    property_types!inner(*),
+    property_images(*)
   `,
     { count: "exact" },
   )
@@ -440,324 +415,110 @@ export const deleteProperty = async (id: number): Promise<void> => {
   if (error) throw error
 }
 
-// Viewing request functions
-export const fetchViewingRequests = async (filters?: {
-  status?: string
-  property_id?: number
-  limit?: number
-  offset?: number
-}): Promise<{ data: ViewingRequest[]; count: number }> => {
-  let query = supabase.from("viewing_requests").select(
-    `
-      *,
-      properties (
-        id,
-        title,
-        address,
-        postcode,
-        price,
-        property_categories (display_name)
-      )
-    `,
-    { count: "exact" },
-  )
-
-  if (filters?.status) {
-    query = query.eq("status", filters.status)
-  }
-
-  if (filters?.property_id) {
-    query = query.eq("property_id", filters.property_id)
-  }
-
-  if (filters?.limit) {
-    query = query.limit(filters.limit)
-  }
-
-  if (filters?.offset) {
-    query = query.range(filters.offset, filters.offset + (filters.limit || 10) - 1)
-  }
-
-  query = query.order("created_at", { ascending: false })
-
-  const { data, error, count } = await query
-
-  if (error) throw error
-  return { data: data || [], count: count || 0 }
-}
-
-export const updateViewingRequestStatus = async (
-  id: number,
-  status: ViewingRequest["status"],
-  adminNotes?: string,
-): Promise<ViewingRequest> => {
-  const { data, error } = await supabase
-    .from("viewing_requests")
-    .update({
-      status,
-      admin_notes: adminNotes,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", id)
-    .select(`
-      *,
-      properties (
-        id,
-        title,
-        address,
-        postcode,
-        price,
-        property_categories (display_name)
-      )
-    `)
-    .single()
-
-  if (error) throw error
-  return data
-}
-
-// Valuation request functions
-export const fetchValuationRequests = async (filters?: {
-  status?: string
-  limit?: number
-  offset?: number
-}): Promise<{ data: ValuationRequest[]; count: number }> => {
-  let query = supabase.from("valuation_requests").select("*", { count: "exact" })
-
-  if (filters?.status) {
-    query = query.eq("status", filters.status)
-  }
-
-  if (filters?.limit) {
-    query = query.limit(filters.limit)
-  }
-
-  if (filters?.offset) {
-    query = query.range(filters.offset, filters.offset + (filters.limit || 10) - 1)
-  }
-
-  query = query.order("created_at", { ascending: false })
-
-  const { data, error, count } = await query
-
-  if (error) throw error
-  return { data: data || [], count: count || 0 }
-}
-
-export const updateValuationRequestStatus = async (
-  id: number,
-  status: ValuationRequest["status"],
-  adminNotes?: string,
-  estimatedValue?: number,
-): Promise<ValuationRequest> => {
-  const updateData: any = {
-    status,
-    updated_at: new Date().toISOString(),
-  }
-
-  if (adminNotes !== undefined) {
-    updateData.admin_notes = adminNotes
-  }
-
-  if (estimatedValue !== undefined) {
-    updateData.estimated_value = estimatedValue
-  }
-
-  const { data, error } = await supabase.from("valuation_requests").update(updateData).eq("id", id).select("*").single()
-
-  if (error) throw error
-  return data
-}
-
-// Contact inquiry functions
-export const fetchContactInquiries = async (filters?: {
-  status?: string
-  inquiry_type?: string
-  limit?: number
-  offset?: number
-}): Promise<{ data: ContactInquiry[]; count: number }> => {
-  let query = supabase.from("contact_inquiries").select(
-    `
-      *,
-      properties (
-        id,
-        title,
-        address,
-        postcode
-      )
-    `,
-    { count: "exact" },
-  )
-
-  if (filters?.status) {
-    query = query.eq("status", filters.status)
-  }
-
-  if (filters?.inquiry_type) {
-    query = query.eq("inquiry_type", filters.inquiry_type)
-  }
-
-  if (filters?.limit) {
-    query = query.limit(filters.limit)
-  }
-
-  if (filters?.offset) {
-    query = query.range(filters.offset, filters.offset + (filters.limit || 10) - 1)
-  }
-
-  query = query.order("created_at", { ascending: false })
-
-  const { data, error, count } = await query
-
-  if (error) throw error
-  return { data: data || [], count: count || 0 }
-}
-
-export const updateContactInquiryStatus = async (
-  id: number,
-  status: ContactInquiry["status"],
-  adminNotes?: string,
-): Promise<ContactInquiry> => {
-  const { data, error } = await supabase
-    .from("contact_inquiries")
-    .update({
-      status,
-      admin_notes: adminNotes,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", id)
-    .select(`
-      *,
-      properties (
-        id,
-        title,
-        address,
-        postcode
-      )
-    `)
-    .single()
-
-  if (error) throw error
-  return data
-}
+const generateSlug = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
 export const createRegion = async (name: string, description?: string): Promise<Region> => {
-  const slug = name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
+  const { data, error } = await supabase.from("regions").insert({ name: name.trim(), slug: generateSlug(name), description: description?.trim() || null }).select().single();
+  if (error) throw error;
+  return data;
+}
 
-  const { data, error } = await supabase
-    .from("regions")
-    .insert({
-      name: name.trim(),
-      slug,
-      description: description?.trim() || null,
-    })
-    .select()
-    .single()
+export const updateRegion = async (id: number, name: string, description?: string): Promise<Region> => {
+  const { data, error } = await supabase.from("regions").update({ name: name.trim(), slug: generateSlug(name), description: description?.trim() || null, updated_at: new Date().toISOString() }).eq("id", id).select().single();
+  if (error) throw error;
+  return data;
+}
 
-  if (error) throw error
-  return data
+export const deleteRegion = async (id: number): Promise<void> => {
+  const { data: areas, error: areasError } = await supabase.from("areas").select("id").eq("region_id", id);
+  if (areasError) throw areasError;
+
+  const areaIds = areas.map(a => a.id);
+  if (areaIds.length > 0) {
+    const { count, error: propertiesError } = await supabase.from("properties").select("id", { count: "exact", head: true }).in("area_id", areaIds);
+    if (propertiesError) throw propertiesError;
+    if (count && count > 0) throw new Error("Cannot delete region with existing properties.");
+  }
+
+  const { error } = await supabase.from("regions").delete().eq("id", id);
+  if (error) throw error;
 }
 
 export const createArea = async (name: string, regionId: number, description?: string): Promise<Area> => {
-  const slug = name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-
-  const { data, error } = await supabase
-    .from("areas")
-    .insert({
-      name: name.trim(),
-      slug,
-      region_id: regionId,
-      description: description?.trim() || null,
-    })
-    .select(`
-      *,
-      regions (*)
-    `)
-    .single()
-
-  if (error) throw error
-  return data
+  const { data, error } = await supabase.from("areas").insert({ name: name.trim(), slug: generateSlug(name), region_id: regionId, description: description?.trim() || null }).select(`*, regions(*)`).single();
+  if (error) throw error;
+  return data;
 }
 
-// Fixed upload functions with better error handling
-export const uploadPropertyImage = async (file: File, propertyId: number): Promise<string> => {
-  try {
-    // Validate file
-    if (!file) throw new Error("No file provided")
-    if (file.size > 10 * 1024 * 1024) throw new Error("File too large (max 10MB)")
-
-    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"]
-    if (!allowedTypes.includes(file.type)) {
-      throw new Error("Invalid file type. Only JPEG, PNG, WebP, and GIF are allowed")
-    }
-
-    const fileExt = file.name.split(".").pop()?.toLowerCase()
-    const fileName = `${propertyId}/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
-    const filePath = `property-images/${fileName}`
-
-    console.log("Uploading image:", { fileName, fileSize: file.size, fileType: file.type })
-
-    const { data, error } = await supabase.storage.from("properties").upload(filePath, file, {
-      cacheControl: "3600",
-      upsert: false,
-    })
-
-    if (error) {
-      console.error("Storage upload error:", error)
-      throw new Error(`Upload failed: ${error.message}`)
-    }
-
-    const { data: urlData } = supabase.storage.from("properties").getPublicUrl(filePath)
-
-    return urlData.publicUrl
-  } catch (error) {
-    console.error("Image upload error:", error)
-    throw error
-  }
+export const updateArea = async (id: number, name: string, regionId: number, description?: string): Promise<Area> => {
+  const { data, error } = await supabase.from("areas").update({ name: name.trim(), slug: generateSlug(name), region_id: regionId, description: description?.trim() || null, updated_at: new Date().toISOString() }).eq("id", id).select(`*, regions(*)`).single();
+  if (error) throw error;
+  return data;
 }
 
-export const uploadPropertyDocument = async (file: File, propertyId: number, documentType: string): Promise<string> => {
-  try {
-    // Validate file
-    if (!file) throw new Error("No file provided")
-    if (file.size > 50 * 1024 * 1024) throw new Error("File too large (max 50MB)")
+export const deleteArea = async (id: number): Promise<void> => {
+  const { count, error: propertiesError } = await supabase.from("properties").select("id", { count: "exact", head: true }).eq("area_id", id);
+  if (propertiesError) throw propertiesError;
+  if (count && count > 0) throw new Error("Cannot delete area with existing properties.");
+  
+  const { error } = await supabase.from("areas").delete().eq("id", id);
+  if (error) throw error;
+}
 
-    const allowedTypes = [
-      "application/pdf",
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    ]
-    if (!allowedTypes.includes(file.type)) {
-      throw new Error("Invalid file type. Only PDF and Word documents are allowed")
-    }
+// === Request Management Functions ===
 
-    const fileExt = file.name.split(".").pop()?.toLowerCase()
-    const fileName = `${propertyId}/${documentType}-${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
-    const filePath = `property-documents/${fileName}`
+export async function fetchViewingRequests(filters: RequestFilters): Promise<{ data: ViewingRequest[]; count: number }> {
+  let query = supabase.from("viewing_requests").select(`*, properties (id, title, address, postcode, price)`, { count: "exact" });
 
-    console.log("Uploading document:", { fileName, fileSize: file.size, fileType: file.type })
+  if (filters.status) query = query.eq("status", filters.status);
+  if (filters.searchTerm) query = query.or(`name.ilike.%${filters.searchTerm}%,email.ilike.%${filters.searchTerm}%`);
 
-    const { data, error } = await supabase.storage.from("properties").upload(filePath, file, {
-      cacheControl: "3600",
-      upsert: false,
-    })
+  query = query.order("created_at", { ascending: false }).limit(filters.limit || 100);
 
-    if (error) {
-      console.error("Storage upload error:", error)
-      throw new Error(`Upload failed: ${error.message}`)
-    }
+  const { data, error, count } = await query;
+  if (error) throw error;
+  return { data: data || [], count: count || 0 };
+}
 
-    const { data: urlData } = supabase.storage.from("properties").getPublicUrl(filePath)
+export async function fetchValuationRequests(filters: RequestFilters): Promise<{ data: ValuationRequest[]; count: number }> {
+  let query = supabase.from("valuation_requests").select(`*, property_types(display_name)`, { count: "exact" });
 
-    return urlData.publicUrl
-  } catch (error) {
-    console.error("Document upload error:", error)
-    throw error
-  }
+  if (filters.status) query = query.eq("status", filters.status);
+  if (filters.searchTerm) query = query.or(`name.ilike.%${filters.searchTerm}%,email.ilike.%${filters.searchTerm}%,address.ilike.%${filters.searchTerm}%`);
+  
+  query = query.order("created_at", { ascending: false }).limit(filters.limit || 100);
+
+  const { data, error, count } = await query;
+  if (error) throw error;
+  return { data: data || [], count: count || 0 };
+}
+
+export async function fetchContactInquiries(filters: RequestFilters): Promise<{ data: ContactInquiry[]; count: number }> {
+  let query = supabase.from("contact_messages").select(`*, properties (id, title)`, { count: "exact" });
+  if (filters.status) query = query.eq("status", filters.status);
+  if (filters.searchTerm) query = query.or(`name.ilike.%${filters.searchTerm}%,email.ilike.%${filters.searchTerm}%,subject.ilike.%${filters.searchTerm}%`);
+  
+  query = query.order("created_at", { ascending: false }).limit(filters.limit || 100);
+
+  const { data, error, count } = await query;
+  if (error) throw error;
+  return { data: data || [], count: count || 0 };
+}
+
+export async function updateViewingRequestStatus(id: number, status: ViewingRequest["status"], admin_notes?: string): Promise<ViewingRequest> {
+  const { data, error } = await supabase.from("viewing_requests").update({ status, admin_notes, updated_at: new Date().toISOString() }).eq("id", id).select().single();
+  if (error) throw error;
+  return data;
+}
+
+export async function updateValuationRequestStatus(id: number, status: ValuationRequest["status"], admin_notes?: string, estimated_value?: number): Promise<ValuationRequest> {
+  const { data, error } = await supabase.from("valuation_requests").update({ status, admin_notes, estimated_value, updated_at: new Date().toISOString() }).eq("id", id).select().single();
+  if (error) throw error;
+  return data;
+}
+
+export async function updateContactInquiryStatus(id: number, status: ContactInquiry["status"], admin_notes?: string): Promise<ContactInquiry> {
+  const { data, error } = await supabase.from("contact_messages").update({ status, admin_notes, updated_at: new Date().toISOString() }).eq("id", id).select().single();
+  if (error) throw error;
+  return data;
 }

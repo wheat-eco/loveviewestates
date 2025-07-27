@@ -1,9 +1,9 @@
+
 "use client"
 
 import type React from "react"
-
-import { useState } from "react"
-import { createArea, type Area, type Region } from "@/lib/supabase-client"
+import { useState, useEffect } from "react"
+import { createArea, updateArea, type Area, type Region } from "@/lib/supabase-client"
 import { Modal } from "@/components/ui/Modal"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -17,18 +17,31 @@ interface CreateAreaModalProps {
   isOpen: boolean
   onClose: () => void
   regions: Region[]
-  selectedRegionId?: number
-  onAreaCreated: (area: Area) => void
+  onAreaSaved: (area: Area) => void
+  existingArea?: Area | null
 }
 
-export function CreateAreaModal({ isOpen, onClose, regions, selectedRegionId, onAreaCreated }: CreateAreaModalProps) {
+export function CreateAreaModal({ isOpen, onClose, regions, onAreaSaved, existingArea }: CreateAreaModalProps) {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    region_id: selectedRegionId?.toString() || "",
+    region_id: "",
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (existingArea) {
+      setFormData({
+        name: existingArea.name || "",
+        description: existingArea.description || "",
+        region_id: existingArea.region_id?.toString() || "",
+      })
+    } else {
+       setFormData({ name: "", description: "", region_id: "" })
+    }
+  }, [existingArea, isOpen])
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -53,13 +66,17 @@ export function CreateAreaModal({ isOpen, onClose, regions, selectedRegionId, on
     setError(null)
 
     try {
-      const area = await createArea(formData.name, Number.parseInt(formData.region_id), formData.description)
-      onAreaCreated(area)
-      setFormData({ name: "", description: "", region_id: selectedRegionId?.toString() || "" })
-      onClose()
+      let savedArea: Area;
+      if (existingArea) {
+        savedArea = await updateArea(existingArea.id, formData.name, Number(formData.region_id), formData.description);
+      } else {
+        savedArea = await createArea(formData.name, Number(formData.region_id), formData.description)
+      }
+      onAreaSaved(savedArea)
+      handleClose()
     } catch (err) {
-      console.error("Error creating area:", err)
-      setError(err instanceof Error ? err.message : "Failed to create area")
+      console.error("Error saving area:", err)
+      setError(err instanceof Error ? err.message : "Failed to save area")
     } finally {
       setLoading(false)
     }
@@ -67,14 +84,14 @@ export function CreateAreaModal({ isOpen, onClose, regions, selectedRegionId, on
 
   const handleClose = () => {
     if (!loading) {
-      setFormData({ name: "", description: "", region_id: selectedRegionId?.toString() || "" })
+      setFormData({ name: "", description: "", region_id: "" })
       setError(null)
       onClose()
     }
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title="Create New Area">
+    <Modal isOpen={isOpen} onClose={handleClose} title={existingArea ? "Edit Area" : "Create New Area"}>
       <form onSubmit={handleSubmit} className={styles.form}>
         {error && <Alert variant="error">{error}</Alert>}
 
@@ -131,10 +148,10 @@ export function CreateAreaModal({ isOpen, onClose, regions, selectedRegionId, on
             {loading ? (
               <>
                 <Spinner size="small" />
-                Creating...
+                Saving...
               </>
             ) : (
-              "Create Area"
+              "Save Area"
             )}
           </Button>
         </div>

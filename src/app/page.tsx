@@ -8,9 +8,9 @@ import Link from "next/link"
 export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0)
   const slides = [
-    { id: 1, image: "/img/7.jpeg" },
-    { id: 2, image: "/img/5.jpg" },
-    { id: 3, image: "/img/9.jpeg" },
+    { id: 1, image: "/img/7.jpeg", alt: "A beautiful modern home exterior" },
+    { id: 2, image: "/img/5.jpg", alt: "A cozy and well-lit living room" },
+    { id: 3, image: "/img/9.jpeg", alt: "A stylish kitchen with modern appliances" },
   ]
 
   useEffect(() => {
@@ -46,6 +46,8 @@ export default function Home() {
                 style={{
                   backgroundImage: `url(${slide.image})`,
                 }}
+                aria-label={slide.alt}
+                role="img"
               ></div>
             ))}
           </div>
@@ -72,7 +74,7 @@ export default function Home() {
           <h1>Welcome to Love View Estate</h1>
           <p>Your premier real estate partner for exceptional properties</p>
           <div className="hero-buttons">
-            <Link href="/for-sale-north-ayrshire" className="btn btn-primary">
+            <Link href="/available-properties" className="btn btn-primary">
               Explore Properties
             </Link>
             <Link href="/contact" className="btn btn-secondary">
@@ -100,9 +102,9 @@ export default function Home() {
           <div className="valuations-image">
             <Image
               src="/img/7.jpeg"
-              alt="Interior of a modern property"
-              width={600}
-              height={400}
+              alt="Interior of a modern property suitable for valuation"
+              width={800}
+              height={600}
               className="w-full h-auto"
             />
           </div>
@@ -131,6 +133,7 @@ export default function Home() {
                 style={{
                   backgroundImage: "url('/img/8.jpeg')",
                 }}
+                aria-label="For Sale Properties"
               >
                 <div className="service-overlay"></div>
                 <h3 className="service-title">FOR SALE</h3>
@@ -146,6 +149,7 @@ export default function Home() {
                 style={{
                   backgroundImage: "url('/img/9.jpeg')",
                 }}
+                aria-label="To Let Properties"
               >
                 <div className="service-overlay"></div>
                 <h3 className="service-title">TO LET</h3>
@@ -161,6 +165,7 @@ export default function Home() {
                 style={{
                   backgroundImage: "url('/img/7.jpeg')",
                 }}
+                aria-label="Services for Landlords"
               >
                 <div className="service-overlay"></div>
                 <h3 className="service-title">Landlords</h3>
@@ -176,6 +181,7 @@ export default function Home() {
                 style={{
                   backgroundImage: "url('/img/4.jpg')",
                 }}
+                aria-label="Services for Owners"
               >
                 <div className="service-overlay"></div>
                 <h3 className="service-title">Owners</h3>

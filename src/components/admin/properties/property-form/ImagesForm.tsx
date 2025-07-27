@@ -1,8 +1,9 @@
+
 "use client"
 
 import type React from "react"
+import { useState, useRef } from 'react'
 
-import { useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Upload, X, Star } from "lucide-react"
 import styles from "../PropertyForm.module.css"
@@ -15,27 +16,33 @@ interface ImagesFormProps {
 
 export function ImagesForm({ imageFiles, previewUrls, onChange }: ImagesFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [newImagePreviews, setNewImagePreviews] = useState<string[]>([]);
+
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
     if (files.length > 0) {
-      onChange([...imageFiles, ...files])
+      const newFiles = [...imageFiles, ...files];
+      onChange(newFiles)
+      
+      const newPreviews = files.map(file => URL.createObjectURL(file));
+      setNewImagePreviews(prev => [...prev, ...newPreviews]);
     }
   }
 
-  const handleRemoveImage = (index: number) => {
-    const updatedFiles = [...imageFiles]
-    updatedFiles.splice(index, 1)
-    onChange(updatedFiles)
+  const handleRemoveNewImage = (index: number) => {
+    const updatedFiles = [...imageFiles];
+    updatedFiles.splice(index, 1);
+    onChange(updatedFiles);
+    
+    const updatedPreviews = [...newImagePreviews];
+    URL.revokeObjectURL(updatedPreviews[index]); // Clean up memory
+    updatedPreviews.splice(index, 1);
+    setNewImagePreviews(updatedPreviews);
   }
-
-  const handleSetFeatured = (index: number) => {
-    // Move the selected image to the first position
-    const updatedFiles = [...imageFiles]
-    const [featuredFile] = updatedFiles.splice(index, 1)
-    updatedFiles.unshift(featuredFile)
-    onChange(updatedFiles)
-  }
+  
+  // Note: For simplicity, editing existing images (from previewUrls) is not handled here.
+  // A more complex implementation would be needed to manage removals/reordering of existing images.
 
   return (
     <div className={styles.formSection}>
@@ -61,56 +68,35 @@ export function ImagesForm({ imageFiles, previewUrls, onChange }: ImagesFormProp
           Upload Images
         </Button>
       </div>
-
-      {previewUrls.length > 0 && (
-        <div className={styles.imagePreviewContainer}>
+      
+      <div className={styles.imagePreviewContainer}>
           {previewUrls.map((url, index) => (
-            <div key={index} className={styles.imagePreview}>
-              <img src={url || "/placeholder.svg"} alt={`Property image ${index + 1}`} />
-
-              {index === 0 && (
-                <div className={styles.featuredBadge}>
-                  <Star size={12} />
-                  Featured
-                </div>
-              )}
-
+            <div key={`existing-${index}`} className={styles.imagePreview}>
+              <img src={url} alt={`Existing property image ${index + 1}`} />
               <div className={styles.imagePreviewOverlay}>
-                <div className={styles.imageActions}>
-                  {index !== 0 && (
-                    <Button
-                      type="button"
-                      size="icon"
-                      variant="ghost"
-                      onClick={() => handleSetFeatured(index)}
-                      title="Set as featured image"
-                    >
-                      <Star size={16} />
-                    </Button>
-                  )}
-
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => handleRemoveImage(index)}
-                    title="Remove image"
-                  >
-                    <X size={16} />
-                  </Button>
-                </div>
+                <p className='text-white text-xs'>Existing Image</p>
+              </div>
+            </div>
+          ))}
+          {newImagePreviews.map((url, index) => (
+            <div key={`new-${index}`} className={styles.imagePreview}>
+              <img src={url} alt={`New property image ${index + 1}`} />
+              <div className={styles.imagePreviewOverlay}>
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => handleRemoveNewImage(index)}
+                  title="Remove image"
+                  className="text-white hover:text-red-500"
+                >
+                  <X size={16} />
+                </Button>
               </div>
             </div>
           ))}
         </div>
-      )}
 
-      {previewUrls.length === 0 && (
-        <div className={styles.emptyState}>
-          <Upload size={48} />
-          <p>No images uploaded yet. Add some high-quality photos to showcase your property.</p>
-        </div>
-      )}
     </div>
   )
 }

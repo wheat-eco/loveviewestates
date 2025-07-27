@@ -34,23 +34,21 @@
 }
 
 .teamIntro {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   line-height: 1.8;
   color: #4a4a4a;
   text-align: center;
   max-width: 800px;
-  margin: 0 auto 2rem;
+  margin: 0 auto 1rem;
 }
 
 .teamGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
-  gap: 3rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
 }
 
 .teamMember {
-  display: flex;
-  gap: 2rem;
   background-color: #f9f9f9;
   border-radius: 8px;
   overflow: hidden;
@@ -64,34 +62,39 @@
 }
 
 .memberImageWrapper {
-  flex: 0 0 180px;
+  width: 100%;
+  height: 280px;
+  overflow: hidden;
 }
 
 .memberImage {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.teamMember:hover .memberImage {
+  transform: scale(1.05);
 }
 
 .memberInfo {
-  flex: 1;
-  padding: 1.5rem 1.5rem 1.5rem 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  padding: 1.5rem;
+  text-align: center;
 }
 
 .memberName {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: 600;
   color: #323232;
+  margin-bottom: 0.5rem;
 }
 
 .memberPosition {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 500;
   color: #e4b611; /* Primary gold color */
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .memberBio {
@@ -136,12 +139,6 @@
 }
 
 /* Responsive styles */
-@media (max-width: 992px) {
-  .teamGrid {
-    grid-template-columns: 1fr;
-  }
-}
-
 @media (max-width: 768px) {
   .teamContainer {
     padding: 3rem 1.5rem;
@@ -152,21 +149,7 @@
   }
 
   .teamIntro {
-    font-size: 1.1rem;
-  }
-
-  .teamMember {
-    flex-direction: column;
-    gap: 0;
-  }
-
-  .memberImageWrapper {
-    flex: 0 0 auto;
-    height: 250px;
-  }
-
-  .memberInfo {
-    padding: 1.5rem;
+    font-size: 1rem;
   }
 
   .joinTeam {
@@ -184,11 +167,11 @@
   }
 
   .memberName {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
   }
 
   .memberPosition {
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
 
   .joinTeam h2 {

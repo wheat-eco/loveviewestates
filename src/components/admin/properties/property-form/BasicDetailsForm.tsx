@@ -1,3 +1,4 @@
+
 "use client"
 
 import type React from "react"
@@ -33,7 +34,7 @@ export function BasicDetailsForm({
       <h2>Basic Property Details</h2>
 
       <div className={styles.formRow}>
-        <FormGroup>
+        <FormGroup className={styles.formGroup}>
           <label htmlFor="title">
             Property Title <span className={styles.required}>*</span>
           </label>
@@ -49,7 +50,7 @@ export function BasicDetailsForm({
       </div>
 
       <div className={styles.formRow}>
-        <FormGroup>
+        <FormGroup className={styles.formGroup}>
           <label htmlFor="category_id">
             Property Category <span className={styles.required}>*</span>
           </label>
@@ -63,11 +64,11 @@ export function BasicDetailsForm({
           </Select>
         </FormGroup>
 
-        <FormGroup>
+        <FormGroup className={styles.formGroup}>
           <label htmlFor="property_type_id">
             Property Type <span className={styles.required}>*</span>
           </label>
-          <div className={styles.inputWithButton}>
+          <div className="flex gap-2">
             <Select
               id="property_type_id"
               name="property_type_id"
@@ -88,16 +89,15 @@ export function BasicDetailsForm({
               variant="outline"
               onClick={onCreatePropertyType}
               disabled={!formData.category_id}
-              className={styles.createButton}
             >
-              Create New
+              New
             </Button>
           </div>
         </FormGroup>
       </div>
 
       <div className={styles.formRow}>
-        <FormGroup>
+        <FormGroup className={styles.formGroup}>
           <label htmlFor="bedrooms">
             Bedrooms <span className={styles.required}>*</span>
           </label>
@@ -112,7 +112,7 @@ export function BasicDetailsForm({
           />
         </FormGroup>
 
-        <FormGroup>
+        <FormGroup className={styles.formGroup}>
           <label htmlFor="bathrooms">
             Bathrooms <span className={styles.required}>*</span>
           </label>
@@ -127,7 +127,7 @@ export function BasicDetailsForm({
           />
         </FormGroup>
 
-        <FormGroup>
+        <FormGroup className={styles.formGroup}>
           <label htmlFor="reception_rooms">Reception Rooms</label>
           <Input
             type="number"
@@ -141,7 +141,7 @@ export function BasicDetailsForm({
       </div>
 
       <div className={styles.formRow}>
-        <FormGroup>
+        <FormGroup className={styles.formGroup}>
           <label htmlFor="price">
             Price <span className={styles.required}>*</span>
           </label>
@@ -157,7 +157,7 @@ export function BasicDetailsForm({
           />
         </FormGroup>
 
-        <FormGroup>
+        <FormGroup className={styles.formGroup}>
           <label htmlFor="price_qualifier">Price Qualifier</label>
           <Select id="price_qualifier" name="price_qualifier" value={formData.price_qualifier} onChange={onChange}>
             <option value="">None</option>
@@ -170,7 +170,7 @@ export function BasicDetailsForm({
         </FormGroup>
 
         {formData.category_id && categories.find((c) => c.id === Number(formData.category_id))?.name === "rent" && (
-          <FormGroup>
+          <FormGroup className={styles.formGroup}>
             <label htmlFor="rent_frequency">Rent Frequency</label>
             <Select id="rent_frequency" name="rent_frequency" value={formData.rent_frequency} onChange={onChange}>
               <option value="monthly">Per Month</option>
@@ -183,7 +183,7 @@ export function BasicDetailsForm({
       </div>
 
       <div className={styles.formRow}>
-        <FormGroup>
+        <FormGroup className={styles.formGroup}>
           <label htmlFor="status">
             Status <span className={styles.required}>*</span>
           </label>
@@ -197,7 +197,7 @@ export function BasicDetailsForm({
           </Select>
         </FormGroup>
 
-        <FormGroup>
+        <FormGroup className={styles.formGroup}>
           <label htmlFor="available_date">
             Available Date{" "}
             {formData.category_id && categories.find((c) => c.id === Number(formData.category_id))?.name === "rent" && (
@@ -218,16 +218,16 @@ export function BasicDetailsForm({
       </div>
 
       <div className={styles.formRow}>
-        <FormGroup>
-          <div className={styles.checkboxGroup}>
-            <Checkbox id="featured" name="featured" checked={formData.featured} onChange={onCheckboxChange} />
-            <label htmlFor="featured">Featured Property (will be highlighted on the website)</label>
+        <FormGroup className={styles.formGroup}>
+          <div className="flex items-center space-x-2">
+            <Checkbox id="featured" name="featured" checked={formData.featured} onCheckedChange={(checked) => onCheckboxChange({ target: { name: 'featured', checked } } as any)} />
+            <label htmlFor="featured" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Featured Property (will be highlighted on the website)</label>
           </div>
         </FormGroup>
       </div>
 
       <div className={styles.formRow}>
-        <FormGroup>
+        <FormGroup className={styles.formGroup}>
           <label htmlFor="description">
             Property Description <span className={styles.required}>*</span>
           </label>

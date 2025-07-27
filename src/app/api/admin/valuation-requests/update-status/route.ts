@@ -1,10 +1,36 @@
+
 import { NextResponse } from "next/server"
 import { createClient } from "@/utils/supabase/server"
-import { Resend } from "resend"
-import ValuationStatusUpdateEmail from "@/emails/ValuationStatusUpdate"
+import nodemailer from "nodemailer"
+import fs from "fs/promises"
+import path from "path"
 
-// Initialize Resend
-const resend = new Resend(process.env.RESEND_API_KEY)
+async function getEmailSettings() {
+  return {
+    EMAIL_HOST: process.env.EMAIL_HOST,
+    EMAIL_PORT: process.env.EMAIL_PORT,
+    EMAIL_USER: process.env.EMAIL_USER,
+    EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
+    EMAIL_FROM: process.env.EMAIL_FROM,
+    EMAIL_SECURE: process.env.EMAIL_SECURE === 'true',
+    EMAIL_DOMAIN: process.env.EMAIL_DOMAIN || 'loveviewestates.co.uk',
+  }
+}
+
+async function renderTemplate(templateName: string, data: Record<string, any>) {
+  try {
+    const templatePath = path.join(process.cwd(), "src", "emails", templateName);
+    let templateContent = await fs.readFile(templatePath, "utf-8");
+    for (const key in data) {
+      const regex = new RegExp(`{{{${key}}}}`, "g");
+      templateContent = templateContent.replace(regex, data[key]);
+    }
+    return templateContent;
+  } catch (error) {
+    console.error(`Error rendering email template ${templateName}:`, error);
+    return `Error rendering email template: ${templateName}`;
+  }
+}
 
 export async function POST(request: Request) {
   try {
@@ -19,7 +45,6 @@ export async function POST(request: Request) {
 
     const supabase = await createClient()
 
-    // First, get the valuation request details for the email
     const { data: valuationRequest, error: fetchError } = await supabase
       .from("valuation_requests")
       .select("*")
@@ -27,47 +52,47 @@ export async function POST(request: Request) {
       .single()
 
     if (fetchError) {
-      console.error("Error fetching valuation request:", fetchError)
       return NextResponse.json({ success: false, error: fetchError.message }, { status: 500 })
     }
 
-    // Update valuation request status
     const { error } = await supabase.from("valuation_requests").update({ status }).eq("id", requestId)
 
     if (error) {
-      console.error("Error updating valuation request status:", error)
       return NextResponse.json({ success: false, error: error.message }, { status: 500 })
     }
 
-    // Send email notification if requested
-    if (sendEmail && process.env.RESEND_API_KEY) {
+    const settings = await getEmailSettings();
+    if (sendEmail && settings.EMAIL_HOST) {
+        const transporter = nodemailer.createTransport({
+            host: settings.EMAIL_HOST,
+            port: Number(settings.EMAIL_PORT),
+            secure: settings.EMAIL_SECURE,
+            auth: {
+              user: settings.EMAIL_USER,
+              pass: settings.EMAIL_PASSWORD,
+            },
+        });
       try {
-        const { error: emailError } = await resend.emails.send({
-          from: `Love View Estate <noreply@${process.env.EMAIL_DOMAIN || "loveviewestates.co.uk"}>`,
+        const html = await renderTemplate("valuation-status-update.html", {
+          ...settings,
+          name: valuationRequest.name,
+          postcode: valuationRequest.postcode,
+          status,
+        });
+
+        await transporter.sendMail({
+          from: settings.EMAIL_FROM,
           to: valuationRequest.email,
           subject: `Your Valuation Request Update`,
-          react: ValuationStatusUpdateEmail({
-            name: valuationRequest.full_name,
-            address: valuationRequest.postcode, // Using postcode as the address
-            status,
-            requestType: valuationRequest.valuation_type === "sales" ? "Sales" : "Rental",
-            domain: process.env.EMAIL_DOMAIN || "loveviewestates.co.uk",
-          }),
+          html: html
         })
-
-        if (emailError) {
-          console.error("Error sending email:", emailError)
-          // Continue even if email fails
-        }
       } catch (emailError) {
         console.error("Error sending email:", emailError)
-        // Continue even if email fails
       }
     }
 
     return NextResponse.json({ success: true })
   } catch (error: any) {
-    console.error("Error updating valuation request status:", error)
     return NextResponse.json({ success: false, error: error.message }, { status: 500 })
   }
 }

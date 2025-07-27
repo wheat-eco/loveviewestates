@@ -1,5 +1,25 @@
 import Image from "next/image"
 import styles from "./landlords.module.css"
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Landlord Services | Love View Estate",
+  description: "Comprehensive property management and tenant-find services for landlords in Ayrshire. Let us handle the details for your rental property.",
+  openGraph: {
+    title: "Landlord Services | Love View Estate",
+    description: "Comprehensive property management and tenant-find services for landlords in Ayrshire.",
+    url: '/landlords',
+    images: [
+      {
+        url: '/img/1.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'A well-maintained property managed by Love View Estate',
+      },
+    ],
+  },
+};
+
 
 export default function LandlordsPage() {
   return (

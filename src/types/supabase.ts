@@ -1,3 +1,4 @@
+
 type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 export default Json
 
@@ -125,42 +126,6 @@ export interface Database {
           slug?: string
           created_at?: string
           updated_at?: string
-        }
-        Relationships: []
-      }
-      viewing_requests: {
-        Row: {
-          id: number
-          property_id: number
-          name: string
-          email: string
-          phone: string
-          preferred_date: string | null
-          message: string | null
-          status: string
-          created_at: string
-        }
-        Insert: {
-          id?: number
-          property_id: number
-          name: string
-          email: string
-          phone: string
-          preferred_date?: string | null
-          message?: string | null
-          status: string
-          created_at?: string
-        }
-        Update: {
-          id?: number
-          property_id?: number
-          name?: string
-          email?: string
-          phone?: string
-          preferred_date?: string | null
-          message?: string | null
-          status?: string
-          created_at?: string
         }
         Relationships: []
       }

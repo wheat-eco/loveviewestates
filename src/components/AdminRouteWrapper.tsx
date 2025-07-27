@@ -4,17 +4,19 @@ import { usePathname } from "next/navigation";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
 
-export default function AdminRouteWrapper({ children }: { children: React.ReactNode }) {
+export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-
-  // Check if the current route is under the "admin" directory
   const isAdminRoute = pathname.startsWith("/admin");
+
+  if (isAdminRoute) {
+    return <>{children}</>;
+  }
 
   return (
     <>
-      {!isAdminRoute && <Header />}
+      <Header />
       <main>{children}</main>
-      {!isAdminRoute && <Footer />}
+      <Footer />
     </>
   );
 }

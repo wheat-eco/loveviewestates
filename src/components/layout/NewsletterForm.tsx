@@ -1,3 +1,4 @@
+
 "use client"
 
 import type React from "react"
@@ -42,7 +43,8 @@ export default function NewsletterForm() {
       }
     } catch (error) {
       setIsError(true)
-      setMessage("An error occurred. Please try again.")
+      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred. Please check the server logs."
+      setMessage(`An error occurred: ${errorMessage}`)
     } finally {
       setIsSubmitting(false)
     }
@@ -66,7 +68,7 @@ export default function NewsletterForm() {
         </button>
 
         {message && (
-          <p className={`newsletter-message ${isError ? "newsletter-error" : "newsletter-success"}`}>{message}</p>
+          <p className={`newsletter-message ${isError ? "text-red-500" : "text-green-500"} mt-2 text-sm`}>{message}</p>
         )}
       </form>
     </div>

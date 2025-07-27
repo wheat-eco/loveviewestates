@@ -1,3 +1,4 @@
+
 "use client"
 
 import type React from "react"
@@ -59,33 +60,34 @@ export function DocumentsForm({ documents, onChange, propertyCategory }: Documen
         Upload relevant documents for the property. These will be available for download by interested parties.
       </p>
 
-      <div className={styles.documentsGrid}>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
         {documentTypes.map((docType) => (
-          <div key={docType.key} className={styles.documentUpload}>
-            <div className={styles.documentHeader}>
-              <FileText size={20} />
-              <h4>{docType.label}</h4>
+          <div key={docType.key} className="border p-4 rounded-md">
+            <div className="flex items-center justify-between mb-2">
+              <h4 className="font-medium flex items-center gap-2">
+                <FileText size={16} /> {docType.label}
+              </h4>
+              {documents[docType.key] && (
+                 <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleRemoveDocument(docType.key)}
+                    title="Remove document"
+                    className="h-8 w-8"
+                  >
+                    <X size={16} />
+                  </Button>
+              )}
             </div>
 
             {documents[docType.key] ? (
-              <div className={styles.documentItem}>
-                <div className={styles.documentInfo}>
-                  <div className={styles.documentName}>{documents[docType.key]!.name}</div>
-                  <div className={styles.documentSize}>{formatFileSize(documents[docType.key]!.size)}</div>
-                </div>
-
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleRemoveDocument(docType.key)}
-                  title="Remove document"
-                >
-                  <X size={16} />
-                </Button>
+              <div className="text-sm text-gray-600">
+                <p className="font-medium truncate">{documents[docType.key]!.name}</p>
+                <p className="text-gray-500">{formatFileSize(documents[docType.key]!.size)}</p>
               </div>
             ) : (
-              <div className={styles.uploadPrompt}>
+              <div>
                 <input
                   ref={(el) => (fileInputRefs.current[docType.key] = el)}
                   type="file"
@@ -96,7 +98,7 @@ export function DocumentsForm({ documents, onChange, propertyCategory }: Documen
 
                 <Button type="button" variant="outline" onClick={() => fileInputRefs.current[docType.key]?.click()}>
                   <Upload size={16} />
-                  Upload {docType.label}
+                  Upload File
                 </Button>
               </div>
             )}

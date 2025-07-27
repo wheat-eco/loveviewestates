@@ -1,3 +1,4 @@
+
 "use client"
 
 import type React from "react"
@@ -77,7 +78,8 @@ export function CreatePropertyTypeModal({
       <form onSubmit={handleSubmit} className={styles.modalForm}>
         {error && <Alert variant="error">{error}</Alert>}
 
-        <FormGroup label="Category" required>
+        <FormGroup>
+          <label>Category *</label>
           <select
             name="categoryId"
             value={formData.categoryId}
@@ -94,7 +96,8 @@ export function CreatePropertyTypeModal({
           </select>
         </FormGroup>
 
-        <FormGroup label="Display Name" required>
+        <FormGroup>
+          <label>Display Name *</label>
           <Input
             name="displayName"
             value={formData.displayName}
@@ -104,7 +107,8 @@ export function CreatePropertyTypeModal({
           />
         </FormGroup>
 
-        <FormGroup label="Internal Name" required>
+        <FormGroup>
+          <label>Internal Name *</label>
           <Input
             name="name"
             value={formData.name}
@@ -115,7 +119,8 @@ export function CreatePropertyTypeModal({
           <small className={styles.fieldHint}>Used internally - lowercase with underscores</small>
         </FormGroup>
 
-        <FormGroup label="Description">
+        <FormGroup>
+          <label>Description</label>
           <Textarea
             name="description"
             value={formData.description}

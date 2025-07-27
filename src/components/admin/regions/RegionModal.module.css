@@ -1,7 +1,35 @@
+
 .form {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+}
+
+.modalForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.modalSelect {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.fieldHint {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
 }
 
 .formGroup {

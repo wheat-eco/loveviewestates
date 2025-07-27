@@ -1,4 +1,4 @@
-import ValuationForm from "@/components/valuation/ValuationForm"
+
 
 export const metadata = {
   title: "Sales Valuation | Love View Estate",
@@ -6,5 +6,5 @@ export const metadata = {
 }
 
 export default function SalesValuationPage() {
-  return <ValuationForm valuationType="sale" />
+  return <div className="p-8"><p>This feature is temporarily unavailable while we make improvements. Please contact us directly for a valuation.</p></div>
 }

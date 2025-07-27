@@ -2,11 +2,25 @@ import Link from "next/link"
 import Image from "next/image"
 import { createClient } from "@/utils/supabase/server"
 import styles from "./for-rent.module.css"
+import type { Metadata } from 'next';
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Properties For Sale | Love View Estate",
-  description: "Browse our selection of properties for sale throughout Ayrshire.",
-}
+  description: "Browse our selection of properties for sale throughout Ayrshire. Find your dream home in North, South, or East Ayrshire.",
+  openGraph: {
+    title: "Properties For Sale | Love View Estate",
+    description: "Browse our selection of properties for sale throughout Ayrshire. Find your dream home in North, South, or East Ayrshire.",
+    url: '/for-sale',
+    images: [
+      {
+        url: '/img/8.jpeg',
+        width: 1200,
+        height: 630,
+        alt: 'A house for sale in Ayrshire',
+      },
+    ],
+  },
+};
 
 async function getRegionsWithPropertiesForSale() {
   const supabase = await createClient()
@@ -72,11 +86,12 @@ export default async function ForSalePage() {
               <Link href={`/for-sale-${region.slug}`} key={region.id} className={styles.locationCard}>
                 <div className={styles.locationImage}>
                   <Image
-                    src={`/placeholder.svg?height=400&width=600&text=${region.name}`}
+                    src={`/img/3.jpg`}
                     alt={`${region.name} Properties`}
                     width={600}
                     height={400}
                     className={styles.locationImg}
+                    data-ai-hint="ayrshire house"
                   />
                 </div>
                 <div className={styles.locationContent}>

@@ -2,11 +2,25 @@ import Link from "next/link"
 import Image from "next/image"
 import { ArrowRight, ArrowLeft } from "lucide-react"
 import styles from "./valuation.module.css"
+import type { Metadata } from 'next';
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Free Property Valuation | Love View Estate",
-  description: "Get a free instant online valuation for your property with Love View Estate.",
-}
+  description: "Get a free instant online valuation for your property in Ayrshire with Love View Estate. Find out what your home is worth for selling or renting.",
+  openGraph: {
+    title: "Free Property Valuation | Love View Estate",
+    description: "Get a free instant online valuation for your property in Ayrshire.",
+    url: '/valuation',
+    images: [
+      {
+        url: '/img/team.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'A property valuation being conducted',
+      },
+    ],
+  },
+};
 
 export default function ValuationPage() {
   return (

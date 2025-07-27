@@ -1,193 +1,99 @@
-.container {
-  min-height: 100vh;
-  background-color: #f9fafb;
-}
-
-.header {
-  background: white;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.headerContent {
-  max-width: 80rem;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
-.headerInner {
+.dashboardContainer {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 4rem;
+  flex-direction: column;
+  gap: 2rem;
 }
 
-.headerLeft {
+.loadingContainer {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
+  justify-content: center;
+  padding: 4rem 0;
 }
 
-.headerIcon {
-  color: #2563eb;
-}
-
-.headerTitle {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #111827;
-}
-
-.headerRight {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.userInfo {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.userIcon {
-  color: #6b7280;
-}
-
-.userName {
-  font-size: 0.875rem;
-  color: #374151;
-}
-
-.userRole {
-  padding: 0.25rem 0.5rem;
-  background-color: #dbeafe;
-  color: #1e40af;
-  font-size: 0.75rem;
-  border-radius: 9999px;
-}
-
-.logoutButton {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #6b7280;
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: color 0.2s;
-}
-
-.logoutButton:hover {
-  color: #111827;
-}
-
-.logoutText {
-  font-size: 0.875rem;
-}
-
-.main {
-  max-width: 80rem;
-  margin: 0 auto;
-  padding: 2rem 1rem;
-}
-
-.welcomeSection {
-  margin-bottom: 2rem;
-}
-
-.welcomeSection h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #111827;
-  margin-bottom: 0.5rem;
-}
-
-.welcomeSection p {
-  color: #6b7280;
+.loadingSpinner {
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid #e2e8f0;
+  border-top: 2px solid #e4b611;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
 }
 
 .statsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
-  margin-bottom: 2rem;
 }
 
 .statCard {
   background: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   padding: 1.5rem;
   border-left: 4px solid;
+  transition: all 0.2s ease-in-out;
 }
-
-.statCard.blue {
-  border-left-color: #2563eb;
+.statCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
+.statblue { border-left-color: #3b82f6; }
+.statgreen { border-left-color: #10b981; }
+.statpurple { border-left-color: #8b5cf6; }
+.statorange { border-left-color: #f97316; }
+.statred { border-left-color: #ef4444; }
+.statindigo { border-left-color: #6366f1; }
 
-.statCard.green {
-  border-left-color: #16a34a;
-}
-
-.statCard.purple {
-  border-left-color: #9333ea;
-}
-
-.statCard.orange {
-  border-left-color: #ea580c;
-}
-
-.statCard.red {
-  border-left-color: #dc2626;
-}
-
-.statCard.indigo {
-  border-left-color: #4f46e5;
-}
-
-.statContent {
+.statHeader {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
 }
-
 .statIcon {
-  color: #6b7280;
+  color: #9ca3af;
 }
-
-.statDetails {
-  flex: 1;
-}
-
-.statLabel {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #6b7280;
-  margin-bottom: 0.25rem;
-}
-
 .statValue {
-  font-size: 1.875rem;
+  font-size: 2rem;
   font-weight: 700;
   color: #111827;
-  margin-bottom: 0.25rem;
 }
 
+.statContent h3 {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #4b5563;
+  margin-bottom: 0.25rem;
+}
 .statChange {
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   color: #6b7280;
 }
 
-.quickActionsSection {
-  margin-bottom: 2rem;
+.statAction {
+  margin-top: 1rem;
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background-color: #f3f4f6;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.statAction:hover {
+  background-color: #e5e7eb;
 }
 
-.quickActionsSection h3 {
-  font-size: 1.25rem;
+.quickActionsSection h2, .recentActivitySection h2 {
+  font-size: 1.5rem;
   font-weight: 600;
-  color: #111827;
-  margin-bottom: 1rem;
+  color: #1a1a1a;
+  margin-bottom: 1.5rem;
 }
 
 .quickActionsGrid {
@@ -196,146 +102,121 @@
   gap: 1rem;
 }
 
-.quickActionCard {
+.actionCard {
   background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
+  border-radius: 0.75rem;
   padding: 1.5rem;
   display: flex;
   align-items: center;
   gap: 1rem;
+  text-align: left;
   cursor: pointer;
   transition: all 0.2s;
-  text-align: left;
+  border: 1px solid #e5e7eb;
+}
+.actionCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-color: #e4b611;
 }
 
-.quickActionCard:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  transform: translateY(-1px);
+.actionIcon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
 }
+.actionblue .actionIcon { background-color: #3b82f6; }
+.actiongreen .actionIcon { background-color: #10b981; }
+.actionpurple .actionIcon { background-color: #8b5cf6; }
+.actionorange .actionIcon { background-color: #f97316; }
 
-.quickActionIcon {
-  color: #6b7280;
-}
-
-.quickActionContent h4 {
-  font-size: 1rem;
+.actionContent h3 {
+  font-size: 1.125rem;
   font-weight: 600;
   color: #111827;
   margin-bottom: 0.25rem;
 }
-
-.quickActionContent p {
+.actionContent p {
   font-size: 0.875rem;
   color: #6b7280;
 }
 
 .recentActivitySection {
   background: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   padding: 1.5rem;
-}
-
-.recentActivitySection h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #111827;
-  margin-bottom: 1rem;
 }
 
 .activityList {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
 }
 
 .activityItem {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 0.75rem;
-  border-radius: 0.375rem;
-  background-color: #f9fafb;
+  padding: 1rem;
+  border-bottom: 1px solid #f3f4f6;
 }
-
+.activityItem:last-child {
+  border-bottom: none;
+}
 .activityIcon {
-  width: 2rem;
-  height: 2rem;
-  background-color: #dbeafe;
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: #fef9c3;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #2563eb;
+  color: #e4b611;
 }
 
-.activityContent {
-  flex: 1;
-}
-
-.activityTitle {
-  font-size: 0.875rem;
+.activityContent h4 {
   font-weight: 500;
   color: #111827;
   margin-bottom: 0.25rem;
 }
-
-.activityDate {
-  font-size: 0.75rem;
+.activityContent p {
+  font-size: 0.875rem;
   color: #6b7280;
+  margin-bottom: 0.25rem;
+}
+.activityTime {
+  font-size: 0.75rem;
+  color: #9ca3af;
 }
 
-.noActivity {
+.activityStatus {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  text-transform: capitalize;
+}
+.statusavailable { background: #dcfce7; color: #166534; }
+.statusforsale { background: #dbeafe; color: #1e40af; }
+.statusletagreed { background: #fee2e2; color: #991b1b; }
+
+.emptyState {
+  padding: 3rem 1.5rem;
   text-align: center;
   color: #6b7280;
-  font-style: italic;
-  padding: 2rem;
 }
 
-.loading {
-  min-height: 100vh;
-  background-color: #f9fafb;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.loadingSpinner {
-  width: 2rem;
-  height: 2rem;
-  border: 2px solid #2563eb;
-  border-top: 2px solid transparent;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+.emptyState svg {
+  margin: 0 auto 1rem;
+  color: #d1d5db;
 }
 
 @keyframes spin {
   to {
     transform: rotate(360deg);
-  }
-}
-
-@media (max-width: 768px) {
-  .headerContent {
-    padding: 0 0.5rem;
-  }
-
-  .main {
-    padding: 1rem 0.5rem;
-  }
-
-  .statsGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .quickActionsGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .userInfo {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.25rem;
   }
 }

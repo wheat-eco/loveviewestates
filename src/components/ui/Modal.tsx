@@ -18,6 +18,8 @@ interface ModalProps {
 
 export function Modal({ isOpen, onClose, title, children, size = "medium" }: ModalProps) {
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+
     if (isOpen) {
       document.body.style.overflow = "hidden"
     } else {
@@ -30,6 +32,7 @@ export function Modal({ isOpen, onClose, title, children, size = "medium" }: Mod
   }, [isOpen])
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         onClose()
@@ -45,7 +48,7 @@ export function Modal({ isOpen, onClose, title, children, size = "medium" }: Mod
     }
   }, [isOpen, onClose])
 
-  if (!isOpen) return null
+  if (typeof window === 'undefined' || !isOpen) return null
 
   const modalContent = (
     <div className={styles.overlay} onClick={onClose}>

@@ -15,11 +15,25 @@ import {
   Star,
 } from "lucide-react"
 import styles from "./selling.module.css"
+import type { Metadata } from 'next';
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Selling Your Property | Love View Estate",
-  description: "Expert guidance and premium marketing to achieve the best possible price for your property",
-}
+  description: "Expert guidance and premium marketing to achieve the best possible price for your property in Ayrshire. Get a free, no-obligation valuation today.",
+  openGraph: {
+    title: "Selling Your Property | Love View Estate",
+    description: "Expert guidance and premium marketing to achieve the best possible price for your property in Ayrshire.",
+    url: '/selling',
+    images: [
+      {
+        url: '/img/1.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'A beautiful home in Ayrshire being sold by Love View Estate',
+      },
+    ],
+  },
+};
 
 export default function SellingPage() {
   return (
@@ -197,7 +211,7 @@ export default function SellingPage() {
               </div>
               <div className={styles.testimonialAuthor}>
                 <div className={styles.authorImage}>
-                  <Image src="/img/john.jpg?height=50&width=50" alt="John Smith" width={50} height={50} />
+                  <Image src="/img/john.jpg?height=50&width=50" alt="John Smith headshot" width={50} height={50} />
                 </div>
                 <div className={styles.authorInfo}>
                   <h4>John Smith</h4>
@@ -215,7 +229,7 @@ export default function SellingPage() {
               </div>
               <div className={styles.testimonialAuthor}>
                 <div className={styles.authorImage}>
-                  <Image src="/img/sarah.jpg?height=50&width=50" alt="Sarah Johnson" width={50} height={50} />
+                  <Image src="/img/sarah.jpg?height=50&width=50" alt="Sarah Johnson headshot" width={50} height={50} />
                 </div>
                 <div className={styles.authorInfo}>
                   <h4>Sarah Johnson</h4>
@@ -233,7 +247,7 @@ export default function SellingPage() {
               </div>
               <div className={styles.testimonialAuthor}>
                 <div className={styles.authorImage}>
-                  <Image src="/img/david.jpg?height=50&width=50" alt="David Wilson" width={50} height={50} />
+                  <Image src="/img/david.jpg?height=50&width=50" alt="David Wilson headshot" width={50} height={50} />
                 </div>
                 <div className={styles.authorInfo}>
                   <h4>David Wilson</h4>

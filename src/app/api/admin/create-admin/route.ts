@@ -1,67 +1,81 @@
+
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
 import { cookies } from "next/headers"
 import { type NextRequest, NextResponse } from "next/server"
 
+// This function is for the initial setup. It will only work if no admin users exist.
 export async function POST(request: NextRequest) {
+  const { email, password, fullName } = await request.json()
+
+  // Validate input
+  if (!email || !password || !fullName) {
+    return NextResponse.json({ message: "Missing required fields." }, { status: 400 })
+  }
+
+  if (password.length < 6) {
+    return NextResponse.json({ message: "Password must be at least 6 characters long." }, { status: 400 })
+  }
+
   try {
     const supabase = createRouteHandlerClient({ cookies })
-    const { userId, email, fullName } = await request.json()
 
-    // Validate required fields
-    if (!userId || !email || !fullName) {
-      return NextResponse.json({ message: "Missing required fields: userId, email, or fullName" }, { status: 400 })
-    }
-
-    // Check if this is the first user (should be admin)
-    const { data: existingUsers, error: countError } = await supabase.from("users").select("id").limit(1)
+    // CRITICAL: Check if any admin user already exists.
+    const { count, error: countError } = await supabase
+      .from("admin")
+      .select("id", { count: "exact", head: true })
 
     if (countError) {
-      console.error("Error checking existing users:", countError)
+      console.error("Error checking for existing admins:", countError)
+      return NextResponse.json({ message: "Database error while checking admins." }, { status: 500 })
+    }
+
+    if (count !== null && count > 0) {
       return NextResponse.json(
-        { message: "Database error while checking existing users", error: countError.message },
-        { status: 500 },
+        { message: "An admin account already exists. New admins must be invited from the admin dashboard." },
+        { status: 403 },
       )
     }
 
-    // If no users exist, this will be the first admin
-    const isFirstUser = !existingUsers || existingUsers.length === 0
+    // If no admins exist, proceed to create the first one.
+    const { data: authData, error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName,
+        },
+      },
+    })
 
-    // Insert user into the users table
-    const { data: userData, error: insertError } = await supabase
-      .from("users")
+    if (signUpError) {
+      console.error("Supabase signUp error:", signUpError)
+      return NextResponse.json({ message: signUpError.message }, { status: 400 })
+    }
+
+    if (!authData.user) {
+      return NextResponse.json({ message: "User could not be created in authentication system." }, { status: 500 })
+    }
+
+    // Insert the user into the public 'admin' table with a 'superadmin' role.
+    const { error: insertError } = await supabase
+      .from("admin")
       .insert({
-        id: userId,
-        full_name: fullName,
+        id: authData.user.id,
         email: email,
-        role: isFirstUser ? "admin" : "user", // First user becomes admin
-        phone: null,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        full_name: fullName,
+        role: "superadmin", // First user is always a superadmin
       })
-      .select()
-      .single()
 
     if (insertError) {
-      console.error("Error inserting user:", insertError)
-
-      // Check if it's a duplicate key error
-      if (insertError.code === "23505") {
-        return NextResponse.json({ message: "User already exists in the database" }, { status: 409 })
-      }
-
-      return NextResponse.json(
-        { message: "Failed to create user in database", error: insertError.message },
-        { status: 500 },
-      )
+      console.error("Error inserting user into admin table:", insertError)
+      // Attempt to clean up the auth user if the database insert fails
+      await supabase.auth.admin.deleteUser(authData.user.id)
+      return NextResponse.json({ message: "Failed to create user record in database." }, { status: 500 })
     }
 
-    return NextResponse.json({
-      message: "Admin user created successfully",
-      user: userData,
-      isFirstUser,
-    })
+    return NextResponse.json({ message: "Superadmin created successfully." })
   } catch (error: any) {
-    console.error("Unexpected error in create-admin:", error)
-    return NextResponse.json({ message: "Internal server error", error: error.message }, { status: 500 })
+    console.error("Create admin API error:", error)
+    return NextResponse.json({ message: "Internal Server Error" }, { status: 500 })
   }
 }

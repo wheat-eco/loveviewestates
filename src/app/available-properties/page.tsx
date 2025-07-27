@@ -3,11 +3,25 @@ import Image from "next/image"
 import { createClient } from "@/utils/supabase/server"
 import { Bed, Bath, Home, MapPin, Calendar } from "lucide-react"
 import styles from "./available-properties.module.css"
+import type { Metadata } from 'next';
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Available Properties | Love View Estate",
-  description: "Browse our current selection of available properties across Ayrshire",
-}
+  description: "Browse our current selection of available properties for sale and to rent across Ayrshire. Find your dream home today.",
+  openGraph: {
+    title: "Available Properties | Love View Estate",
+    description: "Browse our current selection of available properties for sale and to rent across Ayrshire. Find your dream home today.",
+    url: '/available-properties',
+    images: [
+      {
+        url: '/img/7.jpeg',
+        width: 1200,
+        height: 630,
+        alt: 'A beautiful property in Ayrshire',
+      },
+    ],
+  },
+};
 
 async function getAvailableProperties() {
   const supabase = await createClient()

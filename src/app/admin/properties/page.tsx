@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useState, useEffect, useMemo } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import AdminLayout from "@/components/admin/AdminLayout"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -21,6 +21,7 @@ import styles from "./properties.module.css"
 
 export default function PropertiesPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const supabase = createClientComponentClient()
 
   // State
@@ -32,7 +33,7 @@ export default function PropertiesPage() {
 
   // Filters
   const [searchTerm, setSearchTerm] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") || "")
   const [selectedRegion, setSelectedRegion] = useState("")
   const [selectedStatus, setSelectedStatus] = useState("")
 
@@ -42,12 +43,11 @@ export default function PropertiesPage() {
   const [totalProperties, setTotalProperties] = useState(0)
   const pageSize = 20
 
-  // Load initial data
+  // Load initial data for filters
   useEffect(() => {
     const loadInitialData = async () => {
       try {
         const [categoriesData, regionsData] = await Promise.all([fetchPropertyCategories(), fetchRegions()])
-
         setCategories(categoriesData)
         setRegions(regionsData)
       } catch (err) {
@@ -55,83 +55,77 @@ export default function PropertiesPage() {
         setError("Failed to load page data")
       }
     }
-
     loadInitialData()
   }, [])
 
-  // Load properties
+  // Load properties whenever filters change
   useEffect(() => {
-    loadProperties()
-  }, [currentPage, searchTerm, selectedCategory, selectedRegion, selectedStatus])
+    const loadProperties = async () => {
+      setLoading(true)
+      setError(null)
 
-  const loadProperties = async () => {
-    setLoading(true)
-    setError(null)
-
-    try {
-      let query = supabase.from("properties").select(
-        `
-          *,
-          areas (
-            id,
-            name,
-            regions (
+      try {
+        let query = supabase.from("properties").select(
+          `
+            *,
+            areas (
               id,
+              name,
+              region_id
+            ),
+            property_categories (
+              id,
+              display_name,
               name
+            ),
+            property_types (
+              id,
+              display_name
+            ),
+            property_images (
+              id,
+              image_url,
+              is_featured
             )
-          ),
-          property_categories (
-            id,
-            display_name
-          ),
-          property_types (
-            id,
-            display_name
-          ),
-          property_images (
-            id,
-            image_url,
-            is_featured
-          )
-        `,
-        { count: "exact" },
-      )
+          `,
+          { count: "exact" },
+        )
 
-      // Apply filters
-      if (searchTerm) {
-        query = query.or(`title.ilike.%${searchTerm}%,address.ilike.%${searchTerm}%,postcode.ilike.%${searchTerm}%`)
+        // Apply filters
+        if (searchTerm) {
+          query = query.or(`title.ilike.%${searchTerm}%,address.ilike.%${searchTerm}%,postcode.ilike.%${searchTerm}%`)
+        }
+        if (selectedCategory) {
+          query = query.eq("category_id", selectedCategory)
+        }
+        if (selectedRegion) {
+          query = query.eq("areas.region_id", selectedRegion)
+        }
+        if (selectedStatus) {
+          query = query.eq("status", selectedStatus)
+        }
+
+        // Apply pagination
+        const from = (currentPage - 1) * pageSize
+        const to = from + pageSize - 1
+
+        const { data, error, count } = await query.order("created_at", { ascending: false }).range(from, to)
+
+        if (error) throw error
+
+        setProperties(data || [])
+        setTotalProperties(count || 0)
+        setTotalPages(Math.ceil((count || 0) / pageSize))
+      } catch (err) {
+        console.error("Error loading properties:", err)
+        setError("Failed to load properties")
+      } finally {
+        setLoading(false)
       }
-
-      if (selectedCategory) {
-        query = query.eq("category_id", selectedCategory)
-      }
-
-      if (selectedRegion) {
-        query = query.eq("areas.region_id", selectedRegion)
-      }
-
-      if (selectedStatus) {
-        query = query.eq("status", selectedStatus)
-      }
-
-      // Apply pagination
-      const from = (currentPage - 1) * pageSize
-      const to = from + pageSize - 1
-
-      const { data, error, count } = await query.order("created_at", { ascending: false }).range(from, to)
-
-      if (error) throw error
-
-      setProperties(data || [])
-      setTotalProperties(count || 0)
-      setTotalPages(Math.ceil((count || 0) / pageSize))
-    } catch (err) {
-      console.error("Error loading properties:", err)
-      setError("Failed to load properties")
-    } finally {
-      setLoading(false)
     }
-  }
+
+    loadProperties()
+  }, [currentPage, searchTerm, selectedCategory, selectedRegion, selectedStatus, supabase])
 
   const handleDeleteProperty = async (propertyId: number) => {
     if (!confirm("Are you sure you want to delete this property? This action cannot be undone.")) {
@@ -140,11 +134,8 @@ export default function PropertiesPage() {
 
     try {
       const { error } = await supabase.from("properties").delete().eq("id", propertyId)
-
       if (error) throw error
-
-      // Reload properties
-      loadProperties()
+      setProperties(properties.filter((p) => p.id !== propertyId))
     } catch (err) {
       console.error("Error deleting property:", err)
       setError("Failed to delete property")
@@ -153,10 +144,10 @@ export default function PropertiesPage() {
 
   const getFeaturedImage = (property: Property) => {
     const featuredImage = property.property_images?.find((img) => img.is_featured)
-    return featuredImage?.image_url || property.property_images?.[0]?.image_url || "/placeholder.svg"
+    return featuredImage?.image_url || property.property_images?.[0]?.image_url
   }
 
-  const formatPrice = (price: number, category: string, frequency?: string) => {
+  const formatPrice = (price: number, categoryName?: string, frequency?: string) => {
     const formatted = new Intl.NumberFormat("en-GB", {
       style: "currency",
       currency: "GBP",
@@ -164,12 +155,15 @@ export default function PropertiesPage() {
       maximumFractionDigits: 0,
     }).format(price)
 
-    if (category === "rent" && frequency) {
+    if (categoryName === "rent" && frequency) {
       return `${formatted} ${frequency === "monthly" ? "pcm" : `per ${frequency}`}`
     }
-
     return formatted
   }
+
+  const filteredProperties = useMemo(() => {
+    return properties; // The filtering is now done server-side
+  }, [properties]);
 
   return (
     <AdminLayout title="Properties">
@@ -188,7 +182,6 @@ export default function PropertiesPage() {
 
       {error && <Alert variant="error">{error}</Alert>}
 
-      {/* Filters */}
       <div className={styles.filtersSection}>
         <div className={styles.filtersGrid}>
           <div className={styles.searchGroup}>
@@ -200,25 +193,22 @@ export default function PropertiesPage() {
               className={styles.searchInput}
             />
           </div>
-
           <Select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
             <option value="">All Categories</option>
             {categories.map((category) => (
-              <option key={category.id} value={category.id}>
+              <option key={category.id} value={category.id.toString()}>
                 {category.display_name}
               </option>
             ))}
           </Select>
-
           <Select value={selectedRegion} onChange={(e) => setSelectedRegion(e.target.value)}>
             <option value="">All Regions</option>
             {regions.map((region) => (
-              <option key={region.id} value={region.id}>
+              <option key={region.id} value={region.id.toString()}>
                 {region.name}
               </option>
             ))}
           </Select>
-
           <Select value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)}>
             <option value="">All Statuses</option>
             <option value="available">Available</option>
@@ -229,26 +219,23 @@ export default function PropertiesPage() {
             <option value="draft">Draft</option>
           </Select>
         </div>
-
         <div className={styles.resultsInfo}>
           {loading ? (
             <span>Loading...</span>
           ) : (
             <span>
-              Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, totalProperties)} of{" "}
-              {totalProperties} properties
+              Showing {Math.min((currentPage - 1) * pageSize + 1, totalProperties)} to{" "}
+              {Math.min(currentPage * pageSize, totalProperties)} of {totalProperties} properties
             </span>
           )}
         </div>
       </div>
 
-      {/* Properties Grid */}
       {loading ? (
         <div className={styles.loadingContainer}>
           <Spinner size="large" />
-          <p>Loading properties...</p>
         </div>
-      ) : properties.length === 0 ? (
+      ) : filteredProperties.length === 0 ? (
         <div className={styles.emptyState}>
           <div className={styles.emptyIcon}>
             <Filter size={48} />
@@ -260,21 +247,20 @@ export default function PropertiesPage() {
               : "Get started by adding your first property"}
           </p>
           <Button onClick={() => router.push("/admin/properties/add")}>
-            <Plus size={16} />
-            Add Property
+            <Plus size={16} /> Add Property
           </Button>
         </div>
       ) : (
         <>
           <div className={styles.propertiesGrid}>
-            {properties.map((property) => (
+            {filteredProperties.map((property) => (
               <div key={property.id} className={styles.propertyCard}>
                 <div className={styles.propertyImage}>
                   <img
-                    src={getFeaturedImage(property) || "/placeholder.svg"}
+                    src={getFeaturedImage(property) || "https://placehold.co/300x200.png"}
                     alt={property.title}
                     onError={(e) => {
-                      e.currentTarget.src = "/placeholder.svg?height=200&width=300"
+                      e.currentTarget.src = "https://placehold.co/300x200.png"
                     }}
                   />
                   {property.featured && <div className={styles.featuredBadge}>Featured</div>}
@@ -282,26 +268,20 @@ export default function PropertiesPage() {
                     {property.status.replace("_", " ")}
                   </div>
                 </div>
-
                 <div className={styles.propertyContent}>
                   <div className={styles.propertyHeader}>
                     <h3 className={styles.propertyTitle}>{property.title}</h3>
                     <div className={styles.propertyPrice}>
                       {formatPrice(
                         property.price,
-                        property.property_categories?.display_name?.toLowerCase() || "",
+                        property.property_categories?.name,
                         property.rent_frequency,
                       )}
                     </div>
                   </div>
-
                   <div className={styles.propertyMeta}>
                     <span className={styles.propertyType}>{property.property_types?.display_name}</span>
-                    <span className={styles.propertyLocation}>
-                      {property.areas?.name}, {property.areas?.regions?.name}
-                    </span>
                   </div>
-
                   <div className={styles.propertyDetails}>
                     <span>{property.bedrooms} bed</span>
                     <span>{property.bathrooms} bath</span>
@@ -309,45 +289,37 @@ export default function PropertiesPage() {
                       <span>{property.reception_rooms} reception</span>
                     )}
                   </div>
-
                   <div className={styles.propertyActions}>
                     <Button
                       variant="outline"
                       size="small"
                       onClick={() => router.push(`/admin/properties/view/${property.id}`)}
                     >
-                      <Eye size={14} />
-                      View
+                      <Eye size={14} /> View
                     </Button>
                     <Button
                       variant="outline"
                       size="small"
                       onClick={() => router.push(`/admin/properties/edit/${property.id}`)}
                     >
-                      <Edit size={14} />
-                      Edit
+                      <Edit size={14} /> Edit
                     </Button>
                     <Button variant="danger" size="small" onClick={() => handleDeleteProperty(property.id)}>
-                      <Trash2 size={14} />
-                      Delete
+                      <Trash2 size={14} /> Delete
                     </Button>
                   </div>
                 </div>
               </div>
             ))}
           </div>
-
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className={styles.pagination}>
               <Button variant="outline" disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>
                 Previous
               </Button>
-
               <span className={styles.pageInfo}>
                 Page {currentPage} of {totalPages}
               </span>
-
               <Button
                 variant="outline"
                 disabled={currentPage === totalPages}

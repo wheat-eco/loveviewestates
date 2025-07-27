@@ -1,24 +1,51 @@
 import { createClient } from "@/utils/supabase/server"
 import { notFound } from "next/navigation"
 import PropertyDetailPageClient from "./PropertyDetailPageClient"
+import type { Metadata } from 'next';
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-  const resolvedParams = await params
-  const slug = resolvedParams.slug
+type Props = {
+  params: { slug: string }
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const slug = params.slug
   const supabase = await createClient()
 
-  const { data: property } = await supabase.from("properties").select("title, description").eq("slug", slug).single()
+  const { data: property } = await supabase
+    .from("properties")
+    .select(`
+        title, 
+        description,
+        property_images(image_url, is_featured)
+    `)
+    .eq("slug", slug)
+    .single()
 
   if (!property) {
     return {
-      title: "Property | Love View Estate",
-      description: "View details of this property.",
+      title: "Property Not Found",
+      description: "The property you are looking for could not be found.",
     }
   }
+  
+  const featuredImage = property.property_images?.find(img => img.is_featured)?.image_url || property.property_images?.[0]?.image_url
 
   return {
-    title: `${property.title} | Love View Estate`,
-    description: property.description || `View details of ${property.title}.`,
+    title: property.title,
+    description: property.description?.substring(0, 160) || `View details for ${property.title}.`,
+    openGraph: {
+        title: property.title,
+        description: property.description?.substring(0, 160) || `View details for ${property.title}.`,
+        url: `/property/${slug}`,
+        images: featuredImage ? [
+            {
+                url: featuredImage,
+                width: 1200,
+                height: 630,
+                alt: property.title,
+            }
+        ] : [],
+    }
   }
 }
 
@@ -99,9 +126,8 @@ async function getPropertyBySlug(slug: string) {
   }
 }
 
-export default async function PropertyDetailPage({ params }: { params: Promise<{ slug: string }> }) {
-  const resolvedParams = await params
-  const slug = resolvedParams.slug
+export default async function PropertyDetailPage({ params }: { params: { slug: string } }) {
+  const slug = params.slug
   const property = await getPropertyBySlug(slug)
 
   if (!property) {

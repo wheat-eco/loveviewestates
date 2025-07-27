@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react"
@@ -59,20 +60,11 @@ const Header = () => {
           <div className="nav-container">
             <nav className="main-nav">
               <ul className="nav-list">
-                <li className="nav-item dropdown">
-                  <Link
-                    href="/about"
-                    className={`nav-link ${isActive("/about") || isActive("/team") || isActive("/testimonials") ? "active" : ""}`}
-                  >
-                    ABOUT <ChevronDown className="inline h-4 w-4 ml-1" />
+                <li className="nav-item">
+                  <Link href="/about" className={`nav-link ${isActive("/about") ? "active" : ""}`}>
+                    ABOUT
                   </Link>
-                  <div className="dropdown-content">
-                    <Link href="/team">
-                      <Users className="h-4 w-4" /> Team
-                    </Link>
-                  </div>
                 </li>
-
                 <li className="nav-item">
                   <Link href="/selling" className={`nav-link ${isActive("/selling") ? "active" : ""}`}>
                     SELLING
@@ -126,6 +118,12 @@ const Header = () => {
                 </li>
 
                 <li className="nav-item">
+                  <Link href="/testimonials" className={`nav-link ${isActive("/testimonials") ? "active" : ""}`}>
+                    TESTIMONIALS
+                  </Link>
+                </li>
+
+                <li className="nav-item">
                   <Link href="/valuation" className="nav-link highlight-button">
                     INSTANT VALUATION
                   </Link>
@@ -144,7 +142,7 @@ const Header = () => {
             <Link href="#" className="social-link" aria-label="Instagram">
               <Instagram className="h-4 w-4" />
             </Link>
-            <Link href="mailto:info@loveviewestate.com" className="social-link" aria-label="Email">
+            <Link href="mailto:info@loveviewestates.co.uk" className="social-link" aria-label="Email">
               <Mail className="h-4 w-4" />
             </Link>
           </div>
@@ -164,29 +162,10 @@ const Header = () => {
         </button>
         <nav>
           <ul>
-            <li className={`mobile-dropdown ${activeDropdowns.includes("about") ? "active" : ""}`}>
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault()
-                  toggleMobileDropdown("about")
-                }}
-              >
-                ABOUT <ChevronDown className="inline h-4 w-4 ml-1" />
-              </a>
-              <ul className="mobile-dropdown-content">
-                
-                <li>
-                  <Link href="/team" onClick={closeMobileMenu}>
-                    Team
-                  </Link>
-                </li>
-                 <li>
-                  <Link href="/about" onClick={closeMobileMenu}>
-                  Our Story
-                  </Link>
-                </li>
-              </ul>
+            <li>
+              <Link href="/about" onClick={closeMobileMenu}>
+                ABOUT
+              </Link>
             </li>
             <li>
               <Link href="/selling" onClick={closeMobileMenu}>
@@ -249,6 +228,11 @@ const Header = () => {
                   </Link>
                 </li>
               </ul>
+            </li>
+            <li>
+              <Link href="/testimonials" onClick={closeMobileMenu}>
+                TESTIMONIALS
+              </Link>
             </li>
             <li>
               <Link href="/valuation" className="mobile-highlight" onClick={closeMobileMenu}>

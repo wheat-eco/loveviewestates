@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Alert } from "@/components/ui/alert"
 import { Spinner } from "@/components/ui/spinner"
 import { Modal } from "@/components/ui/Modal"
+import AdminLayout from "@/components/admin/AdminLayout"
 import {
   Edit,
   Trash2,
@@ -85,35 +86,40 @@ export default function PropertyViewPage() {
       day: "numeric",
     })
   }
+  
+  const getAltText = (image: any, title: string) => {
+    return image.alt_text || image.caption || `${title} - ${image.room_type || 'Image'}`
+  }
 
   if (loading) {
     return (
-      <div className={styles.container}>
+      <AdminLayout title="Property Details">
         <div className={styles.loading}>
           <Spinner size="large" />
           <p>Loading property...</p>
         </div>
-      </div>
+      </AdminLayout>
     )
   }
 
   if (error || !property) {
     return (
-      <div className={styles.container}>
-        <Alert type="error" title="Error">
+      <AdminLayout title="Error">
+        <Alert variant="error">
           {error || "Property not found"}
         </Alert>
         <Button onClick={() => router.push("/admin/properties")} className={styles.backButton}>
           <ArrowLeft size={16} />
           Back to Properties
         </Button>
-      </div>
+      </AdminLayout>
     )
   }
 
   const featuredImage = property.property_images?.find((img) => img.is_featured) || property.property_images?.[0]
 
   return (
+    <AdminLayout title="Property Details">
     <div className={styles.container}>
       {/* Header */}
       <div className={styles.header}>
@@ -125,7 +131,7 @@ export default function PropertyViewPage() {
           <div className={styles.titleSection}>
             <h1 className={styles.title}>{property.title}</h1>
             <div className={styles.badges}>
-              <span className={`${styles.badge} ${styles[property.status]}`}>{property.status}</span>
+              <span className={`${styles.badge} ${styles[property.status]}`}>{property.status.replace('_', ' ')}</span>
               {property.featured && (
                 <span className={`${styles.badge} ${styles.featured}`}>
                   <Star size={12} />
@@ -157,14 +163,14 @@ export default function PropertyViewPage() {
             <div className={styles.imageSection}>
               <div className={styles.featuredImage}>
                 <img
-                  src={featuredImage?.image_url || "/placeholder.svg?height=400&width=600"}
-                  alt={featuredImage?.alt_text || property.title}
+                  src={featuredImage?.image_url || "https://placehold.co/600x400.png"}
+                  alt={getAltText(featuredImage, property.title)}
                   onClick={() => setSelectedImage(featuredImage?.image_url || null)}
                 />
               </div>
               {property.property_images.length > 1 && (
                 <div className={styles.imageGrid}>
-                  {property.property_images.slice(0, 6).map((image) => (
+                  {property.property_images.slice(0, 6).map((image, index) => (
                     <div
                       key={image.id}
                       className={styles.thumbnailWrapper}
@@ -172,9 +178,9 @@ export default function PropertyViewPage() {
                     >
                       <img
                         src={image.thumbnail_url || image.image_url}
-                        alt={image.alt_text || `${property.title} - ${image.room_type || "Image"}`}
+                        alt={getAltText(image, property.title)}
                       />
-                      {property.property_images!.length > 6 && image === property.property_images![5] && (
+                      {property.property_images!.length > 6 && index === 5 && (
                         <div className={styles.moreImages}>+{property.property_images!.length - 6} more</div>
                       )}
                     </div>
@@ -400,10 +406,11 @@ export default function PropertyViewPage() {
       {selectedImage && (
         <Modal isOpen={!!selectedImage} onClose={() => setSelectedImage(null)} title="Property Image" size="large">
           <div className={styles.imageModal}>
-            <img src={selectedImage || "/placeholder.svg"} alt={property.title} />
+            <img src={selectedImage || "https://placehold.co/800x600.png"} alt={property.title} />
           </div>
         </Modal>
       )}
     </div>
+    </AdminLayout>
   )
 }

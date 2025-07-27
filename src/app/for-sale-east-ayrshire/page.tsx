@@ -102,29 +102,29 @@ export default async function ForSaleEastAyrshirePage() {
                   <div className={styles.propertyDetails}>
                     <h2 className={styles.propertyTitle}>{property.title}</h2>
                     <p className={styles.propertyLocation}>
-                      <MapPin size={16} className="mr-1 text-primary-gold" />
+                      <MapPin size={16} />
                       {property.address}
                     </p>
 
                     <div className={styles.propertyFeatures}>
                       <div className={styles.propertyFeature}>
-                        <MapPin size={16} className="mr-1 text-primary-gold" /> {property.areas?.name}
+                        <MapPin size={16} /> {property.areas?.name}
                       </div>
                       <div className={styles.propertyFeature}>
-                        <Bed size={16} className="mr-1 text-primary-gold" /> {property.bedrooms} Bedroom
+                        <Bed size={16} /> {property.bedrooms} Bedroom
                         {property.bedrooms !== 1 ? "s" : ""}
                       </div>
                       <div className={styles.propertyFeature}>
-                        <Bath size={16} className="mr-1 text-primary-gold" /> {property.bathrooms} Bathroom
+                        <Bath size={16} /> {property.bathrooms} Bathroom
                         {property.bathrooms !== 1 ? "s" : ""}
                       </div>
                       {property.property_types?.display_name && (
                         <div className={styles.propertyFeature}>
-                          <Home size={16} className="mr-1 text-primary-gold" /> {property.property_types.display_name}
+                          <Home size={16} /> {property.property_types.display_name}
                         </div>
                       )}
                       <div className={styles.propertyFeature}>
-                        <MapPin size={16} className="mr-1 text-primary-gold" /> {property.postcode}
+                        <MapPin size={16} /> {property.postcode}
                       </div>
                     </div>
 

@@ -1,9 +1,9 @@
+
 "use client"
 
 import type React from "react"
-
-import { useState } from "react"
-import { createRegion, type Region } from "@/lib/supabase-client"
+import { useState, useEffect } from "react"
+import { createRegion, updateRegion, type Region } from "@/lib/supabase-client"
 import { Modal } from "@/components/ui/Modal"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -15,16 +15,28 @@ import styles from "./RegionModal.module.css"
 interface CreateRegionModalProps {
   isOpen: boolean
   onClose: () => void
-  onRegionCreated: (region: Region) => void
+  onRegionSaved: (region: Region) => void
+  existingRegion?: Region | null
 }
 
-export function CreateRegionModal({ isOpen, onClose, onRegionCreated }: CreateRegionModalProps) {
+export function CreateRegionModal({ isOpen, onClose, onRegionSaved, existingRegion }: CreateRegionModalProps) {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (existingRegion) {
+      setFormData({
+        name: existingRegion.name || "",
+        description: existingRegion.description || "",
+      })
+    } else {
+      setFormData({ name: "", description: "" })
+    }
+  }, [existingRegion, isOpen])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -44,13 +56,17 @@ export function CreateRegionModal({ isOpen, onClose, onRegionCreated }: CreateRe
     setError(null)
 
     try {
-      const region = await createRegion(formData.name, formData.description)
-      onRegionCreated(region)
-      setFormData({ name: "", description: "" })
-      onClose()
+      let savedRegion: Region;
+      if (existingRegion) {
+        savedRegion = await updateRegion(existingRegion.id, formData.name, formData.description)
+      } else {
+        savedRegion = await createRegion(formData.name, formData.description)
+      }
+      onRegionSaved(savedRegion)
+      handleClose()
     } catch (err) {
-      console.error("Error creating region:", err)
-      setError(err instanceof Error ? err.message : "Failed to create region")
+      console.error("Error saving region:", err)
+      setError(err instanceof Error ? err.message : "Failed to save region")
     } finally {
       setLoading(false)
     }
@@ -65,7 +81,7 @@ export function CreateRegionModal({ isOpen, onClose, onRegionCreated }: CreateRe
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title="Create New Region">
+    <Modal isOpen={isOpen} onClose={handleClose} title={existingRegion ? "Edit Region" : "Create New Region"}>
       <form onSubmit={handleSubmit} className={styles.form}>
         {error && <Alert variant="error">{error}</Alert>}
 
@@ -103,10 +119,10 @@ export function CreateRegionModal({ isOpen, onClose, onRegionCreated }: CreateRe
             {loading ? (
               <>
                 <Spinner size="small" />
-                Creating...
+                Saving...
               </>
             ) : (
-              "Create Region"
+              "Save Region"
             )}
           </Button>
         </div>

@@ -1,3 +1,4 @@
+
 "use client"
 
 import type React from "react"
@@ -18,7 +19,7 @@ export function SaleDetailsForm({ formData, onChange }: SaleDetailsFormProps) {
       <h2>Sale Property Details</h2>
 
       <div className={styles.formRow}>
-        <FormGroup>
+        <FormGroup className={styles.formGroup}>
           <label htmlFor="tenure">
             Tenure <span className={styles.required}>*</span>
           </label>
@@ -32,7 +33,7 @@ export function SaleDetailsForm({ formData, onChange }: SaleDetailsFormProps) {
         </FormGroup>
 
         {formData.tenure === "Leasehold" && (
-          <FormGroup>
+          <FormGroup className={styles.formGroup}>
             <label htmlFor="lease_remaining">Lease Remaining (years)</label>
             <Input
               type="number"
@@ -49,7 +50,7 @@ export function SaleDetailsForm({ formData, onChange }: SaleDetailsFormProps) {
 
       {(formData.tenure === "Leasehold" || formData.tenure === "Share of Freehold") && (
         <div className={styles.formRow}>
-          <FormGroup>
+          <FormGroup className={styles.formGroup}>
             <label htmlFor="service_charge">Service Charge (£ per year)</label>
             <Input
               type="number"
@@ -63,7 +64,7 @@ export function SaleDetailsForm({ formData, onChange }: SaleDetailsFormProps) {
             />
           </FormGroup>
 
-          <FormGroup>
+          <FormGroup className={styles.formGroup}>
             <label htmlFor="ground_rent">Ground Rent (£ per year)</label>
             <Input
               type="number"
@@ -80,7 +81,7 @@ export function SaleDetailsForm({ formData, onChange }: SaleDetailsFormProps) {
       )}
 
       <div className={styles.formRow}>
-        <FormGroup>
+        <FormGroup className={styles.formGroup}>
           <label htmlFor="epc_rating">EPC Rating</label>
           <Select id="epc_rating" name="epc_rating" value={formData.epc_rating} onChange={onChange}>
             <option value="">Select Rating</option>
@@ -95,7 +96,7 @@ export function SaleDetailsForm({ formData, onChange }: SaleDetailsFormProps) {
           </Select>
         </FormGroup>
 
-        <FormGroup>
+        <FormGroup className={styles.formGroup}>
           <label htmlFor="council_tax_band">Council Tax Band</label>
           <Select id="council_tax_band" name="council_tax_band" value={formData.council_tax_band} onChange={onChange}>
             <option value="">Select Band</option>
@@ -112,7 +113,7 @@ export function SaleDetailsForm({ formData, onChange }: SaleDetailsFormProps) {
       </div>
 
       <div className={styles.formRow}>
-        <FormGroup>
+        <FormGroup className={styles.formGroup}>
           <label htmlFor="year_built">Year Built</label>
           <Input
             type="number"
@@ -126,7 +127,7 @@ export function SaleDetailsForm({ formData, onChange }: SaleDetailsFormProps) {
           />
         </FormGroup>
 
-        <FormGroup>
+        <FormGroup className={styles.formGroup}>
           <label htmlFor="construction_type">Construction Type</label>
           <Select
             id="construction_type"

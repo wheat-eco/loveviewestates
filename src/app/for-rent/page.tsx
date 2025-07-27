@@ -2,11 +2,25 @@ import Link from "next/link"
 import Image from "next/image"
 import { createClient } from "@/utils/supabase/server"
 import styles from "./for-rent.module.css"
+import type { Metadata } from 'next';
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Properties For Rent | Love View Estate",
-  description: "Browse our selection of rental properties throughout Ayrshire.",
-}
+  description: "Browse our selection of rental properties throughout Ayrshire. Find your next home to rent with us.",
+  openGraph: {
+    title: "Properties For Rent | Love View Estate",
+    description: "Browse our selection of rental properties throughout Ayrshire. Find your next home to rent with us.",
+    url: '/for-rent',
+    images: [
+      {
+        url: '/img/9.jpeg',
+        width: 1200,
+        height: 630,
+        alt: 'A home for rent in Ayrshire',
+      },
+    ],
+  },
+};
 
 async function getRegionsWithRentalProperties() {
   const supabase = await createClient()
@@ -72,11 +86,12 @@ export default async function ForRentPage() {
               <Link href={`/to-rent-${region.slug}`} key={region.id} className={styles.locationCard}>
                 <div className={styles.locationImage}>
                   <Image
-                    src={`/placeholder.svg?height=400&width=600&text=${region.name}`}
+                    src={`https://placehold.co/600x400.png`}
                     alt={`${region.name} Properties`}
                     width={600}
                     height={400}
                     className={styles.locationImg}
+                    data-ai-hint="ayrshire landscape"
                   />
                 </div>
                 <div className={styles.locationContent}>

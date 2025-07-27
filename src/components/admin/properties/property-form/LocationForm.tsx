@@ -1,3 +1,4 @@
+
 "use client"
 
 import type React from "react"
@@ -25,11 +26,11 @@ export function LocationForm({ formData, regions, areas, onChange, onCreateRegio
       <h2>Property Location</h2>
 
       <div className={styles.formRow}>
-        <FormGroup>
+        <FormGroup className={styles.formGroup}>
           <label htmlFor="region_id">
             Region <span className={styles.required}>*</span>
           </label>
-          <div className={styles.inputWithButton}>
+          <div className="flex gap-2">
             <Select id="region_id" name="region_id" value={formData.region_id} onChange={onChange} required>
               <option value="">Select Region</option>
               {regions.map((region) => (
@@ -44,11 +45,11 @@ export function LocationForm({ formData, regions, areas, onChange, onCreateRegio
           </div>
         </FormGroup>
 
-        <FormGroup>
+        <FormGroup className={styles.formGroup}>
           <label htmlFor="area_id">
             Area <span className={styles.required}>*</span>
           </label>
-          <div className={styles.inputWithButton}>
+          <div className="flex gap-2">
             <Select
               id="area_id"
               name="area_id"
@@ -79,7 +80,7 @@ export function LocationForm({ formData, regions, areas, onChange, onCreateRegio
       </div>
 
       <div className={styles.formRow}>
-        <FormGroup>
+        <FormGroup className={styles.formGroup}>
           <label htmlFor="address">
             Address <span className={styles.required}>*</span>
           </label>
@@ -93,7 +94,7 @@ export function LocationForm({ formData, regions, areas, onChange, onCreateRegio
           />
         </FormGroup>
 
-        <FormGroup>
+        <FormGroup className={styles.formGroup}>
           <label htmlFor="postcode">
             Postcode <span className={styles.required}>*</span>
           </label>
@@ -109,7 +110,7 @@ export function LocationForm({ formData, regions, areas, onChange, onCreateRegio
       </div>
 
       <div className={styles.formRow}>
-        <FormGroup>
+        <FormGroup className={styles.formGroup}>
           <label htmlFor="latitude">Latitude</label>
           <Input
             id="latitude"
@@ -121,7 +122,7 @@ export function LocationForm({ formData, regions, areas, onChange, onCreateRegio
           <p className={styles.helpText}>Optional: For map display</p>
         </FormGroup>
 
-        <FormGroup>
+        <FormGroup className={styles.formGroup}>
           <label htmlFor="longitude">Longitude</label>
           <Input
             id="longitude"
