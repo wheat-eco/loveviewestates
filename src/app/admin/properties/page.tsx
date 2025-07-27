@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import AdminLayout from "@/components/admin/AdminLayout"
 import { Button } from "@/components/ui/button"
@@ -167,170 +167,172 @@ export default function PropertiesPage() {
 
   return (
     <AdminLayout title="Properties">
-      <div className={styles.pageHeader}>
-        <div className={styles.headerContent}>
-          <div>
-            <h1>Properties</h1>
-            <p>Manage your property listings</p>
+      <Suspense fallback={<div>Loading...</div>}>
+        <div className={styles.pageHeader}>
+          <div className={styles.headerContent}>
+            <div>
+              <h1>Properties</h1>
+              <p>Manage your property listings</p>
+            </div>
+            <Button onClick={() => router.push("/admin/properties/add")}>
+              <Plus size={16} />
+              Add Property
+            </Button>
           </div>
-          <Button onClick={() => router.push("/admin/properties/add")}>
-            <Plus size={16} />
-            Add Property
-          </Button>
         </div>
-      </div>
 
-      {error && <Alert variant="error">{error}</Alert>}
+        {error && <Alert variant="error">{error}</Alert>}
 
-      <div className={styles.filtersSection}>
-        <div className={styles.filtersGrid}>
-          <div className={styles.searchGroup}>
-            <Search size={16} className={styles.searchIcon} />
-            <Input
-              placeholder="Search properties..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className={styles.searchInput}
-            />
+        <div className={styles.filtersSection}>
+          <div className={styles.filtersGrid}>
+            <div className={styles.searchGroup}>
+              <Search size={16} className={styles.searchIcon} />
+              <Input
+                placeholder="Search properties..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className={styles.searchInput}
+              />
+            </div>
+            <Select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
+              <option value="">All Categories</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id.toString()}>
+                  {category.display_name}
+                </option>
+              ))}
+            </Select>
+            <Select value={selectedRegion} onChange={(e) => setSelectedRegion(e.target.value)}>
+              <option value="">All Regions</option>
+              {regions.map((region) => (
+                <option key={region.id} value={region.id.toString()}>
+                  {region.name}
+                </option>
+              ))}
+            </Select>
+            <Select value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)}>
+              <option value="">All Statuses</option>
+              <option value="available">Available</option>
+              <option value="under_offer">Under Offer</option>
+              <option value="let_agreed">Let Agreed</option>
+              <option value="sold">Sold</option>
+              <option value="withdrawn">Withdrawn</option>
+              <option value="draft">Draft</option>
+            </Select>
           </div>
-          <Select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
-            <option value="">All Categories</option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.id.toString()}>
-                {category.display_name}
-              </option>
-            ))}
-          </Select>
-          <Select value={selectedRegion} onChange={(e) => setSelectedRegion(e.target.value)}>
-            <option value="">All Regions</option>
-            {regions.map((region) => (
-              <option key={region.id} value={region.id.toString()}>
-                {region.name}
-              </option>
-            ))}
-          </Select>
-          <Select value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)}>
-            <option value="">All Statuses</option>
-            <option value="available">Available</option>
-            <option value="under_offer">Under Offer</option>
-            <option value="let_agreed">Let Agreed</option>
-            <option value="sold">Sold</option>
-            <option value="withdrawn">Withdrawn</option>
-            <option value="draft">Draft</option>
-          </Select>
-        </div>
-        <div className={styles.resultsInfo}>
-          {loading ? (
-            <span>Loading...</span>
-          ) : (
-            <span>
-              Showing {Math.min((currentPage - 1) * pageSize + 1, totalProperties)} to{" "}
-              {Math.min(currentPage * pageSize, totalProperties)} of {totalProperties} properties
-            </span>
-          )}
-        </div>
-      </div>
-
-      {loading ? (
-        <div className={styles.loadingContainer}>
-          <Spinner size="large" />
-        </div>
-      ) : filteredProperties.length === 0 ? (
-        <div className={styles.emptyState}>
-          <div className={styles.emptyIcon}>
-            <Filter size={48} />
+          <div className={styles.resultsInfo}>
+            {loading ? (
+              <span>Loading...</span>
+            ) : (
+              <span>
+                Showing {Math.min((currentPage - 1) * pageSize + 1, totalProperties)} to{" "}
+                {Math.min(currentPage * pageSize, totalProperties)} of {totalProperties} properties
+              </span>
+            )}
           </div>
-          <h3>No properties found</h3>
-          <p>
-            {searchTerm || selectedCategory || selectedRegion || selectedStatus
-              ? "Try adjusting your filters or search terms"
-              : "Get started by adding your first property"}
-          </p>
-          <Button onClick={() => router.push("/admin/properties/add")}>
-            <Plus size={16} /> Add Property
-          </Button>
         </div>
-      ) : (
-        <>
-          <div className={styles.propertiesGrid}>
-            {filteredProperties.map((property) => (
-              <div key={property.id} className={styles.propertyCard}>
-                <div className={styles.propertyImage}>
-                  <img
-                    src={getFeaturedImage(property) || "https://placehold.co/300x200.png"}
-                    alt={property.title}
-                    onError={(e) => {
-                      e.currentTarget.src = "https://placehold.co/300x200.png"
-                    }}
-                  />
-                  {property.featured && <div className={styles.featuredBadge}>Featured</div>}
-                  <div className={styles.statusBadge} data-status={property.status}>
-                    {property.status.replace("_", " ")}
-                  </div>
-                </div>
-                <div className={styles.propertyContent}>
-                  <div className={styles.propertyHeader}>
-                    <h3 className={styles.propertyTitle}>{property.title}</h3>
-                    <div className={styles.propertyPrice}>
-                      {formatPrice(
-                        property.price,
-                        property.property_categories?.name,
-                        property.rent_frequency,
-                      )}
+
+        {loading ? (
+          <div className={styles.loadingContainer}>
+            <Spinner size="large" />
+          </div>
+        ) : filteredProperties.length === 0 ? (
+          <div className={styles.emptyState}>
+            <div className={styles.emptyIcon}>
+              <Filter size={48} />
+            </div>
+            <h3>No properties found</h3>
+            <p>
+              {searchTerm || selectedCategory || selectedRegion || selectedStatus
+                ? "Try adjusting your filters or search terms"
+                : "Get started by adding your first property"}
+            </p>
+            <Button onClick={() => router.push("/admin/properties/add")}>
+              <Plus size={16} /> Add Property
+            </Button>
+          </div>
+        ) : (
+          <>
+            <div className={styles.propertiesGrid}>
+              {filteredProperties.map((property) => (
+                <div key={property.id} className={styles.propertyCard}>
+                  <div className={styles.propertyImage}>
+                    <img
+                      src={getFeaturedImage(property) || "https://placehold.co/300x200.png"}
+                      alt={property.title}
+                      onError={(e) => {
+                        e.currentTarget.src = "https://placehold.co/300x200.png"
+                      }}
+                    />
+                    {property.featured && <div className={styles.featuredBadge}>Featured</div>}
+                    <div className={styles.statusBadge} data-status={property.status}>
+                      {property.status.replace("_", " ")}
                     </div>
                   </div>
-                  <div className={styles.propertyMeta}>
-                    <span className={styles.propertyType}>{property.property_types?.display_name}</span>
-                  </div>
-                  <div className={styles.propertyDetails}>
-                    <span>{property.bedrooms} bed</span>
-                    <span>{property.bathrooms} bath</span>
-                    {property.reception_rooms && property.reception_rooms > 0 && (
-                      <span>{property.reception_rooms} reception</span>
-                    )}
-                  </div>
-                  <div className={styles.propertyActions}>
-                    <Button
-                      variant="outline"
-                      size="small"
-                      onClick={() => router.push(`/admin/properties/view/${property.id}`)}
-                    >
-                      <Eye size={14} /> View
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="small"
-                      onClick={() => router.push(`/admin/properties/edit/${property.id}`)}
-                    >
-                      <Edit size={14} /> Edit
-                    </Button>
-                    <Button variant="danger" size="small" onClick={() => handleDeleteProperty(property.id)}>
-                      <Trash2 size={14} /> Delete
-                    </Button>
+                  <div className={styles.propertyContent}>
+                    <div className={styles.propertyHeader}>
+                      <h3 className={styles.propertyTitle}>{property.title}</h3>
+                      <div className={styles.propertyPrice}>
+                        {formatPrice(
+                          property.price,
+                          property.property_categories?.name,
+                          property.rent_frequency,
+                        )}
+                      </div>
+                    </div>
+                    <div className={styles.propertyMeta}>
+                      <span className={styles.propertyType}>{property.property_types?.display_name}</span>
+                    </div>
+                    <div className={styles.propertyDetails}>
+                      <span>{property.bedrooms} bed</span>
+                      <span>{property.bathrooms} bath</span>
+                      {property.reception_rooms && property.reception_rooms > 0 && (
+                        <span>{property.reception_rooms} reception</span>
+                      )}
+                    </div>
+                    <div className={styles.propertyActions}>
+                      <Button
+                        variant="outline"
+                        size="small"
+                        onClick={() => router.push(`/admin/properties/view/${property.id}`)}
+                      >
+                        <Eye size={14} /> View
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="small"
+                        onClick={() => router.push(`/admin/properties/edit/${property.id}`)}
+                      >
+                        <Edit size={14} /> Edit
+                      </Button>
+                      <Button variant="danger" size="small" onClick={() => handleDeleteProperty(property.id)}>
+                        <Trash2 size={14} /> Delete
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-          {totalPages > 1 && (
-            <div className={styles.pagination}>
-              <Button variant="outline" disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>
-                Previous
-              </Button>
-              <span className={styles.pageInfo}>
-                Page {currentPage} of {totalPages}
-              </span>
-              <Button
-                variant="outline"
-                disabled={currentPage === totalPages}
-                onClick={() => setCurrentPage(currentPage + 1)}
-              >
-                Next
-              </Button>
+              ))}
             </div>
-          )}
-        </>
-      )}
+            {totalPages > 1 && (
+              <div className={styles.pagination}>
+                <Button variant="outline" disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>
+                  Previous
+                </Button>
+                <span className={styles.pageInfo}>
+                  Page {currentPage} of {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                >
+                  Next
+                </Button>
+              </div>
+            )}
+          </>
+        )}
+      </Suspense>
     </AdminLayout>
   )
 }
