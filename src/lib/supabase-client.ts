@@ -522,3 +522,18 @@ export async function updateContactInquiryStatus(id: number, status: ContactInqu
   if (error) throw error;
   return data;
 }
+
+export async function deleteViewingRequest(id: number): Promise<void> {
+    const { error } = await supabase.from("viewing_requests").delete().eq("id", id);
+    if (error) throw error;
+}
+
+export async function deleteValuationRequest(id: number): Promise<void> {
+    const { error } = await supabase.from("valuation_requests").delete().eq("id", id);
+    if (error) throw error;
+}
+
+export async function deleteContactInquiry(id: number): Promise<void> {
+    const { error } = await supabase.from("contact_messages").delete().eq("id", id);
+    if (error) throw error;
+}

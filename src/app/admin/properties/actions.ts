@@ -5,6 +5,7 @@ import { createClient } from "@/utils/supabase/server"
 import { createServiceRoleClient } from "@/utils/supabase/service-role"
 import { revalidatePath } from "next/cache"
 import { type NextRequest } from 'next/server';
+import type { PropertyImage } from "@/lib/supabase-client";
 
 // Helper to generate a unique slug
 const generateSlug = async (supabase: any, title: string, propertyId: number | null = null): Promise<string> => {
@@ -81,59 +82,91 @@ const getPropertyDataFromForm = (formData: FormData) => {
     },
     features,
     keywords,
+    image_order: JSON.parse(formData.get("image_order") as string || "[]") as any[],
   };
 }
 
-async function uploadFiles(supabase: any, formData: FormData, propertyId: number) {
+async function uploadAndLinkFiles(supabase: any, formData: FormData, propertyId: number) {
     const uploadPromises = [];
-    let displayOrder = 0;
+    const newImageFiles: File[] = [];
 
+    // Separate new files from form data
     for (const [key, value] of formData.entries()) {
         if (value instanceof File) {
-            const file = value;
-            const isImage = key.startsWith('image_');
-            const isDocument = ['epc', 'floorplan', 'brochure', 'title_deed', 'lease_agreement', 'tenancy_agreement'].includes(key);
-
-            let filePath = '';
-            let fileType = '';
-            
-            if (isImage) {
-                filePath = `property-images/${propertyId}/${Date.now()}-${file.name}`;
-                fileType = 'image';
-            } else if (isDocument) {
-                filePath = `property-documents/${propertyId}/${Date.now()}-${file.name}`;
-                fileType = 'document';
-            } else {
-                continue; // Skip if not a recognized file type
+            if (key.startsWith('image_')) {
+                newImageFiles.push(value);
             }
+        }
+    }
+    
+    // Upload new images and get their URLs
+    const newImageUploads = newImageFiles.map(file => {
+        const filePath = `property-images/${propertyId}/${Date.now()}-${file.name}`;
+        return supabase.storage.from('properties').upload(filePath, file).then((uploadResult: { data: any, error: any }) => {
+            if (uploadResult.error) throw uploadResult.error;
+            const { data: urlData } = supabase.storage.from('properties').getPublicUrl(filePath);
+            return {
+                originalName: file.name,
+                url: urlData.publicUrl,
+            };
+        });
+    });
 
-            const uploadPromise = supabase.storage
-                .from('properties')
-                .upload(filePath, file)
+    const uploadedImages = await Promise.all(newImageUploads);
+    const uploadedImageMap = new Map(uploadedImages.map(img => [img.originalName, img.url]));
+    
+    // Process image order from form data
+    const imageOrder = JSON.parse(formData.get("image_order") as string || "[]");
+    
+    // Prepare records for property_images table
+    const imageRecords: Omit<PropertyImage, 'id' | 'created_at'>[] = imageOrder.map((imgInfo: any, index: number) => {
+        if (imgInfo.id) { // Existing image
+            return {
+                id: imgInfo.id,
+                is_featured: imgInfo.is_featured || false,
+                display_order: index,
+            };
+        } else { // New image
+            const imageUrl = uploadedImageMap.get(imgInfo.name);
+            if (!imageUrl) return null;
+            return {
+                property_id: propertyId,
+                image_url: imageUrl,
+                is_featured: imgInfo.is_featured || false,
+                display_order: index,
+                alt_text: imgInfo.name,
+                image_type: 'property'
+            };
+        }
+    }).filter(Boolean);
+
+    // Update existing and insert new images
+    const updates = imageRecords.filter(r => r.id).map(r => supabase.from('property_images').update({ display_order: r.display_order, is_featured: r.is_featured }).eq('id', r.id));
+    const inserts = imageRecords.filter(r => !r.id);
+
+    if (inserts.length > 0) {
+        updates.push(supabase.from('property_images').insert(inserts.map(({ id, ...rest }) => rest)));
+    }
+
+    await Promise.all(updates);
+
+    // Handle documents
+    for (const [key, value] of formData.entries()) {
+        if (value instanceof File && !key.startsWith('image_')) {
+            const file = value;
+            const filePath = `property-documents/${propertyId}/${Date.now()}-${file.name}`;
+            const uploadPromise = supabase.storage.from('properties').upload(filePath, file)
                 .then(async (uploadResult: { data: any, error: any }) => {
                     if (uploadResult.error) throw uploadResult.error;
-
                     const { data: urlData } = supabase.storage.from('properties').getPublicUrl(filePath);
-                    
-                    if (fileType === 'image') {
-                        const { error: imageDbError } = await supabase.from('property_images').insert({
-                            property_id: propertyId,
-                            image_url: urlData.publicUrl,
-                            is_featured: displayOrder === 0, // First image is featured
-                            display_order: displayOrder++,
-                        });
-                        if (imageDbError) throw imageDbError;
-                    } else if (fileType === 'document') {
-                        const { error: docDbError } = await supabase.from('property_documents').insert({
-                            property_id: propertyId,
-                            document_url: urlData.publicUrl,
-                            document_name: key,
-                            document_type: key.toUpperCase(),
-                            file_size: file.size,
-                            mime_type: file.type,
-                        });
-                        if (docDbError) throw docDbError;
-                    }
+                    await supabase.from('property_documents').upsert({
+                        property_id: propertyId,
+                        document_name: key,
+                        document_type: key.toUpperCase(),
+                        document_url: urlData.publicUrl,
+                        file_size: file.size,
+                        mime_type: file.type,
+                    }, { onConflict: 'property_id,document_name' });
                 });
             uploadPromises.push(uploadPromise);
         }
@@ -144,13 +177,11 @@ async function uploadFiles(supabase: any, formData: FormData, propertyId: number
 
 export async function createProperty(formData: FormData) {
   const supabase = createClient();
-  // Server actions don't need manual session checking, it's handled by Next.js/Supabase middleware
   
   try {
     const { basicDetails, locationDetails, propertySpecificDetails, features, keywords } = getPropertyDataFromForm(formData);
     const slug = await generateSlug(supabase, basicDetails.title);
     
-    // 1. Insert into properties table
     const { data: propertyData, error: propertyError } = await supabase
       .from("properties")
       .insert({ ...basicDetails, ...locationDetails, slug, keywords })
@@ -158,17 +189,14 @@ export async function createProperty(formData: FormData) {
     if (propertyError) throw propertyError;
     const propertyId = propertyData.id;
 
-    // 2. Insert into property_details
     await supabase.from("property_details").insert({ property_id: propertyId, ...propertySpecificDetails });
 
-    // 3. Insert features
     if (features.length > 0) {
       await supabase.from("property_features").insert(features.map((name, i) => ({ property_id: propertyId, feature_name: name, display_order: i })));
     }
     
-    // 4. Upload files
     const serviceSupabase = createServiceRoleClient();
-    await uploadFiles(serviceSupabase, formData, propertyId);
+    await uploadAndLinkFiles(serviceSupabase, formData, propertyId);
 
     revalidatePath("/admin/properties");
     return { success: true, message: "Property created successfully", propertyId };
@@ -179,35 +207,30 @@ export async function createProperty(formData: FormData) {
 
 export async function updateProperty(formData: FormData) {
     const supabase = createClient();
-    // Server actions don't need manual session checking
-
+    const serviceSupabase = createServiceRoleClient();
     const propertyId = Number(formData.get("property_id"));
     if (!propertyId) return { success: false, message: "Property ID is missing." };
 
     try {
-        const { basicDetails, locationDetails, propertySpecificDetails, features, keywords } = getPropertyDataFromForm(formData);
+        const { basicDetails, locationDetails, propertySpecificDetails, features, keywords, image_order } = getPropertyDataFromForm(formData);
         const slug = await generateSlug(supabase, basicDetails.title, propertyId);
 
-        // 1. Update properties table
         await supabase.from("properties").update({ ...basicDetails, ...locationDetails, slug, keywords }).eq("id", propertyId);
 
-        // 2. Upsert property_details
         await supabase.from("property_details").upsert({ property_id: propertyId, ...propertySpecificDetails }, { onConflict: 'property_id' });
 
-        // 3. Update features (delete all and re-insert)
         await supabase.from("property_features").delete().eq('property_id', propertyId);
         if (features.length > 0) {
             await supabase.from("property_features").insert(features.map((name, i) => ({ property_id: propertyId, feature_name: name, display_order: i })));
         }
 
-        // 4. Upload NEW files
-        const serviceSupabase = createServiceRoleClient();
-        await uploadFiles(serviceSupabase, formData, propertyId);
+        await uploadAndLinkFiles(serviceSupabase, formData, propertyId);
 
         revalidatePath("/admin/properties");
         revalidatePath(`/admin/properties/edit/${propertyId}`);
         return { success: true, message: "Property updated successfully", propertyId };
     } catch (error: any) {
+        console.error('Update property error:', error);
         return { success: false, message: error.message };
     }
 }

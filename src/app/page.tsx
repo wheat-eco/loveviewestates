@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useEffect, useState } from "react"
@@ -105,7 +106,6 @@ export default function Home() {
               alt="Interior of a modern property suitable for valuation"
               width={800}
               height={600}
-              className="w-full h-auto"
             />
           </div>
           <div className="valuations-content">

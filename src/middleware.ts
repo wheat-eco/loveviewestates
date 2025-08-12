@@ -3,6 +3,16 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  // Maintenance Mode Check
+  if (process.env.MAINTENANCE_MODE_ENABLED === 'true') {
+    // Allow access to the maintenance page itself to avoid a redirect loop
+    if (request.nextUrl.pathname !== '/error') {
+      const url = request.nextUrl.clone()
+      url.pathname = '/error'
+      return NextResponse.redirect(url)
+    }
+  }
+  
   let response = NextResponse.next({
     request: {
       headers: request.headers,

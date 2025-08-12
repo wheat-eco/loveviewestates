@@ -1,4 +1,5 @@
 
+
 .container {
   padding: 24px;
   max-width: 1400px;
@@ -268,10 +269,16 @@
 .requestActions {
   display: flex;
   justify-content: flex-end;
+  gap: 0.5rem;
 }
 
 .modalContent {
-  padding: 24px;
+  padding: 1.5rem;
+}
+
+.modalContent p {
+    margin-bottom: 1.5rem;
+    color: #4b5563;
 }
 
 .modalHeader {
@@ -383,7 +390,7 @@
   }
 
   .modalContent {
-    padding: 16px;
+    padding: 1rem;
   }
 
   .modalActions {

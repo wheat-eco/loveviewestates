@@ -10,6 +10,7 @@ import {
   type PropertyType,
   type Region,
   type Area,
+  type PropertyImage,
   fetchRegions,
   fetchAreasByRegion,
   fetchPropertyCategories,
@@ -61,54 +62,53 @@ export default function PropertyForm({ mode, propertyId }: PropertyFormProps) {
   const [showAreaModal, setShowAreaModal] = useState(false)
   const [showPropertyTypeModal, setShowPropertyTypeModal] = useState(false)
 
-  // Form data with example values for testing
+  // Form data
   const [formData, setFormData] = useState({
-    title: "Charming 3-Bedroom Family Home",
-    description: "A delightful and spacious 3-bedroom semi-detached house located in a quiet, family-friendly neighborhood. This property boasts a large private garden, a modern kitchen, and is within walking distance of local schools and amenities.",
+    title: "",
+    description: "",
     category_id: "",
     property_type_id: "",
-    bedrooms: "3",
-    bathrooms: "2",
-    reception_rooms: "1",
-    price: "250000",
-    price_qualifier: "Offers Over",
+    bedrooms: "1",
+    bathrooms: "1",
+    reception_rooms: "0",
+    price: "",
+    price_qualifier: "",
     rent_frequency: "monthly",
     status: "available",
     available_date: new Date().toISOString().split("T")[0],
-    featured: true,
+    featured: false,
     region_id: "",
     area_id: "",
-    address: "123 Willow Creek Drive",
-    postcode: "KA1 2BC",
-    latitude: "55.6119",
-    longitude: "-4.4994",
-    features: ["Private Garden", "Off-street Parking", "Gas Central Heating", "Double Glazing"],
-    furnished_status: "Unfurnished",
-    deposit_amount: "1200",
-    pets_policy: "Considered",
-    smoking_policy: "Not Allowed",
-    minimum_tenancy: "12",
+    address: "",
+    postcode: "",
+    latitude: "",
+    longitude: "",
+    features: [] as string[],
+    furnished_status: "",
+    deposit_amount: "",
+    pets_policy: "",
+    smoking_policy: "",
+    minimum_tenancy: "",
     maximum_tenancy: "",
-    tenure: "Freehold",
+    tenure: "",
     lease_remaining: "",
     service_charge: "",
     ground_rent: "",
-    epc_rating: "C",
-    council_tax_band: "D",
-    year_built: "1998",
-    construction_type: "Brick",
-    heating_type: "Gas",
-    parking: "Driveway",
-    garden: "Private Rear Garden",
-    meta_title: "3 Bed Family Home for Sale in Kilmarnock | 123 Willow Creek",
-    meta_description: "Explore this charming 3-bedroom family home for sale. Features a large garden, modern kitchen, and excellent location. Contact Love View Estate today.",
-    keywords: ["family home", "kilmarnock", "3 bedroom", "garden"],
+    epc_rating: "",
+    council_tax_band: "",
+    year_built: "",
+    construction_type: "",
+    heating_type: "",
+    parking: "",
+    garden: "",
+    meta_title: "",
+    meta_description: "",
+    keywords: [] as string[],
   })
 
   // File state
-  const [imageFiles, setImageFiles] = useState<File[]>([])
-  const [existingImageUrls, setExistingImageUrls] = useState<string[]>([])
-  const [documentFiles, setDocumentFiles] = useState<{ [key: string]: File | null }>({
+  const [images, setImages] = useState<(File | PropertyImage)[]>([])
+  const [documents, setDocuments] = useState<{ [key: string]: File | null }>({
     epc: null,
     floorplan: null,
     brochure: null,
@@ -161,18 +161,17 @@ export default function PropertyForm({ mode, propertyId }: PropertyFormProps) {
             epc_rating: propertyData.property_details?.epc_rating || "",
             council_tax_band: propertyData.property_details?.council_tax_band || "",
             year_built: propertyData.property_details?.year_built?.toString() || "",
-            construction_type: propertyData.property_details?.construction_type || "",
-            heating_type: propertyData.property_details?.heating_type || "",
-            parking: propertyData.property_details?.parking || "",
-            garden: propertyData.property_details?.garden || "",
+            construction_type: (propertyData.property_details as any)?.construction_type || "",
+            heating_type: (propertyData.property_details as any)?.heating_type || "",
+            parking: (propertyData.property_details as any)?.parking || "",
+            garden: (propertyData.property_details as any)?.garden || "",
             meta_title: propertyData.meta_title || "",
             meta_description: propertyData.meta_description || "",
             keywords: propertyData.keywords || [],
           })
 
-          setExistingImageUrls(propertyData.property_images?.map((img) => img.image_url) || [])
+          setImages(propertyData.property_images?.sort((a, b) => a.display_order - b.display_order) || [])
         } else {
-            // For create mode, set default category and region if possible
             if (categoriesData.length > 0) {
                 setFormData(prev => ({...prev, category_id: categoriesData[0].id.toString()}))
             }
@@ -201,7 +200,6 @@ export default function PropertyForm({ mode, propertyId }: PropertyFormProps) {
         const types = await fetchPropertyTypesByCategory(Number(formData.category_id))
         setPropertyTypes(types)
         
-        // If we are in create mode or the existing type ID is invalid, set to the first available type
         const currentTypeIsValid = types.some((t) => t.id === Number(formData.property_type_id));
         if (mode === 'create' || !currentTypeIsValid) {
           if (types.length > 0) {
@@ -248,8 +246,8 @@ export default function PropertyForm({ mode, propertyId }: PropertyFormProps) {
 
   const handleFeatureChange = (features: string[]) => setFormData((prev) => ({ ...prev, features }))
   const handleKeywordsChange = (keywords: string[]) => setFormData((prev) => ({ ...prev, keywords }))
-  const handleImageChange = (files: File[]) => setImageFiles(files)
-  const handleDocumentChange = (type: string, file: File | null) => setDocumentFiles((prev) => ({ ...prev, [type]: file }))
+  const handleImageChange = (newImages: (File | PropertyImage)[]) => setImages(newImages)
+  const handleDocumentChange = (type: string, file: File | null) => setDocuments((prev) => ({ ...prev, [type]: file }))
   const handleRegionCreated = (region: Region) => {
     setRegions((prev) => [...prev, region])
     setFormData((prev) => ({ ...prev, region_id: region.id.toString() }))
@@ -274,7 +272,6 @@ export default function PropertyForm({ mode, propertyId }: PropertyFormProps) {
 
     const formPayload = new FormData()
 
-    // Append all text-based form data
     Object.entries(formData).forEach(([key, value]) => {
       if (Array.isArray(value)) {
         formPayload.append(key, JSON.stringify(value))
@@ -283,13 +280,20 @@ export default function PropertyForm({ mode, propertyId }: PropertyFormProps) {
       }
     })
 
-    // Append new image files
-    imageFiles.forEach((file, index) => {
-      formPayload.append(`image_${index}`, file)
-    })
+    const newFiles = images.filter(img => img instanceof File) as File[];
+    newFiles.forEach((file, index) => {
+        formPayload.append(`image_${index}`, file);
+    });
 
-    // Append new document files
-    Object.entries(documentFiles).forEach(([type, file]) => {
+    const imageOrder = images.map(img => {
+      if (img instanceof File) {
+        return { name: img.name, is_featured: false }; // Placeholder for new files
+      }
+      return { id: img.id, is_featured: img.is_featured };
+    });
+    formPayload.append('image_order', JSON.stringify(imageOrder));
+
+    Object.entries(documents).forEach(([type, file]) => {
       if (file) {
         formPayload.append(type, file)
       }
@@ -393,14 +397,13 @@ export default function PropertyForm({ mode, propertyId }: PropertyFormProps) {
           </TabsContent>
           <TabsContent value="images">
             <ImagesForm
-              imageFiles={imageFiles}
-              previewUrls={existingImageUrls} // Show existing images
-              onChange={handleImageChange}
+              images={images}
+              onImagesChange={handleImageChange}
             />
           </TabsContent>
           <TabsContent value="documents">
             <DocumentsForm
-              documents={documentFiles}
+              documents={documents}
               onChange={handleDocumentChange}
               propertyCategory={selectedCategory?.name || ""}
             />

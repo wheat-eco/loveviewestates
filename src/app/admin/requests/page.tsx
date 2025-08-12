@@ -9,6 +9,9 @@ import {
   updateViewingRequestStatus,
   updateValuationRequestStatus,
   updateContactInquiryStatus,
+  deleteViewingRequest,
+  deleteValuationRequest,
+  deleteContactInquiry,
   type ViewingRequest,
   type ValuationRequest,
   type ContactInquiry,
@@ -34,6 +37,7 @@ import {
   CheckCircle,
   XCircle,
   Search,
+  Trash2,
 } from "lucide-react"
 import styles from "./requests.module.css"
 
@@ -44,6 +48,7 @@ export default function RequestsPage() {
   const [contactInquiries, setContactInquiries] = useState<ContactInquiry[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
 
   // Filters
   const [statusFilter, setStatusFilter] = useState("")
@@ -52,7 +57,9 @@ export default function RequestsPage() {
   // Modal states
   const [selectedRequest, setSelectedRequest] = useState<any>(null)
   const [modalOpen, setModalOpen] = useState(false)
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const [updating, setUpdating] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const [adminNotes, setAdminNotes] = useState("")
   const [newStatus, setNewStatus] = useState("")
   const [estimatedValue, setEstimatedValue] = useState("")
@@ -60,6 +67,12 @@ export default function RequestsPage() {
   useEffect(() => {
     loadRequests(activeTab)
   }, [activeTab, statusFilter, searchTerm])
+  
+  const handleSuccess = (message: string) => {
+    setSuccess(message)
+    setError(null)
+    setTimeout(() => setSuccess(null), 4000)
+  }
 
   const loadRequests = async (tab: string) => {
     try {
@@ -93,12 +106,17 @@ export default function RequestsPage() {
     setSearchTerm("")
   }
 
-  const handleViewRequest = (request: any) => {
+  const openViewModal = (request: any) => {
     setSelectedRequest(request)
     setAdminNotes(request.admin_notes || "")
     setNewStatus(request.status)
     setEstimatedValue(request.estimated_value?.toString() || "")
     setModalOpen(true)
+  }
+  
+  const openDeleteModal = (request: any) => {
+    setSelectedRequest(request)
+    setDeleteModalOpen(true)
   }
 
   const handleUpdateRequest = async () => {
@@ -122,10 +140,34 @@ export default function RequestsPage() {
 
       setModalOpen(false)
       loadRequests(activeTab)
+      handleSuccess("Request updated successfully.")
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update request")
     } finally {
       setUpdating(false)
+    }
+  }
+  
+  const handleDeleteRequest = async () => {
+    if (!selectedRequest) return
+    
+    setDeleting(true)
+    setError(null)
+    try {
+        if (activeTab === "viewing") {
+            await deleteViewingRequest(selectedRequest.id)
+        } else if (activeTab === "valuation") {
+            await deleteValuationRequest(selectedRequest.id)
+        } else if (activeTab === "contact") {
+            await deleteContactInquiry(selectedRequest.id)
+        }
+        setDeleteModalOpen(false)
+        loadRequests(activeTab)
+        handleSuccess("Request deleted successfully.")
+    } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to delete request")
+    } finally {
+        setDeleting(false)
     }
   }
 
@@ -318,9 +360,13 @@ export default function RequestsPage() {
         </div>
 
         <div className={styles.requestActions}>
-            <Button variant="outline" size="small" onClick={() => handleViewRequest(request)}>
-            <Eye size={16} />
-            View & Update
+            <Button variant="outline" size="small" onClick={() => openViewModal(request)}>
+                <Eye size={16} />
+                View & Update
+            </Button>
+            <Button variant="danger" size="small" onClick={() => openDeleteModal(request)}>
+                <Trash2 size={16} />
+                Delete
             </Button>
         </div>
         </div>
@@ -335,11 +381,9 @@ export default function RequestsPage() {
           <p className={styles.subtitle}>Manage viewing requests, valuations, and contact inquiries</p>
         </div>
 
-        {error && (
-          <Alert variant="error" className={styles.alert}>
-            {error}
-          </Alert>
-        )}
+        {error && <Alert variant="error" className={styles.alert}>{error}</Alert>}
+        {success && <Alert variant="success" className={styles.alert}>{success}</Alert>}
+
         <Tabs value={activeTab} onValueChange={handleTabChange}>
           <TabsList className={styles.tabsList}>
             <TabsTrigger value="viewing">Viewing Requests</TabsTrigger>
@@ -514,6 +558,26 @@ export default function RequestsPage() {
                   {updating ? "Updating..." : "Update Request"}
                 </Button>
               </div>
+            </div>
+          )}
+        </Modal>
+
+        {/* Delete Confirmation Modal */}
+        <Modal
+          isOpen={deleteModalOpen}
+          onClose={() => setDeleteModalOpen(false)}
+          title={`Delete ${activeTab} request`}
+        >
+          {selectedRequest && (
+            <div className={styles.modalContent}>
+                <p>Are you sure you want to permanently delete this request from <strong>{selectedRequest.name}</strong>? This action cannot be undone.</p>
+                <div className={styles.modalActions}>
+                    <Button variant="ghost" onClick={() => setDeleteModalOpen(false)} disabled={deleting}>Cancel</Button>
+                    <Button variant="danger" onClick={handleDeleteRequest} disabled={deleting}>
+                        {deleting ? <Spinner size="small" /> : <Trash2 size={16} />}
+                        {deleting ? 'Deleting...' : 'Delete'}
+                    </Button>
+                </div>
             </div>
           )}
         </Modal>
